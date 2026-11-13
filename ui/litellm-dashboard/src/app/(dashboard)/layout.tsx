@@ -34,6 +34,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { CommandPaletteProvider } from "@/components/CommandPalette/CommandPaletteProvider";
 import { recordUiEvent } from "@/lib/telemetry/uiEvents";
 import TelemetryEnvBanner from "@/app/(dashboard)/telemetry/_components/TelemetryEnvBanner";
+import { BottomToolbar } from "@/components/shared/BottomToolbar";
 
 const pluginApiClient = createApiClient({ getBaseUrl: () => getProxyBaseUrl() ?? "" });
 
@@ -228,6 +229,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               <TelemetryEnvBanner />
               {children}
             </main>
+            <BottomToolbar />
           </div>
         </CommandPaletteProvider>
       </div>

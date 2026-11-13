@@ -3,23 +3,36 @@ import { renderWithProviders, screen } from "../../../../tests/test-utils";
 import { CommunityEngagementButtons } from "./CommunityEngagementButtons";
 
 let mockUseDisableShowPromptsImpl = () => false;
+let mockCommunityLinksEnabled = false;
 
 vi.mock("@/app/(dashboard)/hooks/useDisableShowPrompts", () => ({
   useDisableShowPrompts: () => mockUseDisableShowPromptsImpl(),
+}));
+
+vi.mock("@/config/enterpriseFeatures", () => ({
+  ENTERPRISE_FEATURES: {
+    get communityLinks() {
+      return mockCommunityLinksEnabled;
+    },
+  },
 }));
 
 describe("CommunityEngagementButtons", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseDisableShowPromptsImpl = () => false;
+    mockCommunityLinksEnabled = false;
   });
 
-  it("should render", () => {
+  it("should not render in the enterprise build by default", () => {
     renderWithProviders(<CommunityEngagementButtons />);
-    expect(screen.getByRole("link", { name: /join slack/i })).toBeInTheDocument();
+
+    expect(screen.queryByRole("link", { name: /join slack/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /litellm on github/i })).not.toBeInTheDocument();
   });
 
-  it("should render Join Slack button with correct link", () => {
+  it("should render when community links are enabled upstream", () => {
+    mockCommunityLinksEnabled = true;
     renderWithProviders(<CommunityEngagementButtons />);
 
     const joinSlackLink = screen.getByRole("link", { name: /join slack/i });
@@ -27,10 +40,6 @@ describe("CommunityEngagementButtons", () => {
     expect(joinSlackLink).toHaveAttribute("href", "https://www.litellm.ai/support");
     expect(joinSlackLink).toHaveAttribute("target", "_blank");
     expect(joinSlackLink).toHaveAttribute("rel", "noopener noreferrer");
-  });
-
-  it("should render GitHub link with correct href", () => {
-    renderWithProviders(<CommunityEngagementButtons />);
 
     const githubLink = screen.getByRole("link", { name: /litellm on github/i });
     expect(githubLink).toBeInTheDocument();
@@ -40,6 +49,7 @@ describe("CommunityEngagementButtons", () => {
   });
 
   it("should not render buttons when prompts are disabled", () => {
+    mockCommunityLinksEnabled = true;
     mockUseDisableShowPromptsImpl = () => true;
 
     renderWithProviders(<CommunityEngagementButtons />);

@@ -83,6 +83,7 @@ import BetaBadge from "./BetaBadge";
 import SidebarAccountMenu from "./SidebarAccountMenu/SidebarAccountMenu";
 import SidebarUsageCard from "./SidebarUsageCard";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
+import { ENTERPRISE_FEATURES } from "@/config/enterpriseFeatures";
 
 const ICON = { strokeWidth: 1.75 } as const;
 
@@ -186,6 +187,7 @@ export const visibleMenuGroups = (groups: readonly MenuGroup[], context: MenuVis
   const filterItems = (items: MenuItem[]): MenuItem[] =>
     items
       .map((item) => ({ ...item, children: item.children ? filterItems(item.children) : undefined }))
+      .filter((item) => !ENTERPRISE_FEATURES.hiddenNavItems.has(item.key))
       .filter((item) => menuItemIsVisible(item, context, isAdmin));
 
   return groups

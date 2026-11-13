@@ -11,13 +11,14 @@ import HotkeysProvider from "@/contexts/HotkeysProvider";
 import { TerminologyProvider } from "@/contexts/TerminologyContext";
 import { Toaster } from "@/components/ui/sonner";
 import I18nProvider from "@/i18n/I18nProvider";
+import aiGwMonogram from "../../public/assets/logos/ai_gw_monogram.svg";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LiteLLM Dashboard",
-  description: "LiteLLM Proxy Admin UI",
-  icons: { icon: "/get_favicon" },
+  title: "AI-Tokengw Dashboard",
+  description: "AI-Tokengw AI Gateway Admin UI",
+  icons: { icon: aiGwMonogram.src },
 };
 
 export default function RootLayout({

@@ -17,6 +17,7 @@ import { uiHref } from "@/utils/uiHref";
 import { cn } from "@/lib/cva.config";
 import i18n from "@/i18n/i18n";
 import { productNames } from "@/i18n/untranslated/productNames";
+import { ENTERPRISE_FEATURES } from "@/config/enterpriseFeatures";
 
 const GATEWAY = "ai-gateway";
 const CHAT = "chat";
@@ -119,21 +120,25 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
       onClick: () => selectMode(e.key),
     })),
     chatItem,
-    {
-      key: MOYAI,
-      label: (
-        <div className="flex w-full items-center justify-between gap-6 py-0.5">
-          <span className="flex flex-col">
-            <span className="font-medium">{productNames.moyai}</span>{" "}
-            <span className="text-xs leading-snug text-muted-foreground">
-              {t("shell.viewSwitcher.moyaiDescription")}
-            </span>
-          </span>
-          {isMoyaiRoute && <Check className="size-4 text-info" />}
-        </div>
-      ),
-      onClick: () => window.location.assign(moyaiUrl ?? uiHref(MOYAI)),
-    },
+    ...(ENTERPRISE_FEATURES.cloudCodingAgent
+      ? [
+          {
+            key: MOYAI,
+            label: (
+              <div className="flex w-full items-center justify-between gap-6 py-0.5">
+                <span className="flex flex-col">
+                  <span className="font-medium">{productNames.moyai}</span>{" "}
+                  <span className="text-xs leading-snug text-muted-foreground">
+                    {t("shell.viewSwitcher.moyaiDescription")}
+                  </span>
+                </span>
+                {isMoyaiRoute && <Check className="size-4 text-info" />}
+              </div>
+            ),
+            onClick: () => window.location.assign(moyaiUrl ?? uiHref(MOYAI)),
+          } satisfies ViewSwitcherItem,
+        ]
+      : []),
   ];
 
   return (

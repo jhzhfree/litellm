@@ -1,0 +1,9 @@
+services:
+  db:
+    # 宿主机 5432 已被本地 PostgreSQL 占用；仅调整对外映射，容器间仍用 db:5432
+    ports: !override
+      - "5433:5432"
+  litellm:
+    # 允许局域网访问 192.168.24.202:4000
+    ports: !override
+      - "4000:4000"

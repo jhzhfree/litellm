@@ -39,7 +39,7 @@
       },
       "webhookUrl": {
         "label": "Webhook URL",
-        "hint": "Absolute http(s) URL LiteLLM calls when the kill switch is triggered. Leave empty to remove the kill switch."
+        "hint": "Absolute http(s) URL AI-Tokengw calls when the kill switch is triggered. Leave empty to remove the kill switch."
       },
       "method": "Method",
       "headers": {
@@ -68,14 +68,14 @@
       },
       "title": "Danger Zone",
       "killSwitch": "Kill switch",
-      "configuredDescription": "Calls the configured webhook to stop this agent's upstream runtime. This can cause an outage for everyone using the agent and cannot be undone from LiteLLM",
+      "configuredDescription": "Calls the configured webhook to stop this agent's upstream runtime. This can cause an outage for everyone using the agent and cannot be undone from AI-Tokengw",
       "notConfigured": "Not configured. Add a kill switch webhook under Settings to enable this action",
       "fire": "Fire Kill Switch",
       "lastResult": "Last result: HTTP {{status}}",
       "confirm": {
         "title": "Fire kill switch for {{name}}?",
         "outageTitle": "This can cause an outage",
-        "outageDescription": "LiteLLM will call {{method}} {{url}} immediately. Whatever that webhook does to the agent is outside LiteLLM's control and cannot be reverted here",
+        "outageDescription": "AI-Tokengw will call {{method}} {{url}} immediately. Whatever that webhook does to the agent is outside AI-Tokengw's control and cannot be reverted here",
         "typeToConfirm": "Type <name/> to confirm:",
         "inputLabel": "Confirm agent name",
         "cancel": "Cancel",
@@ -155,7 +155,7 @@
         "note": "Users must first sign in through this gateway's Microsoft SSO. Subsequent delegated calls must satisfy both user and agent permissions."
       },
       "executionLabel": "Execution",
-      "verificationNote": "LiteLLM verifies the agent's Entra token before matching this identity. Saving these fields configures the binding; an authenticated request provides verification. Runtime authentication headers are configured separately."
+      "verificationNote": "AI-Tokengw verifies the agent's Entra token before matching this identity. Saving these fields configures the binding; an authenticated request provides verification. Runtime authentication headers are configured separately."
     },
     "formKit": {
       "noMatchingOptions": "No matching options"
@@ -179,7 +179,7 @@
         },
         "protocolVersion": {
           "label": "Protocol Version",
-          "tooltip": "The A2A protocol version LiteLLM serves to clients for this agent. LiteLLM converts the upstream agent's responses to this version, so clients always see the version you pick here regardless of the original agent's version."
+          "tooltip": "The A2A protocol version AI-Tokengw serves to clients for this agent. AI-Tokengw converts the upstream agent's responses to this version, so clients always see the version you pick here regardless of the original agent's version."
         },
         "skills": {
           "label": "Skills"
@@ -227,7 +227,7 @@
       },
       "basic": {
         "title": "Basic Information",
-        "protocolVersionHelp": "LiteLLM serves this version to clients and converts the upstream agent's responses to match it, regardless of the original agent's version."
+        "protocolVersionHelp": "AI-Tokengw serves this version to clients and converts the upstream agent's responses to match it, regardless of the original agent's version."
       },
       "skills": {
         "title": "Skills"
@@ -239,7 +239,7 @@
         "title": "Optional Settings"
       },
       "litellm": {
-        "title": "LiteLLM Parameters"
+        "title": "AI-Tokengw Parameters"
       },
       "cost": {
         "title": "Cost Configuration"
@@ -370,7 +370,7 @@
       "rediscover": "Re-discover",
       "discover": "Discover",
       "title": "Discover from agent URL",
-      "titleHint": "LiteLLM will fetch {{path}} from this URL and let you pick which skills and capabilities to expose through the proxy.",
+      "titleHint": "AI-Tokengw will fetch {{path}} from this URL and let you pick which skills and capabilities to expose through the proxy.",
       "parentDrivenIntro": "Using the connection details you entered above. We'll fetch:",
       "fillFieldsFirst": "Fill in the fields above first",
       "manualIntro": "Paste the upstream agent's base URL. We'll try <cardfile/>, <agentfile/>, and <rootfile/> in order.",
@@ -385,7 +385,7 @@
       "skillsSelected": "{{selected}} / {{total}} selected",
       "noSkills": "Upstream card has no skills",
       "capabilities": "Capabilities",
-      "capabilitiesHint": "Only capabilities LiteLLM can faithfully proxy today are listed. Others (push notifications, extensions) are coming soon.",
+      "capabilitiesHint": "Only capabilities AI-Tokengw can faithfully proxy today are listed. Others (push notifications, extensions) are coming soon.",
       "notAdvertised": "not advertised upstream"
     },
     "panel": {
@@ -946,7 +946,7 @@
         "vectorStoreId": "Vector Store ID",
         "vectorStoreIdHint": "Enter the vector store ID from your api provider",
         "name": "Vector Store Name",
-        "nameHint": "Custom name you want to give to the vector store, this name will be rendered on the LiteLLM UI",
+        "nameHint": "Custom name you want to give to the vector store, this name will be rendered on the AI-Tokengw UI",
         "description": "Description",
         "credentials": "Existing Credentials",
         "credentialsHint": "Optionally select API provider credentials for this vector store eg. Bedrock API KEY",
@@ -958,7 +958,7 @@
         "default": "Enter vector store ID from your provider",
         "vertexRagEngine": "6917529027641081856 (corpus ID from Vertex AI / \"RAG Engine\" console)",
         "vertexAiSearch": "my-datastore_1234567890 (data store ID from Vertex AI / \"Agent Search\" console)",
-        "vertexAiSearchWithEngine": "Any identifier you'll use to reference this in LiteLLM",
+        "vertexAiSearchWithEngine": "Any identifier you'll use to reference this in AI-Tokengw",
         "valkey": "my-search-index (FT index name in Valkey)",
         "mongodb": "my-vector-index (MongoDB Vector Search index name)",
         "opensearch": "my-knn-index (OpenSearch index name)"
@@ -985,7 +985,7 @@
       },
       "pgVector": {
         "title": "PG Vector Setup Required",
-        "intro": "LiteLLM provides a server to connect to PG Vector. To use this provider:",
+        "intro": "AI-Tokengw provides a server to connect to PG Vector. To use this provider:",
         "steps": {
           "deploy": "Deploy the litellm-pgvector server from:",
           "configure": "Configure your PostgreSQL database with pgvector extension",
@@ -995,18 +995,18 @@
       },
       "valkey": {
         "title": "Valkey Setup Required",
-        "intro": "LiteLLM searches documents you have already stored in Valkey. It does not create the index or upload documents for you. Before creating this vector store, make sure:",
+        "intro": "AI-Tokengw searches documents you have already stored in Valkey. It does not create the index or upload documents for you. Before creating this vector store, make sure:",
         "steps": {
           "searchEnabled": "Your Valkey server has vector search enabled (the valkey-search module, included in the valkey-bundle image and in AWS ElastiCache / MemoryDB for Valkey)",
           "indexLoaded": "You have already created a search index and loaded your documents and their embeddings into it. Enter that index name as the Vector Store ID",
           "embeddingModel": "You know which embedding model created those stored embeddings. That model must be added to this proxy under Models so you can pick it below. Using a different model returns wrong results",
           "fieldNames": "You know the field names your documents use for their text and their embedding. If they are not \"text\" and \"embedding\", set them below"
         },
-        "howItWorks": "When a query comes in, LiteLLM converts it to an embedding with the model below and returns the closest matching documents from your index."
+        "howItWorks": "When a query comes in, AI-Tokengw converts it to an embedding with the model below and returns the closest matching documents from your index."
       },
       "opensearch": {
         "title": "OpenSearch Setup Required",
-        "intro": "LiteLLM searches a k-NN index you already have in an OpenSearch Serverless collection or an OpenSearch Service domain. It does not create the index or upload documents. Before creating this vector store, make sure:",
+        "intro": "AI-Tokengw searches a k-NN index you already have in an OpenSearch Serverless collection or an OpenSearch Service domain. It does not create the index or upload documents. Before creating this vector store, make sure:",
         "steps": {
           "knnField": "The index has a knn_vector field holding each document's embedding. Enter the index name as the Vector Store ID, or under Index Name when another endpoint already uses that ID",
           "embeddingModel": "You know which embedding model created those embeddings. That model must be added to this proxy under Models so you can pick it below. Using a different model returns wrong results",
@@ -1032,7 +1032,7 @@
           "guide": "Enable the Discovery Engine API on your Google Cloud project and create a data store following the guide: <guide>Create a Vertex AI Search data store</guide>",
           "location": "Pick a supported location: global, us, or eu",
           "dataStoreId": "For most data store types (Cloud Storage, BigQuery, Media): copy the data store ID and enter it in the Vector Store ID field below.",
-          "engineId": "For website, healthcare, and connector-based sources (Drive, Gmail, Slack, Jira, etc.): create a search app on top of the data store, then copy the <strong>Engine ID</strong> and enter it in the Engine ID field. The Vector Store ID is still required as the LiteLLM-side name for this record, but it isn't used in the GCP URL when Engine ID is set."
+          "engineId": "For website, healthcare, and connector-based sources (Drive, Gmail, Slack, Jira, etc.): create a search app on top of the data store, then copy the <strong>Engine ID</strong> and enter it in the Engine ID field. The Vector Store ID is still required as the AI-Tokengw-side name for this record, but it isn't used in the GCP URL when Engine ID is set."
         }
       }
     },
@@ -1094,26 +1094,26 @@
           "apiKey": "The MONGODB_SIDECAR_API_KEY configured in your MongoDB sidecar",
           "database": "The MongoDB database holding the collection you want to search",
           "collection": "The collection your MongoDB Vector Search index was built on",
-          "embeddingModel": "The embedding model on this proxy that created the vectors already stored in your collection. LiteLLM embeds every search query with it, so it must be the same model. A different model of the same size will not error, it will just return wrong results. Add it under Models first if it is not listed",
+          "embeddingModel": "The embedding model on this proxy that created the vectors already stored in your collection. AI-Tokengw embeds every search query with it, so it must be the same model. A different model of the same size will not error, it will just return wrong results. Add it under Models first if it is not listed",
           "embeddingField": "The field in each document that holds its embedding. It must match the path your MongoDB Vector Search index was created on (default: embedding)",
-          "textField": "The field in each document that holds its readable text. LiteLLM returns this text in search results, and it accepts a dotted path such as metadata.body (default: text)",
-          "numCandidates": "How many nearest neighbours MongoDB examines before returning the top results. Higher is more accurate and slower. Leave blank to let LiteLLM scale it with the requested result count"
+          "textField": "The field in each document that holds its readable text. AI-Tokengw returns this text in search results, and it accepts a dotted path such as metadata.body (default: text)",
+          "numCandidates": "How many nearest neighbours MongoDB examines before returning the top results. Higher is more accurate and slower. Leave blank to let AI-Tokengw scale it with the requested result count"
         },
         "valkey": {
           "host": "Hostname or IP of your Valkey server, without redis:// or a port (e.g. my-valkey.example.com)",
           "port": "Port your Valkey server listens on. Leave as 6379 unless you changed it",
           "password": "Password used to log in to your Valkey server. Leave blank if it has no password",
           "ssl": "Set to true if your Valkey server requires an encrypted (TLS) connection, for example AWS ElastiCache with in-transit encryption turned on",
-          "embeddingModel": "The embedding model on this proxy that was used to create the embeddings already stored in your Valkey index. LiteLLM uses it to embed each search query, so it must be the same model or results will be wrong. Add it under Models first if it is not listed",
-          "textField": "The field in each stored document that holds its readable text. LiteLLM returns this text in search results. Must match how your documents were stored (default: text)",
-          "embeddingField": "The field in each stored document that holds its embedding. LiteLLM searches against this field, so it must match the field your index was created on (default: embedding)"
+          "embeddingModel": "The embedding model on this proxy that was used to create the embeddings already stored in your Valkey index. AI-Tokengw uses it to embed each search query, so it must be the same model or results will be wrong. Add it under Models first if it is not listed",
+          "textField": "The field in each stored document that holds its readable text. AI-Tokengw returns this text in search results. Must match how your documents were stored (default: text)",
+          "embeddingField": "The field in each stored document that holds its embedding. AI-Tokengw searches against this field, so it must match the field your index was created on (default: embedding)"
         },
         "opensearch": {
           "apiBase": "The endpoint of your OpenSearch Serverless collection or OpenSearch Service domain, starting with https://",
           "region": "The AWS region of the collection or domain. Leave blank to use the region in the endpoint, and set it when the endpoint is a custom domain",
-          "embeddingModel": "The embedding model on this proxy that created the vectors already stored in your index. LiteLLM embeds every search query with it, so it must be the same model. Add it under Models first if it is not listed",
+          "embeddingModel": "The embedding model on this proxy that created the vectors already stored in your index. AI-Tokengw embeds every search query with it, so it must be the same model. Add it under Models first if it is not listed",
           "embeddingField": "The top-level knn_vector field in your index mapping that holds each document's embedding (default: embedding)",
-          "textField": "The top-level field in each document that holds its readable text. LiteLLM returns this text in search results (default: text)",
+          "textField": "The top-level field in each document that holds its readable text. AI-Tokengw returns this text in search results (default: text)",
           "indexName": "The OpenSearch index to search. Leave blank to use the Vector Store ID, and set it to register same-named indexes from two endpoints under different IDs"
         },
         "s3Vectors": {
@@ -1472,7 +1472,7 @@
         "name": "A unique name to identify this search tool configuration (e.g., 'perplexity-search', 'tavily-news-search').",
         "provider": "Select the search provider you want to use. Each provider has different capabilities and pricing.",
         "apiKey": "The API key for authenticating with the search provider. This will be securely stored.",
-        "cost": "Your negotiated price per search query. It overrides the LiteLLM cost map price for this tool in the response cost header and spend logs. Leave blank to use the provider's default price."
+        "cost": "Your negotiated price per search query. It overrides the AI-Tokengw cost map price for this tool in the response cost header and spend logs. Leave blank to use the provider's default price."
       },
       "placeholders": {
         "name": "e.g., perplexity-search, my-tavily-tool",
@@ -1692,7 +1692,7 @@
       "method": "Install method",
       "authenticated": "Authenticated",
       "public": "Public command",
-      "authenticatedHint": "Enter your own LiteLLM key at the terminal prompt. The gateway checks your access before downloading the skill",
+      "authenticatedHint": "Enter your own AI-Tokengw key at the terminal prompt. The gateway checks your access before downloading the skill",
       "publicHint": "This skill is listed in the gateway's public index and can be installed without a key",
       "command": "Install command",
       "authenticatedRequirements": "Requires macOS or Linux with Bash, curl, unzip, Node.js 22.20 or later, and npm. Run from your project directory for a project install",
@@ -1982,7 +1982,7 @@
         "empty": "No recorded releases yet. Existing skills start recording history on their next published update.",
         "legacy": "Legacy version",
         "retained": "Uploaded ZIP retained and verified against its source digest.",
-        "reference": "Source reference only. External files may change and are not retained by LiteLLM.",
+        "reference": "Source reference only. External files may change and are not retained by AI-Tokengw.",
         "metadata": "Published metadata",
         "download": "Download retained ZIP",
         "downloadFailed": "Could not download this version.",
@@ -2052,7 +2052,7 @@
       "setup": {
         "title": "Claude Code marketplace setup",
         "removeFirst": "If you added this marketplace before without a key, remove it first in Claude Code. Removing it also uninstalls the plugins you installed from it, so install them again from /plugin after you add the snippet:",
-        "requiresKey": "This proxy requires a LiteLLM key to read the marketplace. Add this to <settings/> and replace <placeholder/> with your key:",
+        "requiresKey": "This proxy requires a AI-Tokengw key to read the marketplace. Add this to <settings/> and replace <placeholder/> with your key:",
         "runCommand": "Run this command in Claude Code to register the marketplace:",
         "orSettings": "Or add this to <settings/> for a persistent configuration:"
       }
@@ -2122,7 +2122,7 @@
       "header": {
         "defaultKeyName": "Virtual Key",
         "never": "Never",
-        "enterpriseOnly": "This is a LiteLLM Enterprise feature, and requires a valid key to use."
+        "enterpriseOnly": "This is a AI-Tokengw Enterprise feature, and requires a valid key to use."
       },
       "deleteModal": {
         "title": "Delete Key",
@@ -2167,7 +2167,7 @@
         "resets": "Resets ",
         "lifetimeSpend": "Lifetime spend: $",
         "lifetimeSpendHintLabel": "Why lifetime spend is below current spend",
-        "lifetimeSpendHint": "Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026 and was not backfilled, so this key's lifetime spend only counts usage since that upgrade.",
+        "lifetimeSpendHint": "Lifetime tracking started with AI-Tokengw v1.103.0 on September 19, 2026 and was not backfilled, so this key's lifetime spend only counts usage since that upgrade.",
         "rateLimits": "Rate Limits",
         "tpm": "TPM: ",
         "rpm": "RPM: ",
@@ -2429,7 +2429,7 @@
         "expires": "Expires",
         "spendBudget": "Spend / Budget",
         "lifetimeSpend": "Lifetime Spend",
-        "lifetimeSpendTooltip": "Cumulative spend across every budget period. Budget resets do not touch this value. Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026, so keys created earlier only count spend since that upgrade.",
+        "lifetimeSpendTooltip": "Cumulative spend across every budget period. Budget resets do not touch this value. Lifetime tracking started with AI-Tokengw v1.103.0 on September 19, 2026, so keys created earlier only count spend since that upgrade.",
         "budgetReset": "Budget Reset",
         "models": "Models",
         "rateLimits": "Rate Limits"
@@ -2575,7 +2575,7 @@
       "label": "Select Agent",
       "placeholder": "Select an agent",
       "empty": "No agents found",
-      "help": "This key will be used by the selected agent to make requests to LiteLLM"
+      "help": "This key will be used by the selected agent to make requests to AI-Tokengw"
     },
     "organization": {
       "label": "Organization",
@@ -3049,7 +3049,7 @@
     "notSet": "Not set"
   },
   "premiumLoggingSettings": {
-    "enterpriseNotice": "Setting Key/Team logging settings is a LiteLLM Enterprise feature. Global Logging Settings are available for all free users. Get a trial key <docs>here</docs>."
+    "enterpriseNotice": "Setting Key/Team logging settings is a AI-Tokengw Enterprise feature. Global Logging Settings are available for all free users. Get a trial key <docs>here</docs>."
   },
   "teamMultiSelect": {
     "placeholder": "Search teams by alias...",
@@ -3718,7 +3718,7 @@
         "dailyMargin": "Daily Margin",
         "monthlyMargin": "Monthly Margin",
         "modelBreakdown": "Model Breakdown",
-        "footer": "Generated by LiteLLM Pricing Calculator on {{date}}"
+        "footer": "Generated by AI-Tokengw Pricing Calculator on {{date}}"
       },
       "csv": {
         "title": "LLM Multi-Model Cost Estimate Report",
@@ -3809,11 +3809,11 @@
         "name": "Name",
         "apiBase": {
           "label": "Headroom API base",
-          "hint": "Base URL of your Headroom compression service (LiteLLM calls its /v1/compress endpoint)",
+          "hint": "Base URL of your Headroom compression service (AI-Tokengw calls its /v1/compress endpoint)",
           "description": "The URL where your Headroom compression service is hosted"
         },
         "defaultOn": "Apply to all requests",
-        "enterpriseNotice": "Applying compression to all requests is available to all users. Enabling it selectively per key or team is a LiteLLM Enterprise feature. Get a trial key <pricing>here</pricing>",
+        "enterpriseNotice": "Applying compression to all requests is available to all users. Enabling it selectively per key or team is a AI-Tokengw Enterprise feature. Get a trial key <pricing>here</pricing>",
         "submit": "Add guardrail"
       },
       "toasts": {
@@ -3823,7 +3823,7 @@
       },
       "overview": {
         "title": "Headroom prompt compression",
-        "description": "Headroom is a native LiteLLM guardrail that compresses your prompts before they reach the model, so you pay for fewer input tokens. The tokens it removes are priced and shown on the Usage tab as compression savings. <docs>Headroom setup docs</docs>",
+        "description": "Headroom is a native AI-Tokengw guardrail that compresses your prompts before they reach the model, so you pay for fewer input tokens. The tokens it removes are priced and shown on the Usage tab as compression savings. <docs>Headroom setup docs</docs>",
         "loading": "Loading...",
         "empty": "No prompt compression guardrails configured yet. Add one below to start saving on input tokens",
         "alwaysOn": "Always on",
@@ -3832,12 +3832,12 @@
     },
     "promptCachingRequests": {
       "title": "Prompt caching requests",
-      "description": "Requests with recorded LiteLLM injection or provider cache reads or writes. A cache hit alone does not establish LiteLLM injection; older logs may not record it.",
+      "description": "Requests with recorded AI-Tokengw injection or provider cache reads or writes. A cache hit alone does not establish AI-Tokengw injection; older logs may not record it.",
       "savingsNote": "Net savings are estimated from logged usage and current configured pricing, after cache-write premiums. Negative values mean caching cost more; unavailable means the request could not be priced.",
       "filters": {
         "label": "Prompt caching request filters",
         "all": "All caching",
-        "injected": "LiteLLM injected",
+        "injected": "AI-Tokengw injected",
         "hits": "Cache hits"
       },
       "selectDateRange": "Select a date range to view requests",
@@ -3848,7 +3848,7 @@
       "columns": {
         "request": "Request",
         "model": "Model",
-        "injection": "LiteLLM injection",
+        "injection": "AI-Tokengw injection",
         "cacheReads": "Cache reads",
         "cacheWrites": "Cache writes",
         "actualCost": "Actual cost",
@@ -4266,7 +4266,7 @@
       },
       "enterpriseNotice": {
         "title": "Enterprise Feature Notice",
-        "description": "Parts of policy attachments will be on LiteLLM Enterprise in subsequent releases."
+        "description": "Parts of policy attachments will be on AI-Tokengw Enterprise in subsequent releases."
       },
       "addPolicy": "+ Add New Policy",
       "addAttachment": "+ Add New Attachment",
@@ -5114,7 +5114,7 @@
     },
     "scim": {
       "title": "SCIM Configuration",
-      "description": "System for Cross-domain Identity Management (SCIM) allows you to automatically provision and manage users and groups in LiteLLM.",
+      "description": "System for Cross-domain Identity Management (SCIM) allows you to automatically provision and manage users and groups in AI-Tokengw.",
       "tenantUrl": {
         "title": "SCIM Tenant URL",
         "description": "Use this URL in your identity provider SCIM integration settings.",
@@ -5332,7 +5332,7 @@
       },
       "emptyPlaceholder": {
         "title": "No Vault Configuration Found",
-        "description": "Configure Hashicorp Vault to securely manage provider API keys and secrets for your LiteLLM deployment.",
+        "description": "Configure Hashicorp Vault to securely manage provider API keys and secrets for your AI-Tokengw deployment.",
         "configure": "Configure Vault"
       },
       "editModal": {
@@ -5417,7 +5417,7 @@
       },
       "emptyPlaceholder": {
         "title": "No CyberArk Configuration Found",
-        "description": "Configure CyberArk Conjur to securely manage provider API keys and secrets for your LiteLLM deployment.",
+        "description": "Configure CyberArk Conjur to securely manage provider API keys and secrets for your AI-Tokengw deployment.",
         "configure": "Configure CyberArk"
       },
       "editModal": {
@@ -5822,7 +5822,7 @@
     },
     "recommendation": {
       "sources": {
-        "modelCostMap": "LiteLLM model cost map",
+        "modelCostMap": "AI-Tokengw model cost map",
         "deploymentConfig": "Deployment configuration"
       },
       "notProvided": "Not provided",
@@ -5932,7 +5932,7 @@
       },
       "lastRefreshed": "Last Refreshed: ",
       "refresh": "Refresh",
-      "description": "Analytics for LiteLLM's <cacheDocs>response cache</cacheDocs> (e.g. Redis / in-memory): requests answered from cache without calling the LLM provider. Provider-side <promptDocs>prompt caching</promptDocs> (cached input tokens from Anthropic, OpenAI, etc.) is not shown here; see \"Prompt Caching Metrics\" on the Usage page or individual requests in the Logs page.",
+      "description": "Analytics for AI-Tokengw's <cacheDocs>response cache</cacheDocs> (e.g. Redis / in-memory): requests answered from cache without calling the LLM provider. Provider-side <promptDocs>prompt caching</promptDocs> (cached input tokens from Anthropic, OpenAI, etc.) is not shown here; see \"Prompt Caching Metrics\" on the Usage page or individual requests in the Logs page.",
       "filters": {
         "virtualKeysPlaceholder": "Select Virtual Keys",
         "noVirtualKeys": "No virtual keys found",
@@ -6001,7 +6001,7 @@
     },
     "settings": {
       "title": "Cache Settings",
-      "subtitle": "Configure Redis cache for LiteLLM",
+      "subtitle": "Configure Redis cache for AI-Tokengw",
       "sections": {
         "connection": "Connection Settings",
         "cluster": "Cluster Configuration",
@@ -6463,7 +6463,7 @@
       },
       "addDialog": {
         "title": "Add Logging Callback",
-        "docsLink": "LiteLLM Docs: Logging",
+        "docsLink": "AI-Tokengw Docs: Logging",
         "cancel": "Cancel",
         "submit": "Add Callback",
         "submitting": "Adding..."
@@ -6492,7 +6492,7 @@
     "emailSettings": {
       "gatewayUrl": "Gateway URL",
       "title": "Email Server Settings",
-      "docsLink": "LiteLLM Docs: email alerts",
+      "docsLink": "AI-Tokengw Docs: email alerts",
       "required": " Required * ",
       "help": {
         "proxyBaseUrl": "Public HTTP(S) gateway URL. Required for model deprecation emails so owners can review their usage.",
@@ -6531,7 +6531,7 @@
     },
     "msTeams": {
       "title": "Microsoft Teams Alerting Settings",
-      "intro": "Send LiteLLM alerts to a Microsoft Teams channel via an incoming webhook. Create one from <docs>Microsoft Docs: incoming webhooks</docs>",
+      "intro": "Send AI-Tokengw alerts to a Microsoft Teams channel via an incoming webhook. Create one from <docs>Microsoft Docs: incoming webhooks</docs>",
       "required": " Required * ",
       "help": {
         "webhookUrl": "Incoming webhook URL for your Teams channel (Workflows or incoming webhook connector)"
@@ -6565,7 +6565,7 @@
       },
       "emptyPlaceholder": {
         "title": "No CloudZero Integration Found",
-        "description": "Connect your CloudZero account to start tracking and analyzing your cloud costs directly from LiteLLM.",
+        "description": "Connect your CloudZero account to start tracking and analyzing your cloud costs directly from AI-Tokengw.",
         "add": "Add CloudZero Integration"
       },
       "form": {
@@ -6970,7 +6970,7 @@
     "usagePanel": {
       "title": "How routing works for this group",
       "priorityExplanation": "Request <group/> to try eligible models in priority order. Direct requests to a member model keep their existing routing behavior.",
-      "strategyExplanation": "Callers request any model in the group by name; LiteLLM picks a deployment behind the scenes using the <strategy/> strategy."
+      "strategyExplanation": "Callers request any model in the group by name; AI-Tokengw picks a deployment behind the scenes using the <strategy/> strategy."
     },
     "modal": {
       "createTitle": "Create Routing Group",
@@ -6983,7 +6983,7 @@
         "strategyRequired": "Strategy is required"
       },
       "groupName": "Group Name",
-      "groupNameDescription": "Use this name as the model in API calls. LiteLLM routes the request to one of the group's models.",
+      "groupNameDescription": "Use this name as the model in API calls. AI-Tokengw routes the request to one of the group's models.",
       "models": "Models",
       "modelsPriorityDescription": "Models from your model list that this group routes between. Models can belong to multiple priority groups.",
       "modelsDescription": "Models from your model list that this group routes between. A model can belong to one non-priority group.",
@@ -7332,7 +7332,7 @@
         "showing": "Showing {{shown}} of {{total}} models",
         "empty": {
           "decisionsTitle": "No model on this proxy uses the decisions mode",
-          "decisionsBody": "The decision models LiteLLM supports are listed below.",
+          "decisionsBody": "The decision models AI-Tokengw supports are listed below.",
           "noMatchTitle": "No matching models",
           "noMatchBody": "Adjust the filters to see more models.",
           "noneTitle": "No models yet",
@@ -7542,19 +7542,19 @@
       "routes": {
         "decisions": "/v1/decisions docs",
         "selfHosted": "Self-hosted, own route",
-        "needsUpgrade": "Needs a newer LiteLLM",
+        "needsUpgrade": "Needs a newer AI-Tokengw",
         "ownDeployment": "Deploy under your own name"
       },
       "addModel": "Add model",
-      "title": "Decision models LiteLLM supports",
+      "title": "Decision models AI-Tokengw supports",
       "summary_one": "{{count}} decision model across $t(aiHub.decisionModelGarden.providerCount, {\"count\": {{providers}} }) answers on <code>/v1/decisions</code>.",
       "summary_other": "{{count}} decision models across $t(aiHub.decisionModelGarden.providerCount, {\"count\": {{providers}} }) answer on <code>/v1/decisions</code>.",
       "providerCount_one": "{{count}} provider",
       "providerCount_other": "{{count}} providers",
       "selfHosted_one": "{{count}} more is self-hosted and answers on its own route.",
       "selfHosted_other": "{{count}} more are self-hosted and answer on their own routes.",
-      "needsUpgrade_one": "{{count}} more needs a newer LiteLLM version.",
-      "needsUpgrade_other": "{{count}} more need a newer LiteLLM version.",
+      "needsUpgrade_one": "{{count}} more needs a newer AI-Tokengw version.",
+      "needsUpgrade_other": "{{count}} more need a newer AI-Tokengw version.",
       "docs": "Decisions docs",
       "showFewer": "Show fewer",
       "showAll": "Show all {{total}}"
@@ -7696,7 +7696,7 @@
     "catalog": {
       "modelHub": "Model Hub",
       "skillsHub": "Skills Hub",
-      "eyebrow": "The LiteLLM catalog",
+      "eyebrow": "The AI-Tokengw catalog",
       "modelsDescription": "Find pricing, context, and capabilities.",
       "skillsDescription": "Discover reusable skills for your agents.",
       "filters": "Filters",
@@ -7755,12 +7755,12 @@
     },
     "linksMenu": {
       "trigger": "Links",
-      "version": "LiteLLM v{{version}}"
+      "version": "AI-Tokengw v{{version}}"
     },
     "baseUrlField": {
       "label": "Base URL",
       "copy": "Copy base URL",
-      "hint": "Use your LiteLLM key as the API key in any OpenAI-compatible SDK"
+      "hint": "Use your AI-Tokengw key as the API key in any OpenAI-compatible SDK"
     },
     "healthBadge": {
       "responseTime": "Response time",
@@ -7988,6 +7988,9 @@
     }
   },
   "shell": {
+    "brand": {
+      "name": "AI-Tokengw"
+    },
     "nav": {
       "groups": {
         "aiGateway": "AI GATEWAY",
@@ -8049,7 +8052,10 @@
         "uiTheme": "UI Theme",
         "telemetry": "Telemetry"
       },
-      "homeLink": "LiteLLM home"
+      "homeLink": "AI-Tokengw home"
+    },
+    "footer": {
+      "copyright": "© {{year}} {{brand}} · All rights reserved."
     },
     "pageDescriptions": {
       "home": "Usage at a glance, recent launches and blog updates",
@@ -8116,7 +8122,7 @@
       "triggerLabel": "Account menu — {{role}} — signed in as {{identity}}",
       "unknownRole": "Unknown role",
       "unknownIdentity": "unknown",
-      "thanks": "Thanks for using LiteLLM!",
+      "thanks": "Thanks for using AI-Tokengw!",
       "tier": "Tier",
       "premium": "Premium",
       "upgradeHint": "Upgrade to Premium for advanced features",
@@ -8146,8 +8152,8 @@
     "navbar": {
       "expandSidebar": "Expand sidebar",
       "collapseSidebar": "Collapse sidebar",
-      "logoAlt": "LiteLLM Brand",
-      "thanks": "Thanks for using LiteLLM!",
+      "logoAlt": "AI-Tokengw Brand",
+      "thanks": "Thanks for using AI-Tokengw!",
       "productDocs": "Product documentation"
     },
     "viewSwitcher": {
@@ -8189,7 +8195,7 @@
     },
     "notifications": {
       "autoRouter": {
-        "title": "LiteLLM Auto Router",
+        "title": "AI-Tokengw Auto Router",
         "description": "Route every request to the cheapest model that can handle it, no prompt changes needed.",
         "link": "Read the docs"
       },
@@ -8202,7 +8208,7 @@
         "otherUpdates_other": "and {{count}} other updates"
       },
       "upgrade": {
-        "title": "LiteLLM v{{version}} is available",
+        "title": "AI-Tokengw v{{version}} is available",
         "description": "{{summary}}. Your current version is v{{current}}",
         "link": "View release notes"
       },
@@ -8226,7 +8232,7 @@
       "label": "Community links",
       "joinSlack": "Join Slack",
       "joinDiscord": "Join Discord",
-      "github": "LiteLLM on GitHub"
+      "github": "AI-Tokengw on GitHub"
     },
     "dashboardResources": {
       "links": {
@@ -8250,9 +8256,9 @@
     "communityButtons": {
       "label": "Community links",
       "slackLabel": "Join Slack",
-      "slackTooltip": "LiteLLM Slack community",
-      "githubLabel": "LiteLLM on GitHub",
-      "githubTooltip": "LiteLLM on GitHub"
+      "slackTooltip": "AI-Tokengw Slack community",
+      "githubLabel": "AI-Tokengw on GitHub",
+      "githubTooltip": "AI-Tokengw on GitHub"
     },
     "workerDropdown": {
       "trigger": "Switch worker, current: {{worker}}",
@@ -8345,9 +8351,9 @@
         "expiresToday": "expires today",
         "expiresIn_one": "expires in {{count}} day",
         "expiresIn_other": "expires in {{count}} days",
-        "expiredTitle": "Your LiteLLM Enterprise license expired on {{date}}",
+        "expiredTitle": "Your AI-Tokengw Enterprise license expired on {{date}}",
         "expiredFix": "Enterprise features are now disabled. Reach out to <sales/> to restore access",
-        "expiringTitle": "Your LiteLLM Enterprise license {{countdown}} ({{date}})",
+        "expiringTitle": "Your AI-Tokengw Enterprise license {{countdown}} ({{date}})",
         "expiringFix": "Renew before it lapses to keep enterprise features. Reach out to <sales/>"
       }
     },
@@ -8429,12 +8435,21 @@
     }
   },
   "login": {
+    "hero": {
+      "title": "One gateway for every AI model",
+      "subtitle": "Unified model access, key management, quotas and audit logging for the whole team.",
+      "points": {
+        "access": "Unified access to mainstream model providers",
+        "quota": "Fine-grained quota, budget and rate control",
+        "audit": "End-to-end request logs and audit trail"
+      }
+    },
     "schema": {
       "usernameRequired": "Please enter your username",
       "passwordRequired": "Please enter your password"
     },
     "ssoNotice": {
-      "title": "Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading this page. To re-enable auto-redirect-to-SSO, set <setting/> in your environment configuration.",
+      "title": "Single Sign-On (SSO) is enabled. AI-Tokengw no longer automatically redirects to the SSO login flow upon loading this page. To re-enable auto-redirect-to-SSO, set <setting/> in your environment configuration.",
       "close": "Close"
     },
     "adminDisabled": {
@@ -8443,10 +8458,10 @@
     },
     "form": {
       "title": "Login",
-      "subtitle": "Access your LiteLLM Admin UI.",
+      "subtitle": "Access your AI-Tokengw Admin UI.",
       "defaultCredentials": {
         "title": "Default Credentials",
-        "body": "By default, Username is <username/> and Password is your set LiteLLM Proxy<masterkey/>.",
+        "body": "By default, Username is <username/> and Password is your set AI-Tokengw Proxy<masterkey/>.",
         "help": "Need to set UI credentials or SSO? <docs>Check the documentation</docs>."
       },
       "worker": {
@@ -8537,7 +8552,7 @@
       "usageAria": "Usage, last {{days}} days",
       "usageFailed": "Failed to load usage",
       "retry": "Retry",
-      "whatsNew": "What's new in LiteLLM?",
+      "whatsNew": "What's new in AI-Tokengw?",
       "leaderboard": {
         "title": "Leaderboard",
         "subtitle": "Share of tokens over the last {{days}} days, with the change between the first and second half of the period"
@@ -8557,7 +8572,7 @@
     },
     "view": {
       "title": "OpenAI Compatible Proxy: API Reference",
-      "description": "LiteLLM is OpenAI Compatible. This means your API Key works with the OpenAI SDK. Just replace the base_url to point to your litellm proxy. Example Below"
+      "description": "AI-Tokengw is OpenAI Compatible. This means your API Key works with the OpenAI SDK. Just replace the base_url to point to your litellm proxy. Example Below"
     },
     "docLink": {
       "title": "Open documentation in a new tab",
@@ -8574,7 +8589,7 @@
         "resetFailed": "Failed to reset theme settings"
       },
       "title": "UI Theme Customization",
-      "description": "Customize your LiteLLM admin dashboard with a custom logo and favicon.",
+      "description": "Customize your AI-Tokengw admin dashboard with a custom logo and favicon.",
       "logoUrl": {
         "label": "Custom Logo URL",
         "hint": "Enter a URL for your custom logo or leave empty for default"
@@ -8729,7 +8744,7 @@
       "copied": "Copied"
     },
     "createdKeyDisplay": {
-      "saveWarning": "Please save this secret key somewhere safe and accessible. For security reasons, <bold>you will not be able to view it again</bold> through your LiteLLM account. If you lose this secret key, you will need to generate a new one.",
+      "saveWarning": "Please save this secret key somewhere safe and accessible. For security reasons, <bold>you will not be able to view it again</bold> through your AI-Tokengw account. If you lose this secret key, you will need to generate a new one.",
       "virtualKey": "Virtual Key:",
       "copied": "Copied!",
       "copyVirtualKey": "Copy Virtual Key",
@@ -8841,7 +8856,7 @@
         "label": "Total recorded savings",
         "loading": "Loading...",
         "hint": "Compression + prompt caching + auto-router",
-        "info": "The sum of recorded savings in the three tiles beside it. Auto-router requests without an estimate are excluded. Its caching term is the LiteLLM-injected share; caching supplied by clients or providers appears only in the caching tile's Total figure."
+        "info": "The sum of recorded savings in the three tiles beside it. Auto-router requests without an estimate are excluded. Its caching term is the AI-Tokengw-injected share; caching supplied by clients or providers appears only in the caching tile's Total figure."
       },
       "compression": {
         "label": "Compression savings",
@@ -8850,9 +8865,9 @@
       },
       "caching": {
         "label": "Prompt caching savings",
-        "hint": "LiteLLM injected",
+        "hint": "AI-Tokengw injected",
         "total": "Total",
-        "info": "What caching saved against paying the input rate for every token: the discount on tokens served from cache, less the premium providers charge to write a cache entry. The headline figure is the share LiteLLM earned by inserting the breakpoints itself, through configured injection points or auto prompt caching. The total beside it also counts requests that arrived with their own cache_control and providers that cache implicitly. Either can be negative on traffic that writes more cache than it reuses, which is why the headline is not always the smaller of the two."
+        "info": "What caching saved against paying the input rate for every token: the discount on tokens served from cache, less the premium providers charge to write a cache entry. The headline figure is the share AI-Tokengw earned by inserting the breakpoints itself, through configured injection points or auto prompt caching. The total beside it also counts requests that arrived with their own cache_control and providers that cache implicitly. Either can be negative on traffic that writes more cache than it reuses, which is why the headline is not always the smaller of the two."
       },
       "autorouter": {
         "label": "Auto-router savings",
@@ -9122,7 +9137,7 @@
       "signOut": "Sign out",
       "chatNavigation": "Chat navigation",
       "openChatNavigation": "Open chat navigation",
-      "sheetTitle": "LiteLLM Chat",
+      "sheetTitle": "AI-Tokengw Chat",
       "sheetDescription": "Conversations and chat workspace navigation"
     },
     "conversationList": {
@@ -9462,7 +9477,7 @@
       },
       "stats": {
         "cheaper": "cheaper than our Devin bill",
-        "providers": "providers through LiteLLM",
+        "providers": "providers through AI-Tokengw",
         "harnesses": "agent harnesses"
       },
       "badge": "Now open source",
@@ -9471,13 +9486,13 @@
       "alreadyDeployed": "Already have Moyai deployed?",
       "askAdmin": "Already have Moyai deployed? Ask a proxy admin to connect it",
       "worksWith": "Works with Claude Code and Codex",
-      "selfHosted": "Self-hosted · 100+ providers through LiteLLM",
+      "selfHosted": "Self-hosted · 100+ providers through AI-Tokengw",
       "seeItInAction": "See it in action",
       "seeItInActionBody": "Give it a task from Slack or the browser. It edits code, runs your tests in its own cloud workspace, and opens a pull request while your laptop is closed.",
       "anyHarness": "Any harness",
       "anyHarnessFootnote": "Pick the harness per session. Same workspace, tools and permissions.",
       "anyModel": "Any model, any provider",
-      "anyModelFootnote": "Routed through your LiteLLM gateway, with spend tracked per teammate.",
+      "anyModelFootnote": "Routed through your AI-Tokengw gateway, with spend tracked per teammate.",
       "runYourOwn": "Run your own cloud agent",
       "runYourOwnBody": "Deploy it on your own infrastructure and point it at this gateway. Your code and credentials stay in your accounts.",
       "getOnGithub": "Get Moyai on GitHub",
@@ -9486,10 +9501,10 @@
     "connected": {
       "workspaceLinked": "Workspace linked",
       "keyIssued": "Virtual key issued",
-      "modelsAvailable": "models available through LiteLLM",
+      "modelsAvailable": "models available through AI-Tokengw",
       "badge": "Connected",
       "title": "Moyai connected",
-      "description": "This deployment is now linked to your LiteLLM gateway.",
+      "description": "This deployment is now linked to your AI-Tokengw gateway.",
       "openMoyai": "Open Moyai",
       "backToGateway": "Back to AI Gateway"
     },
@@ -9830,7 +9845,7 @@
         },
         "codeInterpreterSuggestions": {
           "salesChart": "Generate sample sales data CSV and create a chart",
-          "providersChart": "Create a PNG bar chart comparing AI gateway providers including LiteLLM",
+          "providersChart": "Create a PNG bar chart comparing AI gateway providers including AI-Tokengw",
           "pricingChart": "Generate a CSV of LLM pricing data and visualize it as a line chart"
         }
       }
@@ -10189,13 +10204,13 @@
         "uiReady": "UI Session: Ready",
         "responseIdPrefix": "Response ID",
         "uiSessionPrefix": "UI Session",
-        "apiPending": "LiteLLM will manage session using previous_response_id",
+        "apiPending": "AI-Tokengw will manage session using previous_response_id",
         "uiPending": "UI will manage session using chat history",
-        "apiActive": "LiteLLM API session active - context maintained server-side",
+        "apiActive": "AI-Tokengw API session active - context maintained server-side",
         "uiActive": "UI session active - context maintained client-side",
         "title": "Session Management",
         "about": "About session management",
-        "description": "Choose between LiteLLM API session management (using previous_response_id) or UI-based session management (using chat history)",
+        "description": "Choose between AI-Tokengw API session management (using previous_response_id) or UI-based session management (using chat history)",
         "uiLabel": "UI",
         "toggle": "Use API session management",
         "apiLabel": "API",
@@ -10342,7 +10357,7 @@
         },
         "codeInterpreterPrompts": {
           "salesChart": "Generate sample sales data CSV and create a chart",
-          "gatewayChart": "Create a PNG bar chart comparing AI gateway providers including LiteLLM",
+          "gatewayChart": "Create a PNG bar chart comparing AI gateway providers including AI-Tokengw",
           "pricingChart": "Generate a CSV of LLM pricing data and visualize it as a line chart"
         },
         "suggestions": {
@@ -10849,7 +10864,7 @@
         "tool": "Tool"
       },
       "tooltips": {
-        "responseCache": "This response was replayed from LiteLLM's response cache. The request never reached the provider, so it did not read from or write to the provider's own prompt cache.",
+        "responseCache": "This response was replayed from AI-Tokengw's response cache. The request never reached the provider, so it did not read from or write to the provider's own prompt cache.",
         "timeToFirstToken": "Time to first token",
         "totalLatency": "Total latency",
         "promptTokens": "Prompt tokens",
@@ -10918,10 +10933,10 @@
   "guardrails": {
     "garden": {
       "searchPlaceholder": "Search guardrails",
-      "litellmHeading": "LiteLLM Content Filter",
+      "litellmHeading": "AI-Tokengw Content Filter",
       "showLess": "Show less",
       "showAll": "Show all ({{total}})",
-      "litellmDescription": "Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.",
+      "litellmDescription": "Built-in guardrails powered by AI-Tokengw. Zero latency, no external dependencies, no additional cost.",
       "decisionModelHeading": "Decision Model",
       "decisionModelDescription": "Ask a decision model yes/no questions about each request or response, and block or log when a score reaches its threshold.",
       "partnerHeading": "Partner Guardrails",
@@ -10934,7 +10949,7 @@
     "gardenDetail": {
       "categories": {
         "litellm": {
-          "provider": "LiteLLM Content Filter",
+          "provider": "AI-Tokengw Content Filter",
           "type": "Content Filter"
         },
         "decisionModel": {
@@ -11184,7 +11199,7 @@
           "description": "Conduct Guard evaluates prompts against workspace rules before the model call: prompt injection, PII, and custom policies, with block, warning, and approval verdicts."
         },
         "wingback": {
-          "description": "Wingback runtime security for LiteLLM — PII detection, prompt injection, toxic content, and policy enforcement via the Wingback connectors service."
+          "description": "Wingback runtime security for AI-Tokengw — PII detection, prompt injection, toxic content, and policy enforcement via the Wingback connectors service."
         },
         "airia": {
           "description": "Airia AI security and governance platform. Runtime guardrails for prompt injection, data leakage prevention, and responsible AI, enforced on every prompt and response."
@@ -11410,8 +11425,8 @@
         "closeLabel": "Close detail panel",
         "endpoint": "Endpoint",
         "method": "Method",
-        "forwardKeyTitle": "Forward LiteLLM API Key",
-        "forwardKeyDescription": "When enabled, the caller's LiteLLM API key is forwarded as an <code>Authorization</code> header to your guardrail endpoint. This allows your guardrail to authenticate model calls using the original caller's credentials.",
+        "forwardKeyTitle": "Forward AI-Tokengw API Key",
+        "forwardKeyDescription": "When enabled, the caller's AI-Tokengw API key is forwarded as an <code>Authorization</code> header to your guardrail endpoint. This allows your guardrail to authenticate model calls using the original caller's credentials.",
         "staticHeaders": "Static headers",
         "staticHeadersHint": "Sent with every request to the guardrail.",
         "noStaticHeaders": "No static headers configured.",
@@ -11425,7 +11440,7 @@
         "forwardHeaderPlaceholder": "e.g. x-request-id",
         "addForwardHeader": "Add",
         "equivalentConfig": "Equivalent config",
-        "separateInstanceNote": "This guardrail runs on a separate instance. It receives the user request and forwards the result to the next step in the pipeline. See <docs>LiteLLM Generic Guardrail API docs</docs> for configuration details.",
+        "separateInstanceNote": "This guardrail runs on a separate instance. It receives the user request and forwards the result to the next step in the pipeline. See <docs>AI-Tokengw Generic Guardrail API docs</docs> for configuration details.",
         "testEndpoint": "Test Endpoint",
         "approve": "Approve",
         "reject": "Reject"
@@ -11921,7 +11936,7 @@
       }
     },
     "toolPermission": {
-      "title": "LiteLLM Tool Permission Guardrail",
+      "title": "AI-Tokengw Tool Permission Guardrail",
       "description": "Provide regex patterns (e.g., {{example}}) for tool names or types and optionally constrain payload fields.",
       "addRule": "Add Rule",
       "empty": "No tool rules added yet",
@@ -12302,7 +12317,7 @@
     "usageBreakdown": {
       "ariaLabel": "Usage and cost",
       "title": "Usage & Cost",
-      "description": "Billable units the provider reported for this guardrail and what LiteLLM priced them at",
+      "description": "Billable units the provider reported for this guardrail and what AI-Tokengw priced them at",
       "empty": "No billable usage units were recorded in this period.",
       "metrics": {
         "cost": "Cost",
@@ -12328,7 +12343,7 @@
       "costMath": {
         "title": "How this cost is calculated",
         "formula": "priced units × price per unit = cost, per counter",
-        "explanation": "Per-unit prices come from the cost map LiteLLM ships with."
+        "explanation": "Per-unit prices come from the cost map AI-Tokengw ships with."
       },
       "unitsMath": {
         "title": "How usage units add up",
@@ -12519,7 +12534,7 @@
       "title": "Permission Management / Access Control",
       "subtitle": "Configure access permissions and security settings (Optional)",
       "allowAllKeys": {
-        "label": "Allow All LiteLLM Keys",
+        "label": "Allow All AI-Tokengw Keys",
         "tooltip": "When enabled, every API key can access this MCP server.",
         "description": "Enable if this server should be \"public\" to all keys."
       },
@@ -12530,8 +12545,8 @@
       },
       "delegateAuth": {
         "label": "Delegate auth to upstream (PKCE passthrough)",
-        "tooltip": "When on, LiteLLM skips its own API key/SSO check for this server and lets the client complete PKCE directly with the upstream MCP server. Only honored when Auth Type is oauth2. No spend tracking or per-key rate limiting will run on this route.",
-        "description": "Bypass LiteLLM auth so clients authenticate directly with the upstream OAuth MCP server."
+        "tooltip": "When on, AI-Tokengw skips its own API key/SSO check for this server and lets the client complete PKCE directly with the upstream MCP server. Only honored when Auth Type is oauth2. No spend tracking or per-key rate limiting will run on this route.",
+        "description": "Bypass AI-Tokengw auth so clients authenticate directly with the upstream OAuth MCP server."
       },
       "oauthPassthrough": {
         "label": "OAuth pass-through",
@@ -12540,7 +12555,7 @@
       },
       "internalDelegateWarning": {
         "title": "Internal server with upstream OAuth delegation",
-        "description": "This MCP server is configured as internal-only but delegates auth to upstream. Anonymous users will be able to reach the upstream OAuth2 /authorize flow without a LiteLLM session. Ensure your upstream provider and network enforce access controls."
+        "description": "This MCP server is configured as internal-only but delegates auth to upstream. Anonymous users will be able to reach the upstream OAuth2 /authorize flow without a AI-Tokengw session. Ensure your upstream provider and network enforce access controls."
       },
       "accessGroups": {
         "label": "MCP Access Groups",
@@ -12573,7 +12588,7 @@
         "invalidTokenValidationJson": "Invalid JSON in Token Validation Rules"
       },
       "toasts": {
-        "browserTokenHeld": "Token held for this browser session. Tools can now be previewed and configured; the token is not saved to LiteLLM.",
+        "browserTokenHeld": "Token held for this browser session. Tools can now be previewed and configured; the token is not saved to AI-Tokengw.",
         "oauthAuthorized": "OAuth authorization successful! Please click 'Create MCP Server' to save the configuration.",
         "created": "MCP Server created successfully",
         "submittedForReview": "MCP Server submitted for admin review",
@@ -12615,7 +12630,7 @@
       },
       "maxConcurrentRequests": {
         "label": "Max Concurrent Requests (optional)",
-        "tooltip": "Maximum number of tool calls LiteLLM will run against this server at the same time. Additional calls wait for a free slot. Leave blank for no limit.",
+        "tooltip": "Maximum number of tool calls AI-Tokengw will run against this server at the same time. Additional calls wait for a free slot. Leave blank for no limit.",
         "placeholder": "e.g. 10"
       },
       "rpm": {
@@ -12641,7 +12656,7 @@
     },
     "serverEdit": {
       "toasts": {
-        "browserTokenHeld": "Token held for this browser session. Tools can now be loaded and configured; the token is not saved to LiteLLM.",
+        "browserTokenHeld": "Token held for this browser session. Tools can now be loaded and configured; the token is not saved to AI-Tokengw.",
         "oauthAuthorized": "OAuth authorization successful! Please click 'Update MCP Server' to save the credentials.",
         "persistTokenFailed": "MCP Server updated, but failed to persist OAuth token",
         "persistTokenFailedWithReason": "MCP Server updated, but failed to persist OAuth token: {{reason}}",
@@ -12672,7 +12687,7 @@
         "specUrlTooltip": "URL to an OpenAPI specification (JSON or YAML). MCP tools will be automatically generated from the API endpoints defined in the spec.",
         "specUrlRequired": "Please enter an OpenAPI spec URL",
         "maxConcurrentRequests": "Max Concurrent Requests (optional)",
-        "maxConcurrentRequestsTooltip": "Maximum number of tool calls LiteLLM will run against this server at the same time. Additional calls wait for a free slot. Leave blank for no limit.",
+        "maxConcurrentRequestsTooltip": "Maximum number of tool calls AI-Tokengw will run against this server at the same time. Additional calls wait for a free slot. Leave blank for no limit.",
         "maxConcurrentRequestsPlaceholder": "e.g. 10",
         "rpm": "RPM limit (all callers)",
         "rpmTooltip": "Max requests per minute to this server across all keys and teams. Leave empty for no limit",
@@ -12697,7 +12712,7 @@
       },
       "missingOAuthFlow": {
         "title": "This server has no OAuth flow set",
-        "description": "Choose Machine-to-Machine (M2M) or Interactive (PKCE) so LiteLLM authenticates it the way you intend, then save. Until it is set, LiteLLM falls back to interactive per-user auth and treats a machine-to-machine credential shape conservatively."
+        "description": "Choose Machine-to-Machine (M2M) or Interactive (PKCE) so AI-Tokengw authenticates it the way you intend, then save. Until it is set, AI-Tokengw falls back to interactive per-user auth and treats a machine-to-machine credential shape conservatively."
       },
       "aws": {
         "intro": "For MCP servers hosted on AWS Bedrock AgentCore.",
@@ -12726,7 +12741,7 @@
         },
         "roleArn": {
           "label": "AWS Role ARN",
-          "tooltip": "Optional. IAM role ARN to assume via STS before signing. If set, LiteLLM calls sts:AssumeRole to get temporary credentials."
+          "tooltip": "Optional. IAM role ARN to assume via STS before signing. If set, AI-Tokengw calls sts:AssumeRole to get temporary credentials."
         },
         "sessionName": {
           "label": "AWS Session Name",
@@ -12841,24 +12856,24 @@
     "idJagFormFields": {
       "orgTokenEndpoint": {
         "label": "Org Token Endpoint (leg 1)",
-        "tooltip": "Your IdP org authorization server's token endpoint. LiteLLM exchanges the user's identity assertion here for an ID-JAG assertion (RFC 8693 with requested_token_type=urn:ietf:params:oauth:token-type:id-jag).",
+        "tooltip": "Your IdP org authorization server's token endpoint. AI-Tokengw exchanges the user's identity assertion here for an ID-JAG assertion (RFC 8693 with requested_token_type=urn:ietf:params:oauth:token-type:id-jag).",
         "required": "The org token endpoint is required for ID-JAG"
       },
       "resourceTokenEndpoint": {
         "label": "Resource Token Endpoint (leg 2)",
-        "tooltip": "The upstream resource authorization server's token endpoint. LiteLLM posts the ID-JAG assertion here as an RFC 7523 jwt-bearer grant to get the access token the MCP server accepts.",
+        "tooltip": "The upstream resource authorization server's token endpoint. AI-Tokengw posts the ID-JAG assertion here as an RFC 7523 jwt-bearer grant to get the access token the MCP server accepts.",
         "required": "The resource token endpoint is required for ID-JAG"
       },
       "clientId": {
         "label": "Client ID",
-        "tooltip": "OAuth2 client ID LiteLLM authenticates as on both legs.",
+        "tooltip": "OAuth2 client ID AI-Tokengw authenticates as on both legs.",
         "required": "Client ID is required for ID-JAG",
         "placeholder": "Enter OAuth client ID",
         "placeholderEditing": "Enter OAuth client ID (leave blank to keep existing)"
       },
       "clientSecret": {
         "label": "Client Secret",
-        "tooltip": "Authenticates LiteLLM as the OAuth client via client_secret_post. Leave blank when using a private key instead; a private key takes precedence over this secret.",
+        "tooltip": "Authenticates AI-Tokengw as the OAuth client via client_secret_post. Leave blank when using a private key instead; a private key takes precedence over this secret.",
         "secretOrPrivateKey": "Provide either a client secret or a client private key",
         "placeholder": "Enter OAuth client secret",
         "placeholderEditing": "Enter OAuth client secret (leave blank to keep existing)"
@@ -12966,7 +12981,7 @@
       },
       "roleArn": {
         "label": "AWS Role ARN",
-        "tooltip": "Optional. IAM role ARN to assume via STS before signing. If set, LiteLLM calls sts:AssumeRole to get temporary credentials. Uses ambient credentials (IAM role, env vars) as the source identity unless explicit keys are also provided.",
+        "tooltip": "Optional. IAM role ARN to assume via STS before signing. If set, AI-Tokengw calls sts:AssumeRole to get temporary credentials. Uses ambient credentials (IAM role, env vars) as the source identity unless explicit keys are also provided.",
         "placeholder": "arn:aws:iam::123456789012:role/MyRole (optional)"
       },
       "sessionName": {
@@ -12976,7 +12991,7 @@
       }
     },
     "passthroughAuthorizeSection": {
-      "description": "Callers bring their own upstream token for this auth type, so LiteLLM never stores tokens. To preview tools and configure the tool allowlist, authorize against the upstream here: the token stays in this browser session only and is never saved to LiteLLM. An OAuth app configured below IS saved with the server, so internal users who authorize from the Tools page go through it.",
+      "description": "Callers bring their own upstream token for this auth type, so AI-Tokengw never stores tokens. To preview tools and configure the tool allowlist, authorize against the upstream here: the token stays in this browser session only and is never saved to AI-Tokengw. An OAuth app configured below IS saved with the server, so internal users who authorize from the Tools page go through it.",
       "appMayNotMatchUpstream": "You changed the upstream URL or endpoints; the OAuth app entered here was registered for the previous upstream and may not be valid. Update the client ID, or clear it to use dynamic client registration.",
       "clientId": {
         "label": "OAuth Client ID (optional)",
@@ -13008,7 +13023,7 @@
         "authorizing": "Waiting for authorization...",
         "exchanging": "Exchanging authorization code...",
         "start": "Authorize & Fetch Tools (browser-only)",
-        "success": "Token held for this browser session. Tools can now be previewed and configured; the token was not saved to LiteLLM."
+        "success": "Token held for this browser session. Tools can now be previewed and configured; the token was not saved to AI-Tokengw."
       }
     },
     "envVarsSection": {
@@ -13068,15 +13083,15 @@
     },
     "upstreamTokenHeaderField": {
       "label": "Token Header (optional)",
-      "tooltip": "Which upstream header carries the token LiteLLM resolves for this server. Leave blank to send it as 'Authorization: Bearer <token>', which is the default and what most servers expect. Set a header name when the upstream expects it elsewhere, for example an API gateway that terminates its own credential on 'esb-oauth' while a separate Authorization from Static Headers passes through to the server behind it."
+      "tooltip": "Which upstream header carries the token AI-Tokengw resolves for this server. Leave blank to send it as 'Authorization: Bearer <token>', which is the default and what most servers expect. Set a header name when the upstream expects it elsewhere, for example an API gateway that terminates its own credential on 'esb-oauth' while a separate Authorization from Static Headers passes through to the server behind it."
     },
     "dcrBridgeToggle": {
       "label": "Gateway-hosted sign-in (DCR bridge)",
       "tooltip": "Lets OAuth-only clients like Claude Desktop register and sign in through the gateway. Turn off to relay the upstream server's own OAuth metadata instead (for clients pre-registered with the upstream IdP)."
     },
     "truePassthroughWarning": {
-      "title": "True Passthrough disables LiteLLM authentication for this server",
-      "description": "Anyone who can reach the gateway can call this server without a LiteLLM key. The caller's Authorization header is forwarded to the upstream verbatim, per-key and per-team rate limits and spend tracking do not apply, and the upstream is fully responsible for authenticating callers. Choose OAuth Delegate instead if callers should still authenticate to LiteLLM."
+      "title": "True Passthrough disables AI-Tokengw authentication for this server",
+      "description": "Anyone who can reach the gateway can call this server without a AI-Tokengw key. The caller's Authorization header is forwarded to the upstream verbatim, per-key and per-team rate limits and spend tracking do not apply, and the upstream is fully responsible for authenticating callers. Choose OAuth Delegate instead if callers should still authenticate to AI-Tokengw."
     },
     "servers": {
       "sort": {
@@ -13168,7 +13183,7 @@
         "requiredFieldCount_one": "({{count}} required field)",
         "requiredFieldCount_other": "({{count}} required fields)",
         "noRules": "no rules set",
-        "help": "Select which fields must be filled in before a submission is considered compliant. LiteLLM will show ✓ / ✗ for each rule on every submission card below.",
+        "help": "Select which fields must be filled in before a submission is considered compliant. AI-Tokengw will show ✓ / ✗ for each rule on every submission card below.",
         "saving": "Saving…",
         "save": "Save Rules",
         "cancel": "Cancel"
@@ -13408,7 +13423,7 @@
       },
       "header": {
         "title": "Live Connections",
-        "description": "Stateful Streamable HTTP sessions currently open on this proxy worker, grouped by the AI client that sent the MCP initialize request and by the authenticated LiteLLM user. Stateless requests and SSE connections are not counted."
+        "description": "Stateful Streamable HTTP sessions currently open on this proxy worker, grouped by the AI client that sent the MCP initialize request and by the authenticated AI-Tokengw user. Stateless requests and SSE connections are not counted."
       },
       "refresh": {
         "ariaLabel": "Refresh live connections",
@@ -13644,7 +13659,7 @@
     },
     "connect": {
       "title": "Connect to your MCP client",
-      "description": "Use tools directly from any MCP client with LiteLLM MCP. Enable your AI assistant to perform real-world tasks through a simple, secure connection.",
+      "description": "Use tools directly from any MCP client with AI-Tokengw MCP. Enable your AI assistant to perform real-world tasks through a simple, secure connection.",
       "featureCard": {
         "serverHeaderToggle": "Limit tools to specific MCP servers or MCP groups by passing the <code>x-mcp-servers</code> header",
         "optionsTitle": "Two Options",
@@ -13659,24 +13674,24 @@
       },
       "serverInfoCard": {
         "title": "MCP Server Information",
-        "description": "Connection details for your LiteLLM MCP server"
+        "description": "Connection details for your AI-Tokengw MCP server"
       },
       "implementationExampleCard": {
         "title": "Implementation Example"
       },
       "litellmTab": {
-        "title": "LiteLLM Proxy API Integration",
-        "description": "Connect to LiteLLM Proxy Responses API for seamless tool integration with multiple model providers",
+        "title": "AI-Tokengw Proxy API Integration",
+        "description": "Connect to AI-Tokengw Proxy Responses API for seamless tool integration with multiple model providers",
         "virtualKeyCard": {
           "title": "Virtual Key Setup",
-          "description": "Configure your LiteLLM Proxy Virtual Key for authentication",
-          "instructions": "Get your Virtual Key from your LiteLLM Proxy dashboard or contact your administrator"
+          "description": "Configure your AI-Tokengw Proxy Virtual Key for authentication",
+          "instructions": "Get your Virtual Key from your AI-Tokengw Proxy dashboard or contact your administrator"
         },
-        "exampleDescription": "Complete cURL example for using the LiteLLM Proxy Responses API"
+        "exampleDescription": "Complete cURL example for using the AI-Tokengw Proxy Responses API"
       },
       "openaiTab": {
         "title": "OpenAI Responses API Integration",
-        "description": "Connect OpenAI Responses API to your LiteLLM MCP server for seamless tool integration",
+        "description": "Connect OpenAI Responses API to your AI-Tokengw MCP server for seamless tool integration",
         "apiKeyCard": {
           "title": "API Key Setup",
           "description": "Configure your OpenAI API key for authentication",
@@ -13686,7 +13701,7 @@
       },
       "cursorTab": {
         "title": "Cursor IDE Integration",
-        "description": "Use tools directly from Cursor IDE with LiteLLM MCP. Enable your AI assistant to perform real-world tasks without leaving your coding environment.",
+        "description": "Use tools directly from Cursor IDE with AI-Tokengw MCP. Enable your AI assistant to perform real-world tasks without leaving your coding environment.",
         "setupTitle": "Setup Instructions",
         "steps": {
           "openSettings": {
@@ -13709,7 +13724,7 @@
       },
       "httpTab": {
         "title": "Streamable HTTP Transport",
-        "description": "Connect to LiteLLM MCP using HTTP transport. Compatible with any MCP client that supports HTTP streaming.",
+        "description": "Connect to AI-Tokengw MCP using HTTP transport. Compatible with any MCP client that supports HTTP streaming.",
         "connectionCard": {
           "title": "Universal MCP Connection",
           "description": "Use this URL with any MCP client that supports HTTP transport",
@@ -13727,7 +13742,7 @@
       "stdioDisabled": "stdio disabled",
       "oauthFlowUnset": {
         "badge": "OAuth flow not set",
-        "tooltip": "This OAuth server has no flow set (Machine-to-Machine vs Interactive). Open it and choose an OAuth Flow Type so LiteLLM authenticates it as you intend."
+        "tooltip": "This OAuth server has no flow set (Machine-to-Machine vs Interactive). Open it and choose an OAuth Flow Type so AI-Tokengw authenticates it as you intend."
       },
       "missingFields": {
         "summary_one": "{{count}} user field missing",
@@ -14076,7 +14091,7 @@
       "oauth2TokenExchange": "OAuth Token Exchange (OBO)",
       "oauth2IdJag": "ID-JAG (Okta Cross App Access)",
       "awsSigv4": "AWS SigV4 (Bedrock AgentCore MCPs)",
-      "truePassthrough": "True Passthrough (no LiteLLM auth)",
+      "truePassthrough": "True Passthrough (no AI-Tokengw auth)",
       "oauthDelegate": "OAuth Delegate (client-supplied upstream token)"
     },
     "transports": {
@@ -14099,9 +14114,9 @@
       "back": "Back",
       "intro": {
         "title": "Connect {{server}}",
-        "description": "LiteLLM needs access to {{server}} to complete your request.",
+        "description": "AI-Tokengw needs access to {{server}} to complete your request.",
         "howItWorksTitle": "How it works",
-        "howItWorks": "LiteLLM acts as a secure bridge. Your requests are routed through our MCP client directly to {{server}}'s API.",
+        "howItWorks": "AI-Tokengw acts as a secure bridge. Your requests are routed through our MCP client directly to {{server}}'s API.",
         "requestedAccess": "Requested Access",
         "continue": "Continue to Authentication",
         "cancel": "Cancel"
@@ -14160,7 +14175,7 @@
     }
   },
   "mcpOAuthCallback": {
-    "authorizationComplete": "Authorization complete. You may close this window and return to the LiteLLM dashboard.",
+    "authorizationComplete": "Authorization complete. You may close this window and return to the AI-Tokengw dashboard.",
     "manualCloseHint": "If the window does not close automatically, everything is still saved—you can close it manually.",
     "loading": "Loading..."
   },
@@ -14329,14 +14344,14 @@
         "duration": "Duration",
         "timeToFirstToken": "Time to First Token",
         "responseCache": "Response Cache",
-        "responseCacheTooltip": "Whether this request was served from LiteLLM's response cache (e.g. Redis / in-memory), skipping the LLM provider call entirely. This is separate from provider prompt caching; a Miss here does not mean prompt caching failed.",
+        "responseCacheTooltip": "Whether this request was served from AI-Tokengw's response cache (e.g. Redis / in-memory), skipping the LLM provider call entirely. This is separate from provider prompt caching; a Miss here does not mean prompt caching failed.",
         "hit": "Hit",
         "miss": "Miss",
         "cacheKey": "Cache Key",
-        "cacheKeyTooltip": "The key LiteLLM computed for this request in the response cache. Requests with the same cache key share a cached response; a different key means the request content did not match any cached entry.",
+        "cacheKeyTooltip": "The key AI-Tokengw computed for this request in the response cache. Requests with the same cache key share a cached response; a different key means the request content did not match any cached entry.",
         "promptCacheReadTokens": "Prompt Cache Read Tokens",
         "promptCacheCreationTokens": "Prompt Cache Creation Tokens",
-        "overhead": "LiteLLM Overhead",
+        "overhead": "AI-Tokengw Overhead",
         "overheadValue": "{{value}} ms",
         "retries": "Retries",
         "noRetries": "None",
@@ -14671,7 +14686,7 @@
       },
       "configInfo": {
         "title": "Request/Response Data Not Available",
-        "description": "To view request and response details, enable prompt storage in your LiteLLM configuration by adding the following to your <code>proxy_config.yaml</code> file, or toggle the setting in <strong>Admin Settings → Logging Settings</strong>.",
+        "description": "To view request and response details, enable prompt storage in your AI-Tokengw configuration by adding the following to your <code>proxy_config.yaml</code> file, or toggle the setting in <strong>Admin Settings → Logging Settings</strong>.",
         "note": "Note: This will only affect new requests after the configuration change."
       },
       "tools": {
@@ -14801,7 +14816,7 @@
       "table": {
         "emptyTitle": "No requests yet",
         "emptyFilteredTitle": "No matching requests",
-        "emptyDescription": "Requests proxied through LiteLLM will appear here.",
+        "emptyDescription": "Requests proxied through AI-Tokengw will appear here.",
         "emptyFilteredDescription": "No requests match your filters for this time range.",
         "loading": "Loading request logs…",
         "searchPlaceholder": "Search logs by ID…",
@@ -14907,7 +14922,7 @@
       },
       "panel": {
         "enterpriseTitle": "✨ Enterprise Feature.",
-        "enterpriseDescription": "This is a LiteLLM Enterprise feature, and requires a valid key to use.",
+        "enterpriseDescription": "This is a AI-Tokengw Enterprise feature, and requires a valid key to use.",
         "previewIntro": "Here's a preview of what Audit Logs offer:",
         "previewAlt": "Audit Logs Preview"
       },
@@ -15209,7 +15224,7 @@
       "footnote": {
         "scoped": "Based on retained request logs within the exact selected time range.",
         "allUsers": "All-user totals use UTC daily aggregates for the selected dates. Filtering by person uses the exact selected times. Cache values are reported counts.",
-        "spend": "Spend is the cost recorded by LiteLLM."
+        "spend": "Spend is the cost recorded by AI-Tokengw."
       }
     },
     "viewSelect": {
@@ -16012,12 +16027,12 @@
     "destinationText": {
       "every": "every {{seconds}} s",
       "http": "One JSON report per worker {{every}} and on shutdown, by HTTP POST to LITELLM_TELEMETRY_ENDPOINT. A failed send is retried next window",
-      "localTable_one": "One report per worker {{every}} and on shutdown, stored in this proxy's LiteLLM_TelemetryReport table for {{count}} days. Nothing leaves the proxy. Admins can export from GET /telemetry/reports",
-      "localTable_other": "One report per worker {{every}} and on shutdown, stored in this proxy's LiteLLM_TelemetryReport table for {{count}} days. Nothing leaves the proxy. Admins can export from GET /telemetry/reports",
+      "localTable_one": "One report per worker {{every}} and on shutdown, stored in this proxy's AI-Tokengw_TelemetryReport table for {{count}} days. Nothing leaves the proxy. Admins can export from GET /telemetry/reports",
+      "localTable_other": "One report per worker {{every}} and on shutdown, stored in this proxy's AI-Tokengw_TelemetryReport table for {{count}} days. Nothing leaves the proxy. Admins can export from GET /telemetry/reports",
       "none": "No destination is chosen, so nothing is recorded"
     },
     "destination": {
-      "localTable": "Local table (LiteLLM_TelemetryReport in this proxy's database)",
+      "localTable": "Local table (AI-Tokengw_TelemetryReport in this proxy's database)",
       "http": "HTTP (POST to LITELLM_TELEMETRY_ENDPOINT)",
       "title": "Destination",
       "missing": "Telemetry is on but no destination is chosen, so nothing is recorded",
@@ -16059,18 +16074,18 @@
     "enterpriseDialog": {
       "premiumTitle": "Contact your enterprise representative",
       "title": "Telemetry is an enterprise-only feature",
-      "premiumDescription": "Telemetry can't be turned on from this page. Reach out to your LiteLLM enterprise representative to turn it on for this proxy.",
-      "description": "Telemetry is only available on LiteLLM Enterprise, and this proxy isn't on an enterprise license."
+      "premiumDescription": "Telemetry can't be turned on from this page. Reach out to your AI-Tokengw enterprise representative to turn it on for this proxy.",
+      "description": "Telemetry is only available on AI-Tokengw Enterprise, and this proxy isn't on an enterprise license."
     },
     "groups": {
       "heartbeat": {
         "title": "Heartbeat",
-        "counts": "Random instance id, LiteLLM version, report window, which groups are on",
+        "counts": "Random instance id, AI-Tokengw version, report window, which groups are on",
         "helps": "Which versions are running"
       },
       "requestSuccess": {
         "title": "Request success",
-        "slices": "endpoint, LiteLLM status, provider status, stream, handled by Rust, LiteLLM cache hit",
+        "slices": "endpoint, AI-Tokengw status, provider status, stream, handled by Rust, AI-Tokengw cache hit",
         "counts": "requests, provider attempts, latency to headers and to first byte",
         "helps": "Error-rate and latency regressions, Rust vs Python"
       },
@@ -16187,7 +16202,7 @@
       "toasts": {
         "deleted": "Organization deleted successfully"
       },
-      "enterpriseNotice": "This is a LiteLLM Enterprise feature, and requires a valid key to use. Get a trial key <pricing>here</pricing>.",
+      "enterpriseNotice": "This is a AI-Tokengw Enterprise feature, and requires a valid key to use. Get a trial key <pricing>here</pricing>.",
       "createButton": "+ Create New Organization",
       "listHint": "Click on an organization ID to view its details.",
       "deleteModal": {
@@ -16319,7 +16334,7 @@
         "loadFailed": "Failed to load team information",
         "memberAdded": "Team member added successfully",
         "memberAddFailed": "Failed to add team member",
-        "adminsEnterpriseOnly": "Assigning admins is an enterprise-only feature. Please upgrade your LiteLLM plan to enable this.",
+        "adminsEnterpriseOnly": "Assigning admins is an enterprise-only feature. Please upgrade your AI-Tokengw plan to enable this.",
         "memberUpdated": "Team member updated successfully",
         "memberUpdateFailed": "Failed to update team member",
         "memberRemoved": "Team member removed successfully",
@@ -17397,11 +17412,11 @@
       },
       "perUserOauth": {
         "label": "Per-user GitHub OAuth",
-        "description": "Each LiteLLM user connects their own GitHub account from LLM Credentials, and their requests use their own GitHub Copilot access. Users who have not connected get a 401."
+        "description": "Each AI-Tokengw user connects their own GitHub account from LLM Credentials, and their requests use their own GitHub Copilot access. Users who have not connected get a 401."
       },
       "oauthTokenExchange": {
         "label": "OAuth token exchange (on-behalf-of)",
-        "description": "LiteLLM exchanges each caller's IdP-issued JWT at your IdP's token endpoint for a delegated token. Microsoft Graph only accepts Microsoft Entra tokens, so for Microsoft 365 Copilot the token endpoint must be Entra and callers must send an Entra-issued JWT for this app. Users can still sign in through any IdP federated with Entra."
+        "description": "AI-Tokengw exchanges each caller's IdP-issued JWT at your IdP's token endpoint for a delegated token. Microsoft Graph only accepts Microsoft Entra tokens, so for Microsoft 365 Copilot the token endpoint must be Entra and callers must send an Entra-issued JWT for this app. Users can still sign in through any IdP federated with Entra."
       },
       "staticToken": {
         "label": "Static delegated access token",
@@ -18329,7 +18344,7 @@
       "loadingProviders": "Loading providers...",
       "selectProvider": "Select a provider",
       "mode": "Mode",
-      "healthCheckModeHint": "<strong>Optional</strong> - LiteLLM endpoint to use when health checking this model <docs>Learn more</docs>",
+      "healthCheckModeHint": "<strong>Optional</strong> - AI-Tokengw endpoint to use when health checking this model <docs>Learn more</docs>",
       "credentialsChoiceHint": "Either select existing credentials OR enter new provider credentials below",
       "existingCredentials": "Existing Credentials",
       "existingCredentialsPlaceholder": "Select or search for existing credentials",
@@ -18396,23 +18411,23 @@
       "useInPassThrough": "Use in pass through routes",
       "useInPassThroughHint": "Allow using these credentials in pass through routes. <docs>Learn more</docs>",
       "kubernetesPodDiscovery": "Kubernetes pod discovery",
-      "kubernetesPodDiscoveryHint": "Treat the API Base hostname as a Kubernetes headless service: resolve it to its ready pod IPs and spread requests across the pods. LiteLLM must run inside the same cluster.",
-      "litellmParams": "LiteLLM Params",
+      "kubernetesPodDiscoveryHint": "Treat the API Base hostname as a Kubernetes headless service: resolve it to its ready pod IPs and spread requests across the pods. AI-Tokengw must run inside the same cluster.",
+      "litellmParams": "AI-Tokengw Params",
       "litellmParamsHint": "Optional litellm params used for making a litellm.completion() call.",
       "litellmParamsDocs": "Pass JSON of litellm supported params <docs>litellm.completion() call</docs>",
       "modelInfo": "Model Info",
       "modelInfoHint": "Optional model info params. Returned when calling `/model/info` endpoint."
     },
     "conditionalPublicModelName": {
-      "publicNameDescription": "The name you specify in your API calls to LiteLLM Proxy",
-      "publicNameExample": "<strong>Example:</strong> If you name your public model <publicName/>, and choose <litellmModel/> as the LiteLLM model",
-      "publicNameUsage": "<strong>Usage:</strong> You make an API call to the LiteLLM proxy with <request/>",
-      "publicNameResult": "<strong>Result:</strong> LiteLLM sends <providerModel/> to the provider",
+      "publicNameDescription": "The name you specify in your API calls to AI-Tokengw Proxy",
+      "publicNameExample": "<strong>Example:</strong> If you name your public model <publicName/>, and choose <litellmModel/> as the AI-Tokengw model",
+      "publicNameUsage": "<strong>Usage:</strong> You make an API call to the AI-Tokengw proxy with <request/>",
+      "publicNameResult": "<strong>Result:</strong> AI-Tokengw sends <providerModel/> to the provider",
       "publicModelName": "Public Model Name",
-      "litellmModelName": "LiteLLM Model Name",
-      "litellmModelNameTooltip": "The model name LiteLLM will send to the LLM API",
+      "litellmModelName": "AI-Tokengw Model Name",
+      "litellmModelNameTooltip": "The model name AI-Tokengw will send to the LLM API",
       "modelMappings": "Model Mappings",
-      "modelMappingsTooltip": "Map public model names to LiteLLM model names for load balancing"
+      "modelMappingsTooltip": "Map public model names to AI-Tokengw model names for load balancing"
     },
     "modelConnectionTest": {
       "thisModel": "this model",
@@ -18434,8 +18449,8 @@
       "viewDocumentation": "View Documentation"
     },
     "litellmModelName": {
-      "label": "LiteLLM Model Name(s)",
-      "hint": "The model name LiteLLM will send to the LLM API",
+      "label": "AI-Tokengw Model Name(s)",
+      "hint": "The model name AI-Tokengw will send to the LLM API",
       "required": "Please enter {{target}}.",
       "requiredDeploymentName": "a deployment name",
       "requiredAtLeastOneModel": "at least one model",
@@ -18448,7 +18463,7 @@
       "customModelRequired": "Please enter a custom model name.",
       "azureDeploymentPlaceholder": "Enter Azure deployment name",
       "customModelPlaceholder": "Enter custom model name",
-      "azureHelp": "Your deployment name will be saved as the public model name, and LiteLLM will use 'azure/deployment-name' internally"
+      "azureHelp": "Your deployment name will be saved as the public model name, and AI-Tokengw will use 'azure/deployment-name' internally"
     },
     "cacheControlSettings": {
       "label": "Cache Control Injection Points",
@@ -18462,7 +18477,7 @@
         "assistant": "Assistant"
       },
       "description": "Providers like Anthropic, Bedrock API require users to specify where to inject cache control checkpoints, litellm can automatically add them for you as a cost saving feature.",
-      "roleHint": "LiteLLM will mark all messages of this role as cacheable",
+      "roleHint": "AI-Tokengw will mark all messages of this role as cacheable",
       "indexHint": "(Optional) If set litellm will mark the message at this index as cacheable",
       "labelHelp": "{{label}} help",
       "type": "Type",
@@ -18477,7 +18492,7 @@
     "providerSpecificFields": {
       "clickToUpload": "Click to Upload",
       "authType": "Auth Type:",
-      "authTypeHint": "Select how LiteLLM authenticates to this provider.",
+      "authTypeHint": "Select how AI-Tokengw authenticates to this provider.",
       "credentialOnlyHint": "This auth type is saved as an LLM credential and attached to this model.",
       "createCredential": "Create credential",
       "loadingFields": "Loading provider fields...",
@@ -18487,7 +18502,7 @@
       "baseModelHelp": "The actual model your azure deployment uses. Used for accurate cost tracking. Select name from <docs>here</docs>"
     },
     "handleAddModelSubmit": {
-      "failedToParseExtraParams": "Failed to parse LiteLLM Extra Params: {{error}}",
+      "failedToParseExtraParams": "Failed to parse AI-Tokengw Extra Params: {{error}}",
       "failedToCreateModel": "Failed to create model: {{error}}",
       "failedToAddModel": "Failed to add model: {{error}}"
     },
@@ -18697,7 +18712,7 @@
       "sources": {
         "tokenFile": "Identity token file",
         "secretReference": "Identity token secret reference",
-        "internalIssuer": "Token signed by LiteLLM (internal issuer)",
+        "internalIssuer": "Token signed by AI-Tokengw (internal issuer)",
         "keycloak": "Keycloak client credentials",
         "environment": "Proxy environment variables"
       },
@@ -18854,7 +18869,7 @@
     "updated": "API key updated",
     "title": "Update API Key",
     "description": "Update this model's API key. Only the new key is sent; the rest of the deployment configuration is left untouched.",
-    "apiKeyOnlyWarning": "Only the API key is rotated here. Models that authenticate with an Azure AD token, AWS credentials, or a Vertex service-account JSON aren't supported yet; update those from the model's LiteLLM Params for now.",
+    "apiKeyOnlyWarning": "Only the API key is rotated here. Models that authenticate with an Azure AD token, AWS credentials, or a Vertex service-account JSON aren't supported yet; update those from the model's AI-Tokengw Params for now.",
     "newApiKey": "New API Key",
     "newApiKeyPlaceholder": "Enter the new API key",
     "cancel": "Cancel",
@@ -18984,7 +18999,7 @@
         "message": "Are you sure you want to delete this model?",
         "informationTitle": "Model Information",
         "modelName": "Model Name",
-        "litellmModelName": "LiteLLM Model Name",
+        "litellmModelName": "AI-Tokengw Model Name",
         "provider": "Provider",
         "createdBy": "Created By",
         "notSet": "Not Set"
@@ -19035,15 +19050,15 @@
       "unknownProvider": "Unknown provider",
       "information": {
         "publicModelName": "Public Model Name",
-        "litellmModelName": "LiteLLM Model Name",
-        "copyLitellmModelName": "Copy LiteLLM model name",
-        "litellmModelNameCopied": "LiteLLM model name copied"
+        "litellmModelName": "AI-Tokengw Model Name",
+        "copyLitellmModelName": "Copy AI-Tokengw model name",
+        "litellmModelNameCopied": "AI-Tokengw model name copied"
       },
       "credentialTypes": {
         "aboutAriaLabel": "About credential types",
         "title": "Credential types",
         "reusable": "Reusable",
-        "reusableDescription": "Credentials saved in LiteLLM that can be added to models repeatedly.",
+        "reusableDescription": "Credentials saved in AI-Tokengw that can be added to models repeatedly.",
         "manual": "Manual",
         "manualDescription": "Credentials added directly during model creation or defined in the config file."
       },
@@ -19187,7 +19202,7 @@
     "title": "Add Pass-Through Endpoint",
     "intro": {
       "title": "What is a Pass-Through Endpoint?",
-      "description": "Route requests from your LiteLLM proxy to any external API. Perfect for custom models, image generation APIs, or any service you want to proxy through LiteLLM."
+      "description": "Route requests from your AI-Tokengw proxy to any external API. Perfect for custom models, image generation APIs, or any service you want to proxy through AI-Tokengw."
     },
     "route": {
       "title": "Route Configuration",
@@ -19344,8 +19359,8 @@
   },
   "passThroughSecuritySection": {
     "title": "Security",
-    "description": "When enabled, requests to this endpoint will require a valid LiteLLM Virtual Key",
-    "requireAuth": "Require LiteLLM authentication"
+    "description": "When enabled, requests to this endpoint will require a valid AI-Tokengw Virtual Key",
+    "requireAuth": "Require AI-Tokengw authentication"
   },
   "passThroughSettings": {
     "passThroughSettings": {
@@ -19387,7 +19402,7 @@
         "actions": "Actions"
       },
       "methodsTooltip": "HTTP methods supported by this endpoint",
-      "authenticationTooltip": "LiteLLM Virtual Key required to call endpoint",
+      "authenticationTooltip": "AI-Tokengw Virtual Key required to call endpoint",
       "source": {
         "config": "Config",
         "db": "DB"
@@ -19526,8 +19541,8 @@
         "placeholder": "Enter model name"
       },
       "litellmModelName": {
-        "label": "LiteLLM Model Name",
-        "placeholder": "Enter LiteLLM model name"
+        "label": "AI-Tokengw Model Name",
+        "placeholder": "Enter AI-Tokengw model name"
       },
       "inputCost": {
         "label": "Input Cost (per 1M tokens)",
@@ -19627,7 +19642,7 @@
         "label": "Model Info"
       },
       "litellmParams": {
-        "label": "LiteLLM Params",
+        "label": "AI-Tokengw Params",
         "hint": "Additional parameters for model requests. Settings with dedicated fields above are edited there. Remove a key here to delete its saved value."
       },
       "team": {
@@ -19671,7 +19686,7 @@
     },
     "overview": {
       "provider": "Provider",
-      "litellmModel": "LiteLLM Model",
+      "litellmModel": "AI-Tokengw Model",
       "pricing": "Pricing"
     },
     "audit": {
@@ -19691,7 +19706,7 @@
       "resourceModel": "model",
       "infoTitle": "Model Information",
       "modelName": "Model Name",
-      "litellmModelName": "LiteLLM Model Name",
+      "litellmModelName": "AI-Tokengw Model Name",
       "provider": "Provider",
       "createdBy": "Created By"
     },
@@ -19706,7 +19721,7 @@
     "toasts": {
       "storingCredential": "Storing credential..",
       "credentialStored": "Credential stored successfully",
-      "invalidLitellmParams": "LiteLLM Params must be a valid JSON object",
+      "invalidLitellmParams": "AI-Tokengw Params must be a valid JSON object",
       "invalidModelInfo": "Invalid JSON in Model Info",
       "updateSuccess": "Model settings updated successfully",
       "noComplexityTiers": "No complexity tiers are configured yet, so there is nothing to test.",
@@ -19771,7 +19786,7 @@
     },
     "scheduleDialog": {
       "title": "Set Up Periodic Reload",
-      "description": "Set how often LiteLLM should fetch the latest pricing data from the remote source.",
+      "description": "Set how often AI-Tokengw should fetch the latest pricing data from the remote source.",
       "intro": "Set up automatic reload of price data every:",
       "intervalLabel": "Reload interval in hours",
       "hoursUnit": "hours",
@@ -19885,16 +19900,16 @@
   "transformRequest": {
     "transformRequestPanel": {
       "title": "Playground",
-      "description": "See how LiteLLM transforms your request for the specified provider.",
+      "description": "See how AI-Tokengw transforms your request for the specified provider.",
       "original": {
         "title": "Original Request",
-        "description": "The request you would send to LiteLLM /chat/completions endpoint.",
+        "description": "The request you would send to AI-Tokengw /chat/completions endpoint.",
         "placeholder": "Press Cmd/Ctrl + Enter to transform",
         "transform": "Transform"
       },
       "transformed": {
         "title": "Transformed Request",
-        "description": "How LiteLLM transforms your request for the specified provider.",
+        "description": "How AI-Tokengw transforms your request for the specified provider.",
         "sensitiveHeaders": "Note: Sensitive headers are not shown.",
         "copy": "Copy to clipboard"
       },
@@ -20023,7 +20038,7 @@
         "create_one": "Create {{count}} Users",
         "create_other": "Create {{count}} Users",
         "completeTitle": "User creation complete",
-        "nextStep": "<emphasis>Next step:</emphasis> Download the credentials file containing Virtual Keys and invitation links. Users will need these Virtual Keys to make LLM requests through LiteLLM.",
+        "nextStep": "<emphasis>Next step:</emphasis> Download the credentials file containing Virtual Keys and invitation links. Users will need these Virtual Keys to make LLM requests through AI-Tokengw.",
         "table": {
           "row": "Row",
           "email": "Email",

@@ -9,19 +9,24 @@ describe("resolveLanguage", () => {
     expect(resolveLanguage("ja", locales)).toBe("ja");
   });
 
-  it.each([null, "", "en", "fr", "JA", "ja-JP", "__proto__"])("shows English when the stored value is %j", (stored) => {
-    expect(resolveLanguage(stored, locales)).toBe("en");
+  it("uses a statically bundled language even without a lazy loader", () => {
+    expect(resolveLanguage("en", locales)).toBe("en");
   });
 
-  it("shows English when no language besides English has translations", () => {
-    expect(resolveLanguage("ja", new Map())).toBe("en");
+  it.each([null, "", "fr", "JA", "ja-JP", "__proto__"])("falls back to the default language when the stored value is %j", (stored) => {
+    expect(resolveLanguage(stored, locales)).toBe("zh");
+  });
+
+  it("falls back to the default language even without translations", () => {
+    expect(resolveLanguage("ja", new Map())).toBe("zh");
   });
 });
 
 describe("supportedLanguages", () => {
-  it("puts English first, then every language with translations", () => {
-    expect(supportedLanguages(locales)).toEqual(["en", "ja"]);
-    expect(supportedLanguages(new Map())).toEqual(["en"]);
+  it("puts the default language first, then the fallback and every other language", () => {
+    expect(supportedLanguages(locales)).toEqual(["zh", "en", "ja"]);
+    expect(supportedLanguages(new Map())).toEqual(["zh", "en"]);
+    expect(supportedLanguages(new Map([["zh", locales.get("ja") as () => Promise<never>]]))).toEqual(["zh", "en"]);
   });
 });
 

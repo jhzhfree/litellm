@@ -9,6 +9,7 @@ const devProxyUrl = process.env.LENS_DEV_PROXY_URL;
 
 const nextConfig = {
   transpilePackages: ["@litellm/lens-ui"],
+  allowedDevOrigins: ["192.168.24.202", "localhost", "127.0.0.1", "192.168.24.*"],
   ...(devProxyUrl
     ? {
         async rewrites() {

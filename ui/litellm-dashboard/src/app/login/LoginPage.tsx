@@ -24,7 +24,7 @@ import { useZodForm } from "@/lib/forms/useZodForm";
 import { clearTokenCookies, getCookieFromDocument } from "@/utils/cookieUtils";
 import { isJwtExpired } from "@/utils/jwtUtils";
 import { consumeReturnUrl, getLoginUrl, getReturnUrl, isValidReturnUrl } from "@/utils/returnUrlUtils";
-import { CircleAlert, Info, TriangleAlert, X } from "lucide-react";
+import { CheckCircle2, CircleAlert, Info, TriangleAlert, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -32,6 +32,8 @@ import { z } from "zod";
 import { useWorker } from "@/hooks/useWorker";
 import i18n from "@/i18n/i18n";
 import { productNames } from "@/i18n/untranslated/productNames";
+import aiGwLogo from "../../../public/assets/logos/ai_gw_logo.svg";
+import aiGwLogoDark from "../../../public/assets/logos/ai_gw_logo_dark.svg";
 
 const loginSchema = z.object({
   username: z.string().min(1, { error: () => i18n.t("login.schema.usernameRequired") }),
@@ -211,8 +213,8 @@ function LoginPageContent() {
         <Card className="w-full max-w-lg shadow-md">
           <CardContent>
             <div className="flex w-full flex-col gap-4">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-foreground">{productNames.liteLLMWithLogo}</h2>
+              <div className="flex justify-center">
+                <img src={aiGwLogo.src} alt={productNames.liteLLM} className="h-8 w-auto" />
               </div>
 
               <Alert variant="warning">
@@ -232,20 +234,54 @@ function LoginPageContent() {
     );
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-muted">
-      <Card className="w-full max-w-lg shadow-md">
-        <CardContent>
-          <TooltipProvider>
-            <div className="flex w-full flex-col gap-4">
-              <div className="text-center">
-                <h2 className="text-3xl font-semibold text-foreground">{productNames.liteLLMWithLogo}</h2>
-              </div>
+  const heroPoints = [
+    t("login.hero.points.access"),
+    t("login.hero.points.quota"),
+    t("login.hero.points.audit"),
+  ];
 
-              <div className="text-center">
-                <h3 className="text-2xl font-semibold text-foreground">{t("login.form.title")}</h3>
-                <p className="text-sm text-muted-foreground">{t("login.form.subtitle")}</p>
-              </div>
+  return (
+    <div className="min-h-screen bg-[#f5f7fb] lg:grid lg:grid-cols-2">
+      <aside className="relative hidden overflow-hidden bg-[#0a1830] p-12 text-white lg:flex lg:flex-col lg:justify-between">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_10%,rgba(59,130,246,0.35),transparent_55%),radial-gradient(ellipse_at_85%_90%,rgba(124,58,237,0.28),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:48px_48px]" />
+        </div>
+        <div className="relative">
+          <img src={aiGwLogoDark.src} alt={productNames.liteLLM} className="h-8 w-auto" />
+        </div>
+        <div className="relative max-w-md">
+          <h1 className="text-3xl font-semibold leading-snug">{t("login.hero.title")}</h1>
+          <p className="mt-4 text-sm leading-6 text-white/70">{t("login.hero.subtitle")}</p>
+          <ul className="mt-8 space-y-3">
+            {heroPoints.map((point) => (
+              <li key={point} className="flex items-center gap-2.5 text-sm text-white/85">
+                <CheckCircle2 className="size-4 shrink-0 text-sky-400" />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="relative text-xs text-white/50">
+          {t("shell.footer.copyright", { brand: productNames.liteLLM, year: new Date().getFullYear() })}
+        </p>
+      </aside>
+
+      <main className="flex min-h-screen items-center justify-center px-4 py-10 lg:min-h-0 lg:py-0">
+        <Card className="w-full max-w-md rounded-2xl border-0 shadow-[0_24px_64px_-24px_rgba(15,23,42,0.28)]">
+          <CardContent className="p-8">
+            <TooltipProvider>
+              <div className="flex w-full flex-col gap-5">
+                <img
+                  src={aiGwLogo.src}
+                  alt={productNames.liteLLM}
+                  className="h-8 w-auto self-start lg:hidden"
+                />
+
+                <div>
+                  <h3 className="text-2xl font-semibold text-foreground">{t("login.form.title")}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{t("login.form.subtitle")}</p>
+                </div>
 
               {!uiConfig?.hide_default_credentials_hint && (
                 <Alert variant="info">
@@ -374,11 +410,12 @@ function LoginPageContent() {
                   )}
                 </FieldGroup>
               </form>
-            </div>
-            {uiConfig?.sso_configured && <SsoEnabledNotice />}
-          </TooltipProvider>
-        </CardContent>
-      </Card>
+              </div>
+              {uiConfig?.sso_configured && <SsoEnabledNotice />}
+            </TooltipProvider>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }

@@ -28,7 +28,10 @@ afterEach(async () => {
 });
 
 describe("format keys in English", () => {
-  it("formats numbers and USD the way the dashboard shows them today", () => {
+  it("formats numbers and USD the way the dashboard shows them today", async () => {
+    // Lock the English baseline: the deployment default is Chinese, whose
+    // Intl number formats (7.5万, US$…) intentionally differ.
+    await i18n.changeLanguage("en");
     expect(i18n.t("format.number", { val: 9123456 })).toBe("9,123,456");
     expect(i18n.t("format.number", { val: 80, minimumFractionDigits: 1, maximumFractionDigits: 1 })).toBe("80.0");
     expect(i18n.t("format.compactNumber", { val: 75000 })).toBe("75K");

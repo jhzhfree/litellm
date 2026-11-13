@@ -56,3 +56,13 @@ litellm/rust_bridge/_native*.so
 *.log
 .env
 .env.local
+
+# 本地构建/开发产物（在容器内重新生成, 进入上下文会导致缓存失效）
+ui/litellm-dashboard/.next/
+ui/litellm-dashboard/node_modules/
+ui/litellm-dashboard/out/
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/.ruff_cache/
+*.log

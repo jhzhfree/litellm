@@ -3,6 +3,7 @@ import { initReactI18next } from "react-i18next";
 
 import { registerFormats } from "./formats";
 import en from "./locales/en.json";
+import { DEFAULT_LANGUAGE, FALLBACK_LANGUAGE, LOCALES, resolveLanguage } from "./languages";
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -11,9 +12,20 @@ declare module "i18next" {
   }
 }
 
+// On the client, start in the language the user picked so statically bundled
+// languages (en) paint correctly before LanguageGate's async switch.
+const initialLanguage = (): string => {
+  if (typeof window === "undefined") return DEFAULT_LANGUAGE;
+  try {
+    return resolveLanguage(localStorage.getItem("litellm_language"), LOCALES);
+  } catch {
+    return DEFAULT_LANGUAGE;
+  }
+};
+
 const options: InitOptions = {
-  lng: "en",
-  fallbackLng: "en",
+  lng: initialLanguage(),
+  fallbackLng: FALLBACK_LANGUAGE,
   interpolation: { escapeValue: false },
   resources: { en: { translation: en } },
   initAsync: false,

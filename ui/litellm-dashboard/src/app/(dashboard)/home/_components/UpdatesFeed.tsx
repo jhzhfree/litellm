@@ -47,7 +47,7 @@ export default function UpdatesFeed({ className }: { className?: string }) {
         <h2 id="home-updates-title" className="text-lg font-semibold">
           {t("home.updatesFeed.title")}
         </h2>
-        <Button variant="ghost" size="sm" render={<a href={BLOG_URL} target="_blank" rel="noopener noreferrer" />}>
+        <Button variant="ghost" size="sm" nativeButton={false} render={<a href={BLOG_URL} target="_blank" rel="noopener noreferrer" />}>
           {t("home.updatesFeed.viewAll")}
           <ArrowUpRight className="size-3.5" />
         </Button>

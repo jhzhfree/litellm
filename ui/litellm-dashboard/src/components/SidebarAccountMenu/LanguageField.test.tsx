@@ -19,22 +19,23 @@ const renderField = (fieldLocales: Locales) => {
 };
 
 describe("LanguageField", () => {
-  it("stays hidden while English is the only language", () => {
+  it("offers switching while only statically bundled languages exist", () => {
+    // DEFAULT (zh) + statically bundled (en) are always available.
     const { container } = renderField(new Map());
 
-    expect(container).toBeEmptyDOMElement();
+    expect(container.querySelector('[role="combobox"]')).toBeInTheDocument();
   });
 
   it("lists each language by its own name with the English name beside it", async () => {
     renderField(locales);
-    expect(screen.getByRole("combobox", { name: /Language/ })).toHaveTextContent(nativeName("en"));
+    expect(screen.getByRole("combobox", { name: /Language/ })).toHaveTextContent(nativeName("zh"));
 
     await userEvent.click(screen.getByRole("combobox", { name: /Language/ }));
 
     const japanese = await screen.findByRole("option", { name: new RegExp(nativeName("ja")) });
     expect(japanese).toHaveTextContent(englishName("ja"));
     expect(screen.getByRole("option", { name: new RegExp(nativeName("es")) })).toHaveTextContent(englishName("es"));
-    expect(screen.getByRole("option", { name: nativeName("en") })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /English/ })).toBeInTheDocument();
   });
 
   it("links the fallback note to where translations live", () => {
@@ -60,7 +61,8 @@ describe("LanguageField", () => {
     const { store, reload } = renderField(locales);
 
     await userEvent.click(screen.getByRole("combobox", { name: /Language/ }));
-    await userEvent.click(await screen.findByRole("option", { name: nativeName("en") }));
+    // The test i18n instance starts in the default language (zh).
+    await userEvent.click(await screen.findByRole("option", { name: nativeName("zh") }));
 
     expect(store.write).not.toHaveBeenCalled();
     expect(reload).not.toHaveBeenCalled();

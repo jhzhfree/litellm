@@ -347,7 +347,7 @@
       "columns": {
         "name": "Agent Name",
         "id": "Agent ID",
-        "spend": "Spend (USD)",
+        "spend": "Spend",
         "model": "Model",
         "created": "Created",
         "status": "Status",
@@ -2282,9 +2282,9 @@
         "allowedRoutes": "Allowed Routes",
         "allowedRoutesHint": "List of allowed routes for the key (comma-separated). Can be specific routes (e.g., '/chat/completions') or route patterns (e.g., 'llm_api_routes', 'management_routes', '/keys/*'). Leave empty to allow all routes.",
         "allowedRoutesPlaceholder": "Enter allowed routes (comma-separated). Special values: llm_api_routes, management_routes. Examples: llm_api_routes, /chat/completions, /keys/*. Leave empty to allow all routes",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "maxBudgetPlaceholder": "Enter a numerical value",
-        "softBudget": "Soft Budget (USD)",
+        "softBudget": "Soft Budget",
         "softBudgetPlaceholder": "Get alerts when spend crosses this value, without blocking requests",
         "resetBudget": "Reset Budget",
         "resetBudgetPlaceholder": "Never resets",
@@ -2498,7 +2498,7 @@
     },
     "form": {
       "keyAlias": "Key Alias",
-      "maxBudget": "Max Budget (USD)",
+      "maxBudget": "Max Budget",
       "tpmLimit": "TPM Limit",
       "rpmLimit": "RPM Limit",
       "expireKey": "Expire Key",
@@ -2624,7 +2624,7 @@
       "unlimited": "unlimited"
     },
     "maxBudget": {
-      "label": "Max Budget (USD)",
+      "label": "Max Budget",
       "tooltip": "Maximum amount in USD this key can spend. When reached, the key will be blocked from making further requests",
       "help": "Budget cannot exceed team max budget: ${{budget}}",
       "ceiling": "Budget cannot exceed team max budget: ${{limit}}"
@@ -3217,7 +3217,7 @@
       "allTeamModels": "All Team Models",
       "selectModels": "Select models",
       "selectTeamFirst": "Select a team first",
-      "maxBudget": "Max Budget (USD)",
+      "maxBudget": "Max Budget",
       "advancedSettings": "Advanced Settings",
       "blockProject": "Block Project",
       "blockedWarning": "All API requests using keys under this project will be rejected.",
@@ -3333,7 +3333,7 @@
         "title": "Filters",
         "description": "Narrow down your budgets",
         "reset": "Reset",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "min": "Min",
         "minAriaLabel": "Minimum max budget",
         "max": "Max",
@@ -6708,7 +6708,7 @@
         "models": "Allowed Models",
         "modelsHint": "Select which models are allowed to process requests from this tag",
         "modelsPlaceholder": "Select Models",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "maxBudgetHint": "Maximum amount in USD this tag can spend. When reached, requests with this tag will be blocked",
         "resetBudget": "Reset Budget",
         "resetBudgetHint": "How often the budget should reset. For example, setting 'daily' will reset the budget every 24 hours",
@@ -6760,7 +6760,7 @@
         "models": "Allowed Models",
         "modelsDescription": "Select which models are allowed to process this type of data",
         "modelsPlaceholder": "Select Models",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "maxBudgetDescription": "Maximum amount in USD this tag can spend",
         "resetBudget": "Reset Budget",
         "resetBudgetDescription": "How often the budget should reset",
@@ -8925,9 +8925,9 @@
       },
       "spendBudgetCell": {
         "unlimited": "· Unlimited",
-        "memberBudget": "· {{spend}} of ${{budget}} (team member)",
-        "ofBudget": "of ${{budget}}",
-        "meterValue": "{{spend}} of ${{budget}}",
+        "memberBudget": "· {{spend}} of {{budget}} (team member)",
+        "ofBudget": "of {{budget}}",
+        "meterValue": "{{spend}} of {{budget}}",
         "memberSpend": "team member spend {{spend}}"
       },
       "userPopoverCell": {
@@ -8936,6 +8936,13 @@
         "userId": "User ID",
         "copyLabel": "Copy {{label}}"
       }
+    },
+    "currency": {
+      "label": "Currency",
+      "usd": "USD",
+      "cny": "CNY",
+      "rateHint": "Converted at 1 USD = {{rate}} CNY; amounts are stored and enforced in USD",
+      "rateLabel": "Exchange rate"
     }
   },
   "commonComponents": {
@@ -9339,7 +9346,7 @@
         "saveWarning": "Save this key now; you will not see it again",
         "newKey": "New Key",
         "keyAlias": "Key Alias",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "tpmLimit": "TPM Limit",
         "rpmLimit": "RPM Limit",
         "expireKey": "Expire Key",
@@ -14997,8 +15004,8 @@
         "keyId": "Key ID",
         "keyAlias": "Key Alias",
         "teamAlias": "Team Alias",
-        "spendUsd": "Spend (USD)",
-        "budgetUsd": "Budget (USD)",
+        "spendUsd": "Spend",
+        "budgetUsd": "Budget",
         "unlimited": "Unlimited",
         "userEmail": "User Email",
         "userId": "User ID",
@@ -15022,8 +15029,8 @@
         "teamName": "Team Name",
         "teamId": "Team ID",
         "created": "Created",
-        "spendUsd": "Spend (USD)",
-        "budgetUsd": "Budget (USD)",
+        "spendUsd": "Spend",
+        "budgetUsd": "Budget",
         "unlimited": "Unlimited",
         "models": "Models",
         "organization": "Organization",
@@ -15665,7 +15672,7 @@
       },
       "columns": {
         "model": "Model",
-        "spendUsd": "Spend (USD)",
+        "spendUsd": "Spend",
         "successful": "Successful",
         "failed": "Failed",
         "tokens": "Tokens"
@@ -15778,7 +15785,7 @@
         "keyAlias": "Key Alias",
         "user": "User",
         "tags": "Tags",
-        "spend": "Spend (USD)"
+        "spend": "Spend"
       },
       "tagTooltip": {
         "name": "Tag Name:",
@@ -15830,7 +15837,7 @@
     "keyModelUsage": {
       "columns": {
         "model": "Model",
-        "spend": "Spend (USD)",
+        "spend": "Spend",
         "successful": "Successful",
         "failed": "Failed",
         "tokens": "Tokens"
@@ -16159,7 +16166,7 @@
         "teamsTitle": "Teams"
       },
       "members": {
-        "spendColumn": "Spend (USD)",
+        "spendColumn": "Spend",
         "createdAtColumn": "Created At",
         "roleColumn": "Organization Role",
         "empty": "No members found"
@@ -16224,8 +16231,8 @@
         "id": "Organization ID",
         "name": "Organization Name",
         "created": "Created",
-        "spend": "Spend (USD)",
-        "budget": "Budget (USD)",
+        "spend": "Spend",
+        "budget": "Budget",
         "models": "Models",
         "limits": "TPM / RPM Limits",
         "tpmSort": "TPM",
@@ -16260,7 +16267,7 @@
       "fields": {
         "name": "Organization Name",
         "models": "Models",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "budgetDuration": "Reset Budget",
         "tpmLimit": "Tokens per minute Limit (TPM)",
         "rpmLimit": "Requests per minute Limit (RPM)",
@@ -16296,7 +16303,7 @@
       "fields": {
         "name": "Organization Name",
         "models": "Models",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "budgetDuration": "Reset Budget",
         "tpmLimit": "Tokens per minute Limit (TPM)",
         "rpmLimit": "Requests per minute Limit (RPM)",
@@ -16406,8 +16413,8 @@
         "modelsDescription": "Leave empty to grant no models directly. The team keeps any models granted through its access groups",
         "modelAliases": "Model Aliases",
         "modelAliasesHint": "Map a custom alias to an underlying model. Team members can call the alias in API requests instead of the real model name.",
-        "maxBudget": "Max Budget (USD)",
-        "softBudget": "Soft Budget (USD)",
+        "maxBudget": "Max Budget",
+        "softBudget": "Soft Budget",
         "softBudgetAlertingEmails": "Soft Budget Alerting Emails",
         "softBudgetAlertingEmailsHint": "Comma-separated email addresses to receive alerts when the soft budget is reached",
         "teamMemberSettings": {
@@ -16416,7 +16423,7 @@
           "defaultModelAccess": "Default Model Access",
           "defaultModelAccessHint": "Optional. If set, new members can only access these models by default. Must be a subset of the team's models above. Leave empty to give all members access to all team models.",
           "defaultModelAccessPlaceholder": "Leave empty — all team models accessible to every member",
-          "defaultBudget": "Default Budget (USD)",
+          "defaultBudget": "Default Budget",
           "defaultBudgetHint": "Default spend budget for each member in this team.",
           "defaultBudgetDuration": "Default Budget Duration",
           "inheritResetPeriod": "Inherit team reset period",
@@ -16553,12 +16560,12 @@
         "title": "Edit Member",
         "roleAdmin": "Admin",
         "roleUser": "User",
-        "maxBudgetInTeam": "Team Member Budget (USD)",
+        "maxBudgetInTeam": "Team Member Budget",
         "maxBudgetInTeamTooltip": "Maximum amount in USD this member can spend within this team. This is separate from any global user budget limits",
         "maxBudgetInTeamPlaceholder": "Budget limit for this member within this team",
         "budgetDuration": "Budget Reset Period",
         "budgetDurationTooltip": "How often this member's budget resets within the team. Leave unset and the budget never resets.",
-        "tempBudgetIncrease": "Temporary Budget Increase (USD)",
+        "tempBudgetIncrease": "Temporary Budget Increase",
         "tempBudgetIncreaseTooltip": "Extra USD added on top of the team member budget until the expiry below. The permanent budget is left unchanged and the increase stops applying at expiry.",
         "tempBudgetIncreasePlaceholder": "Extra budget for this member until the expiry",
         "tempBudgetExpiry": "Temporary Budget Expiry (UTC)",
@@ -16598,9 +16605,9 @@
         "updatedAt": "Updated At",
         "lastActive": "Last Active",
         "expires": "Expires",
-        "spend": "Spend (USD)",
+        "spend": "Spend",
         "lifetimeSpend": "Lifetime Spend",
-        "budget": "Budget (USD)",
+        "budget": "Budget",
         "budgetReset": "Budget Reset",
         "models": "Models",
         "rateLimits": "Rate Limits"
@@ -16732,17 +16739,17 @@
           "moreModels_other": "+{{count}} more"
         },
         "currentPeriodSpend": {
-          "title": "Current Period Spend (USD)",
+          "title": "Current Period Spend",
           "tooltip": "Spend in this member's current budget period, the value checked against their budget. The Budget Period column shows the dates that period covers, or Never resets. Spend above a rollover cap at reset carries into the next period.",
           "ariaLabel": "Current period spend information"
         },
         "totalSpend": {
-          "title": "Total Spend (USD)",
+          "title": "Total Spend",
           "tooltip": "Cumulative spend by this member within this team, across budget periods. This is a lower bound: lifetime tracking began 2026-04-21, so periods that reset before then are not included. It is never less than Current Period Spend.",
           "ariaLabel": "Total spend information"
         },
         "memberBudget": {
-          "title": "Team Member Budget (USD)",
+          "title": "Team Member Budget",
           "tooltip": "Team default follows the team's member budget, so changing it in team settings updates this member too. Custom is set on this member only and ignores later team changes.",
           "ariaLabel": "Team member budget information",
           "useTeamDefault": "Use team default"
@@ -16795,7 +16802,7 @@
       "user": "User",
       "teamRole": "Team Role",
       "currentPeriodSpend": {
-        "title": "Current Period Spend (USD)",
+        "title": "Current Period Spend",
         "ofBudget": "of {{budget}}"
       },
       "rateLimits": {
@@ -16805,7 +16812,7 @@
         "rpm": "RPM: {{value}}"
       },
       "totalSpend": {
-        "title": "Total Spend (USD)",
+        "title": "Total Spend",
         "tooltip": "Cumulative spend within this team across budget periods. This is a lower bound: lifetime tracking began 2026-04-21, so periods that reset before then are not included. It is never less than Current Period Spend."
       },
       "modelScope": {
@@ -16896,7 +16903,7 @@
             "label": "Models",
             "hint": "These are the models that your selected team has access to. Leave empty to grant no models directly, e.g. when the team gets its models from access groups"
           },
-          "maxBudget": "Max Budget (USD)",
+          "maxBudget": "Max Budget",
           "budgetDuration": {
             "label": "Reset Budget",
             "defaultPlaceholder": "Default: {{label}} ({{duration}})"
@@ -16917,7 +16924,7 @@
             "description": "ID of the team you want to create. If not provided, it will be generated automatically."
           },
           "teamMemberBudget": {
-            "label": "Team Member Budget (USD)",
+            "label": "Team Member Budget",
             "hint": "This is the individual budget for a user in the team."
           },
           "teamMemberModelMaxBudget": {
@@ -17226,10 +17233,10 @@
       "fieldLabels": {
         "tpmLimit": "Tokens per minute Limit (TPM)",
         "rpmLimit": "Requests per minute Limit (RPM)",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "metadata": "Team Metadata",
-        "softBudget": "Soft Budget (USD)",
-        "teamMemberBudget": "Member Default Budget (USD)",
+        "softBudget": "Soft Budget",
+        "teamMemberBudget": "Member Default Budget",
         "teamMemberBudgetDuration": "Member Default Budget Duration",
         "teamMemberTpmLimit": "Member Default TPM Limit",
         "teamMemberRpmLimit": "Member Default RPM Limit",
@@ -19112,11 +19119,11 @@
       "set": "Set",
       "description": "Every key granted this access group by name draws from this one budget. A key that reaches the group's models through a wildcard or <allProxyModels/> is not charged against it.",
       "maxBudget": {
-        "label": "Max Budget (USD)",
+        "label": "Max Budget",
         "hint": "Total the whole group may spend. Once its shared spend reaches this, every key that draws from the group is refused"
       },
       "softBudget": {
-        "label": "Soft Budget (USD)",
+        "label": "Soft Budget",
         "hint": "Fires an alert when the group's spend reaches this. Requests keep succeeding"
       },
       "resetBudget": {
@@ -20159,7 +20166,7 @@
         "role": "Default Role",
         "roleDescription": "Role assigned to new users",
         "rolePlaceholder": "Not set",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "maxBudgetDescription": "Default maximum budget for new users",
         "resetBudget": "Reset Budget",
         "resetBudgetDescription": "How often the default budget resets",
@@ -20174,7 +20181,7 @@
         "team": "Team",
         "teamPlaceholder": "Search a team",
         "teamEmpty": "No teams found",
-        "maxBudget": "Max Budget in Team (USD)",
+        "maxBudget": "Max Budget in Team",
         "maxBudgetPlaceholder": "Optional",
         "role": "Team Role",
         "add": "Add Team"
@@ -20223,7 +20230,7 @@
         "email": "Email",
         "userId": "User ID",
         "globalProxyRole": "Global Proxy Role",
-        "totalSpend": "Total Spend (USD)"
+        "totalSpend": "Total Spend"
       }
     },
     "table": {
@@ -20253,8 +20260,8 @@
         "status": "Status",
         "globalProxyRole": "Global Proxy Role",
         "userAlias": "User Alias",
-        "spend": "Spend (USD)",
-        "budget": "Budget (USD)",
+        "spend": "Spend",
+        "budget": "Budget",
         "ssoId": "SSO ID",
         "virtualKeys": "Virtual Keys",
         "createdAt": "Created At",
@@ -20320,7 +20327,7 @@
         "email": "Email",
         "userId": "User ID",
         "globalProxyRole": "Global Proxy Role",
-        "totalSpend": "Total Spend (USD)"
+        "totalSpend": "Total Spend"
       },
       "tabs": {
         "overview": "Overview",
@@ -20401,7 +20408,7 @@
         "personalModels": "Personal Models",
         "personalModelsHint": "Select which models this user can access outside of team-scope. Choose 'All Proxy Models' to grant access to all models available on the proxy.",
         "modelsPlaceholder": "Select models",
-        "maxBudget": "Max Budget (USD)",
+        "maxBudget": "Max Budget",
         "unlimitedBudget": "Unlimited Budget",
         "maxBudgetPlaceholder": "Enter a numerical value",
         "resetBudget": "Reset Budget",

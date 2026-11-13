@@ -5,8 +5,9 @@ import { useTranslation } from "react-i18next";
 import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import { getSpendBudgetMeterTone } from "@/components/shared/table_cells/spend_budget_cell";
 import type { components } from "@/lib/http/schema";
+import { useCurrency } from "@/lib/useCurrency";
 import { formatBudgetResetUtc } from "@/utils/budgetUtils";
-import { formatNumberWithCommas, getSpendString } from "@/utils/dataUtils";
+import { formatNumberWithCommas } from "@/utils/dataUtils";
 
 type CallerMembership = components["schemas"]["TeamListCallerMembership"];
 
@@ -25,11 +26,14 @@ interface BudgetLineProps {
 
 function BudgetLine({ label, spend, maxBudget, resetAt }: BudgetLineProps) {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
+  const formatMoney = (usd: number, decimals: number) =>
+    `${symbol}${formatNumberWithCommas(toDisplay(usd), decimals)}`;
   const spendValue = typeof spend === "number" && Number.isFinite(spend) ? spend : 0;
   const budget = typeof maxBudget === "number" && Number.isFinite(maxBudget) ? maxBudget : null;
-  const spendText = spendValue === 0 ? "$0.00" : getSpendString(spendValue, 2);
+  const spendText = formatMoney(spendValue, 2);
   const budgetText =
-    budget === null ? t("teams.memberSpendBudgetCell.unlimited") : `$${formatNumberWithCommas(budget, 2)}`;
+    budget === null ? t("teams.memberSpendBudgetCell.unlimited") : formatMoney(budget, 2);
   const resetText = formatBudgetResetUtc(resetAt);
 
   return (

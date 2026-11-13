@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import type { Team } from "@/components/key_team_helpers/key_list";
 import type { Organization } from "@/components/networking";
+import { useCurrency } from "@/lib/useCurrency";
 import i18n from "@/i18n/i18n";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 
@@ -149,8 +150,15 @@ const SCOPE_LABELS: Record<InheritedBudgetGate["scope"], ParseKeys> = {
   User: "shared.inheritedBudgetHint.scopes.user",
 };
 
-const formatGate = (gate: InheritedBudgetGate, t: TFunction): string =>
-  `${t(SCOPE_LABELS[gate.scope])} ${gate.alias}: $${formatNumberWithCommas(gate.maxBudget, 2)}${gate.budgetDuration ? ` / ${gate.budgetDuration}` : ""}`;
+const formatGate = (
+  gate: InheritedBudgetGate,
+  t: TFunction,
+  money: { symbol: string; toDisplay: (usd: number) => number },
+): string =>
+  `${t(SCOPE_LABELS[gate.scope])} ${gate.alias}: ${money.symbol}${formatNumberWithCommas(
+    money.toDisplay(gate.maxBudget),
+    2,
+  )}${gate.budgetDuration ? ` / ${gate.budgetDuration}` : ""}`;
 
 interface InheritedBudgetHintProps {
   gates: readonly InheritedBudgetGate[];
@@ -158,6 +166,7 @@ interface InheritedBudgetHintProps {
 
 export function InheritedBudgetHint({ gates }: InheritedBudgetHintProps) {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
   if (gates.length === 0) return null;
   return (
     <SimpleTooltip
@@ -165,7 +174,7 @@ export function InheritedBudgetHint({ gates }: InheritedBudgetHintProps) {
         <div data-testid="inherited-budget-hint" className="flex flex-col gap-1">
           <span>{t("shared.inheritedBudgetHint.intro")}</span>
           {gates.map((gate) => (
-            <span key={gate.scope}>{formatGate(gate, t)}</span>
+            <span key={gate.scope}>{formatGate(gate, t, { symbol, toDisplay })}</span>
           ))}
         </div>
       }

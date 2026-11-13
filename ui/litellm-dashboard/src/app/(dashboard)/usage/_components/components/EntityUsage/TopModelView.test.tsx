@@ -36,7 +36,7 @@ describe("TopModelView", () => {
   it("should display all table column headers", () => {
     render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
     expect(screen.getByText("Model")).toBeInTheDocument();
-    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+    expect(screen.getByText("Spend")).toBeInTheDocument();
     expect(screen.getByText("Successful")).toBeInTheDocument();
     expect(screen.getByText("Failed")).toBeInTheDocument();
     expect(screen.getByText("Tokens")).toBeInTheDocument();
@@ -80,7 +80,7 @@ describe("TopModelView", () => {
     await clickControl(user, "Chart View");
 
     expect(showsChart(container)).toBe(true);
-    expect(screen.queryByText("Spend (USD)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Spend")).not.toBeInTheDocument();
   });
 
   it("should switch to table view when table view button is clicked", async () => {
@@ -93,7 +93,7 @@ describe("TopModelView", () => {
     await clickControl(user, "Table View");
 
     expect(showsChart(container)).toBe(false);
-    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+    expect(screen.getByText("Spend")).toBeInTheDocument();
   });
 
   it("renders one brand-blue bar per model with model names on the axis in chart view", async () => {
@@ -285,7 +285,7 @@ describe("TopModelView", () => {
   it("should handle empty model list", () => {
     render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
     expect(screen.getByText("Model")).toBeInTheDocument();
-    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+    expect(screen.getByText("Spend")).toBeInTheDocument();
   });
 
   it("should display dash for missing model key", () => {

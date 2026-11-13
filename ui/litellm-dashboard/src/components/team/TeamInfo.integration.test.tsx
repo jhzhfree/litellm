@@ -412,7 +412,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(screen.getByRole("tab", { name: "Settings" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByText("Team Member Settings"));
-    return await screen.findByLabelText("Default Budget (USD)");
+    return await screen.findByLabelText("Default Budget");
   };
 
   const submitNewDefault = async (user: ReturnType<typeof userEvent.setup>, input: HTMLElement, value: string) => {
@@ -657,7 +657,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(screen.getByRole("tab", { name: "Settings" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByText("Team Member Settings"));
-    const input = await screen.findByLabelText("Default Budget (USD)");
+    const input = await screen.findByLabelText("Default Budget");
 
     await submitNewDefault(user, input, "20");
     expect(await screen.findByText("Reset member budgets?")).toBeInTheDocument();
@@ -686,7 +686,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(screen.getByRole("tab", { name: "Settings" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByText("Team Member Settings"));
-    const input = await screen.findByLabelText("Default Budget (USD)");
+    const input = await screen.findByLabelText("Default Budget");
 
     await submitNewDefault(user, input, "20");
     await user.click(await screen.findByRole("button", { name: "Reset to $20.00" }));
@@ -873,7 +873,7 @@ describe("TeamInfoView - model settings", () => {
     if (models.length === 0) {
       expect(await screen.findByLabelText("All Proxy Models")).toBeInTheDocument();
     }
-    fireEvent.change(await screen.findByLabelText("Max Budget (USD)"), { target: { value: "100" } });
+    fireEvent.change(await screen.findByLabelText("Max Budget"), { target: { value: "100" } });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalledTimes(1));
@@ -893,7 +893,7 @@ describe("TeamInfoView - model settings", () => {
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     expect(await screen.findByLabelText("All Proxy Models")).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Max Budget (USD)"), { target: { value: "100" } });
+    fireEvent.change(screen.getByLabelText("Max Budget"), { target: { value: "100" } });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalledTimes(1));

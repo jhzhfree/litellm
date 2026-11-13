@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useBudgetOptions } from "@/app/(dashboard)/hooks/budgets/useBudgetOptions";
 import type { budgetItem } from "@/app/(dashboard)/hooks/budgets/useBudgets";
 import { SearchSelect, type SearchSelectOption } from "@/components/shared/SearchSelect";
+import { useCurrency } from "@/lib/useCurrency";
 
 export const END_USER_BUDGET_HINT: ParseKeys = "keyTeamHelpers.endUserBudgetSelect.hint";
 
@@ -18,9 +19,14 @@ interface EndUserBudgetSelectProps {
   readonly canEdit: boolean;
 }
 
-const budgetSublabel = (budget: budgetItem, t: TFunction): string | undefined => {
+interface MoneyFormatContext {
+  readonly symbol: string;
+  readonly toDisplay: (usd: number) => number;
+}
+
+const budgetSublabel = (budget: budgetItem, t: TFunction, money: MoneyFormatContext): string | undefined => {
   const parts = [
-    budget.max_budget != null ? `$${budget.max_budget}` : null,
+    budget.max_budget != null ? `${money.symbol}${money.toDisplay(budget.max_budget)}` : null,
     budget.budget_duration
       ? t("keyTeamHelpers.endUserBudgetSelect.resets", { duration: budget.budget_duration })
       : null,
@@ -36,11 +42,12 @@ export const EndUserBudgetSelect: React.FC<EndUserBudgetSelectProps> = ({
   canEdit,
 }) => {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
   const { data: budgets } = useBudgetOptions(accessToken, canEdit);
   const options: SearchSelectOption[] = (budgets ?? []).map((budget) => ({
     label: budget.budget_id,
     value: budget.budget_id,
-    sublabel: budgetSublabel(budget, t),
+    sublabel: budgetSublabel(budget, t, { symbol, toDisplay }),
   }));
 
   return (

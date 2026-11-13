@@ -51,6 +51,7 @@ import BudgetDurationDropdown, {
   NEVER_RESETS_BUDGET_DURATION,
 } from "./common_components/budget_duration_dropdown";
 import { Organization, getDefaultTeamSettings, getGuardrailsList, getPoliciesList, teamDeleteCall } from "./networking";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 import NumericalInput from "./shared/numerical_input";
 import { ModelMaxBudget, ModelMaxBudgetField } from "./key_team_helpers/ModelMaxBudgetEditor";
 import { modelMaxBudgetUpdate } from "./key_team_helpers/modelMaxBudgetPayload";
@@ -827,8 +828,15 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   </FormField>
 
                   <FormField control={form.control} name="max_budget" label={t("teams.page.create.fields.maxBudget")}>
-                    {({ ref, value, ...field }) => (
-                      <NumericalInput {...field} ref={ref} value={value ?? ""} step={0.01} precision={2} width={200} />
+                    {({ id, value, onChange, ...field }) => (
+                      <MoneyInput
+                        {...(field as React.ComponentProps<"input">)}
+                        id={id}
+                        value={typeof value === "number" ? value : value ? Number(value) : null}
+                        onChange={(next) => onChange(next === null ? undefined : String(next))}
+                        step={0.01}
+                        className="w-[200px]"
+                      />
                     )}
                   </FormField>
                   <FormField
@@ -931,17 +939,14 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                             t("teams.page.create.fields.teamMemberBudget.hint"),
                           )}
                         >
-                          {({ ref, value, onChange, ...field }) => (
-                            <NumericalInput
-                              {...field}
-                              ref={ref}
-                              value={value ?? ""}
-                              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                                onChange(event.target.value ? Number(event.target.value) : undefined)
-                              }
+                          {({ id, value, onChange, ...field }) => (
+                            <MoneyInput
+                              {...(field as React.ComponentProps<"input">)}
+                              id={id}
+                              value={typeof value === "number" ? value : value ? Number(value) : null}
+                              onChange={(next) => onChange(next ?? undefined)}
                               step={0.01}
-                              precision={2}
-                              width={200}
+                              className="w-[200px]"
                             />
                           )}
                         </FormField>

@@ -22,7 +22,7 @@ vi.mock("@/app/(dashboard)/hooks/uiSettings/useUpdateUISettings", () => ({
 }));
 
 const TPM_LABEL = "Tokens per minute Limit (TPM)";
-const MAX_BUDGET_LABEL = "Max Budget (USD)";
+const MAX_BUDGET_LABEL = "Max Budget";
 const RAISE_MAX_BUDGET_LABEL = "Raise the team's max budget";
 const RAISE_MAX_BUDGET_HELP_LABEL = "About raising the team's max budget";
 const RAISE_MAX_BUDGET_TOOLTIP =
@@ -132,7 +132,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
     const mutate = mockSave({});
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
-    fireEvent.click(screen.getByRole("checkbox", { name: "Member Default Budget (USD)" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Member Default Budget" }));
     fireEvent.click(screen.getByRole("checkbox", { name: "Member Default Budget Duration" }));
     fireEvent.click(saveButton());
 
@@ -148,7 +148,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
     const mutate = mockSave({});
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
-    fireEvent.click(screen.getByRole("checkbox", { name: "Soft Budget (USD)" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Soft Budget" }));
     fireEvent.click(saveButton());
 
     await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));

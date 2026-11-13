@@ -11,6 +11,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { useSyntaxTheme } from "@/hooks/useSyntaxTheme";
+import { CurrencySwitcher } from "@/components/shared/CurrencySwitcher";
 import { PageHeader, PageHeaderControls, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
 import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
 import { Button } from "@/components/ui/button";
@@ -91,6 +92,7 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
           </PageHeaderTitle>
           <PageHeaderDescription>{t("budgets.panel.description")}</PageHeaderDescription>
           <PageHeaderControls>
+            <CurrencySwitcher />
             <PageTabsList>
               {canModify && (
                 <>

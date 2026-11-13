@@ -1,4 +1,5 @@
 import { BudgetResetSchedule, describeBudgetResetSchedule } from "@/utils/budgetUtils";
+import { useCurrency } from "@/lib/useCurrency";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,7 @@ function describePeriodLine(t: TFunction, schedule: BudgetResetSchedule): string
 
 export default function MyUserTab({ teamId }: MyUserTabProps) {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
   const { data, isLoading, error } = useMyTeamMember(teamId);
 
   if (isLoading) {
@@ -106,10 +108,13 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
           <CardContent>
             {labelWithTooltip(t, t("teams.myUserTab.currentPeriodSpend.title"), budgetReset.tooltip)}
             <div className="mt-2">
-              <h3 className="text-2xl font-semibold">${formatNumber(spend, 4)}</h3>
+              <h3 className="text-2xl font-semibold">
+                {symbol}
+                {formatNumber(toDisplay(spend), 4)}
+              </h3>
               <span className="text-muted-foreground">
                 {t("teams.myUserTab.currentPeriodSpend.ofBudget", {
-                  budget: maxBudget === null ? t("teams.myUserTab.unlimited") : `$${formatNumber(maxBudget, 4)}`,
+                  budget: maxBudget === null ? t("teams.myUserTab.unlimited") : `${symbol}${formatNumber(toDisplay(maxBudget), 4)}`,
                 })}
               </span>
             </div>
@@ -131,7 +136,10 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
         <Card>
           <CardContent>
             {labelWithTooltip(t, t("teams.myUserTab.totalSpend.title"), t("teams.myUserTab.totalSpend.tooltip"))}
-            <h4 className="mt-2 text-xl font-semibold">${formatNumber(totalSpend, 4)}</h4>
+            <h4 className="mt-2 text-xl font-semibold">
+              {symbol}
+              {formatNumber(toDisplay(totalSpend), 4)}
+            </h4>
           </CardContent>
         </Card>
 

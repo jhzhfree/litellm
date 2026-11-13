@@ -588,7 +588,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Max Budget (USD)")).toBeInTheDocument();
+      expect(screen.getByLabelText("Max Budget")).toBeInTheDocument();
     });
   });
 
@@ -1044,7 +1044,7 @@ describe("KeyEditView", () => {
     };
     const view = renderWithProviders(<KeyEditView {...props} />);
 
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget" }), {
       target: { value: "12.5" },
     });
     view.rerender(
@@ -1112,7 +1112,7 @@ describe("KeyEditView", () => {
     );
     await waitFor(() => expect(listMCPTools).toHaveBeenCalledWith("test-token", "srv-a"));
 
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget" }), {
       target: { value: "12.5" },
     });
     await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
@@ -1165,7 +1165,7 @@ describe("KeyEditView", () => {
       userRole: "admin",
     };
     const view = renderWithProviders(<KeyEditView {...props} />);
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget" }), {
       target: { value: "12.5" },
     });
     view.rerender(
@@ -1189,7 +1189,7 @@ describe("KeyEditView", () => {
       userRole: "admin",
     };
     const view = renderWithProviders(<KeyEditView {...props} />);
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget" }), {
       target: { value: "12.5" },
     });
     view.rerender(
@@ -2747,7 +2747,7 @@ describe("KeyEditView", () => {
       };
 
       await retype("Key Alias", "typed-alias");
-      await retype("Max Budget (USD)", "12.5");
+      await retype("Max Budget", "12.5");
       await retype("TPM Limit", "111");
       await retype("RPM Limit", "222");
       await retype("Max Parallel Requests", "3");
@@ -3199,7 +3199,7 @@ describe("KeyEditView", () => {
         renderForPayload(onSubmitMock);
         await screen.findByRole("button", { name: /save changes/i });
 
-        await userEvent.clear(screen.getByLabelText("Max Budget (USD)"));
+        await userEvent.clear(screen.getByLabelText("Max Budget"));
         await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 
         await waitFor(() => {
@@ -3298,7 +3298,7 @@ describe("KeyEditView", () => {
       const onSubmit = vi.fn().mockResolvedValue(undefined);
       renderAsTeamAdmin(onSubmit);
 
-      fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+      fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget" }), {
         target: { value: "25" },
       });
 

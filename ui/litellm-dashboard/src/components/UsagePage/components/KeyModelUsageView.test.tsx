@@ -58,7 +58,7 @@ describe("KeyModelUsageView", () => {
   it("should display all table column headers", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
     expect(screen.getByText("Model")).toBeInTheDocument();
-    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+    expect(screen.getByText("Spend")).toBeInTheDocument();
     expect(screen.getByText("Successful")).toBeInTheDocument();
     expect(screen.getByText("Failed")).toBeInTheDocument();
     expect(screen.getByText("Tokens")).toBeInTheDocument();

@@ -151,8 +151,8 @@ describe("OrganizationsTable", () => {
       "Organization ID",
       "Organization Name",
       "Created",
-      "Spend (USD)",
-      "Budget (USD)",
+      "Spend",
+      "Budget",
       "Models",
       "Members",
     ]) {
@@ -162,7 +162,7 @@ describe("OrganizationsTable", () => {
 
   it("right-aligns the money and count columns only", () => {
     renderWithProviders(<OrganizationsTable {...baseProps} organizations={[]} />);
-    for (const header of ["Spend (USD)", "Budget (USD)", "Members"]) {
+    for (const header of ["Spend", "Budget", "Members"]) {
       expect(screen.getByRole("columnheader", { name: header })).toHaveClass("text-right");
     }
     for (const header of ["Organization Name"]) {

@@ -83,7 +83,7 @@ describe("TopKeyView", () => {
     render(<TopKeyView {...baseProps} />);
     expect(screen.getByText("Key ID")).toBeInTheDocument();
     expect(screen.getByText("Key Alias")).toBeInTheDocument();
-    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+    expect(screen.getByText("Spend")).toBeInTheDocument();
   });
 
   it("should display Tags column when showTags is true", () => {

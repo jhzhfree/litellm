@@ -167,7 +167,7 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Max Budget (USD)")).toBeInTheDocument();
+      expect(screen.getByText("Max Budget")).toBeInTheDocument();
     });
   });
 
@@ -382,7 +382,7 @@ describe("UserEditView", () => {
     renderWithProviders(<UserEditView {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Max Budget (USD)")).toBeInTheDocument();
+      expect(screen.getByText("Max Budget")).toBeInTheDocument();
     });
 
     const budgetInput = screen.getByRole("spinbutton", { name: /max budget/i });

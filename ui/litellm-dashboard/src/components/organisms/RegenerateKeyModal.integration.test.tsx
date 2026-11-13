@@ -81,7 +81,7 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    const budget = screen.getByLabelText("Max Budget (USD)");
+    const budget = screen.getByLabelText("Max Budget");
     await user.clear(budget);
     await user.type(budget, "42.567");
     const tpm = screen.getByLabelText("TPM Limit");
@@ -118,7 +118,7 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    const budget = screen.getByLabelText("Max Budget (USD)");
+    const budget = screen.getByLabelText("Max Budget");
     await user.clear(budget);
     await user.type(budget, typed);
 
@@ -149,7 +149,7 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.clear(screen.getByLabelText("Max Budget (USD)"));
+    await user.clear(screen.getByLabelText("Max Budget"));
     await user.clear(screen.getByLabelText("TPM Limit"));
     await user.clear(screen.getByLabelText("RPM Limit"));
     await user.clear(screen.getByPlaceholderText("e.g. 30s, 30h, 30d"));

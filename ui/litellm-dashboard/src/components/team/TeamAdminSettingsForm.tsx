@@ -10,6 +10,7 @@ import { z } from "zod";
 import type { TeamMetadataField } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
 
 import { FormField } from "@/components/shared/form/FormField";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
@@ -36,6 +37,9 @@ import {
 } from "./teamAdminEditAccess";
 
 const numericInputSchema = z.union([z.string(), z.number()]).nullish();
+
+/** 以金额（美元）计量的字段：输入时按当前货币单位换算 */
+const MONEY_FIELDS: ReadonlySet<string> = new Set(["max_budget", "soft_budget", "team_member_budget"]);
 
 const teamAdminSettingsShape = {
   tpm_limit: numericInputSchema,
@@ -156,6 +160,14 @@ function TeamAdminSettingsFormFields({
                   placeholder={t("teams.adminSettingsForm.inheritDurationPlaceholder")}
                   value={durationSelectValue(value)}
                   onChange={(next) => onChange(next === NEVER_RESETS_BUDGET_DURATION ? null : next ?? undefined)}
+                />
+              ) : MONEY_FIELDS.has(name) ? (
+                <MoneyInput
+                  {...(field as React.ComponentProps<"input">)}
+                  id={id}
+                  value={typeof value === "number" ? value : value ? Number(value) : null}
+                  onChange={(next) => onChange(next ?? null)}
+                  step={INPUT_STEP[name]}
                 />
               ) : (
                 <NumericalInput

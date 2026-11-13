@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import MemberTable, { type MemberTableColumn } from "../common_components/MemberTable";
 import UserSearchModal from "../common_components/user_search_modal";
 import { toast } from "@/lib/toast";
+import { useCurrency } from "@/lib/useCurrency";
 import {
   Member,
   organizationMemberAddCall,
@@ -49,6 +50,7 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
   userModels,
 }) => {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
   const queryClient = useQueryClient();
   const { data: orgData, isLoading: loading } = useOrganization(organizationId);
   const [isEditing, setIsEditing] = useState(false);
@@ -216,13 +218,16 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                   />
                 </p>
                 <div className="mt-2 text-sm text-foreground">
-                  <p className="text-xl font-semibold">${formatNumberWithCommas(orgData.spend, 4)}</p>
+                  <p className="text-xl font-semibold">
+                    {symbol}
+                    {formatNumberWithCommas(toDisplay(orgData.spend), 4)}
+                  </p>
                   <p>
                     {t("organizations.view.overview.budgetOf", {
                       budget:
                         orgData.litellm_budget_table.max_budget === null
                           ? t("organizations.view.overview.unlimited")
-                          : `$${formatNumberWithCommas(orgData.litellm_budget_table.max_budget, 4)}`,
+                          : `${symbol}${formatNumberWithCommas(toDisplay(orgData.litellm_budget_table.max_budget), 4)}`,
                     })}
                   </p>
                   {orgData.litellm_budget_table.budget_duration && (
@@ -372,7 +377,7 @@ const OrganizationInfoView: React.FC<OrganizationInfoProps> = ({
                       {t("organizations.view.settings.maxBudget", {
                         budget:
                           orgData.litellm_budget_table.max_budget !== null
-                            ? `$${formatNumberWithCommas(orgData.litellm_budget_table.max_budget, 4)}`
+                            ? `${symbol}${formatNumberWithCommas(toDisplay(orgData.litellm_budget_table.max_budget), 4)}`
                             : t("organizations.view.settings.noLimit"),
                       })}
                     </div>

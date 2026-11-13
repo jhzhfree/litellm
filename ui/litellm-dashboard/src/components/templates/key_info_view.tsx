@@ -39,6 +39,7 @@ import { extractLoggingSettings, formatMetadataForDisplay, stripTagsFromMetadata
 import { KeyResponse } from "../key_team_helpers/key_list";
 import LoggingSettingsView from "../logging_settings_view";
 import { toast } from "@/lib/toast";
+import { useCurrency } from "@/lib/useCurrency";
 import { getPolicyInfoWithGuardrails, keyDeleteCall, keyUpdateCall } from "../networking";
 import { useResetKeySpend } from "@/app/(dashboard)/hooks/keys/useResetKeySpend";
 import { useSetKeyBlockedState } from "@/app/(dashboard)/hooks/keys/useSetKeyBlockedState";
@@ -106,6 +107,7 @@ export default function KeyInfoView({
   backButtonText = i18n.t("keyDetail.keyInfoView.backToKeys"),
 }: KeyInfoViewProps) {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
   const accessGroupNames = useModelAccessGroupNames();
   const activityDateRange = useActivityDateRange();
@@ -571,7 +573,8 @@ export default function KeyInfoView({
         currentKeyData.user?.user_email,
       );
   const budgetDisplay = (() => {
-    if (hasOwnBudget) return `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}`;
+    if (hasOwnBudget)
+      return `${symbol}${formatNumberWithCommas(toDisplay(currentKeyData.max_budget as number), 2)}`;
     if (memberGate)
       return t("keyDetail.keyInfoView.budget.teamMemberBudget", {
         budget: formatNumberWithCommas(memberGate.maxBudget, 2),
@@ -652,7 +655,9 @@ export default function KeyInfoView({
           },
           {
             label: t("keyDetail.keyInfoView.deleteModal.spend"),
-            value: currentKeyData?.spend ? `$${formatNumberWithCommas(currentKeyData.spend, 4)}` : "$0.0000",
+            value: currentKeyData?.spend
+              ? `${symbol}${formatNumberWithCommas(toDisplay(currentKeyData.spend), 4)}`
+              : `${symbol}${formatNumberWithCommas(0, 4)}`,
           },
         ]}
         onCancel={() => {

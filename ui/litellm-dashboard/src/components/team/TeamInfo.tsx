@@ -1,5 +1,6 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import type { components } from "@/lib/http/schema";
+import { useCurrency } from "@/lib/useCurrency";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import { organizationKeys, useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { invalidateTeamQueries } from "@/app/(dashboard)/hooks/teams/useTeams";
@@ -619,6 +620,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   onUpdate,
 }) => {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
   const teamUpdateSchema = useMemo(
     () =>
       buildTeamUpdateFieldsSchema(t).superRefine((values, ctx) => {
@@ -1414,13 +1416,16 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               />
             </p>
             <div className="mt-2">
-              <h3 className="text-lg font-medium">${formatNumberWithCommas(info.spend, 2)}</h3>
+              <h3 className="text-lg font-medium">
+                {symbol}
+                {formatNumberWithCommas(toDisplay(info.spend), 2)}
+              </h3>
               <p>
                 {t("teams.teamInfo.overview.budgetOf", {
                   budget:
                     info.max_budget === null
                       ? t("teams.teamInfo.overview.unlimitedBudget")
-                      : `$${formatNumberWithCommas(info.max_budget, 2)}`,
+                      : `${symbol}${formatNumberWithCommas(toDisplay(info.max_budget), 2)}`,
                 })}
               </p>
               {info.budget_duration && (
@@ -2537,13 +2542,13 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 <div>
                   {t("teams.teamInfo.settingsView.maxBudget")}
                   {info.max_budget !== null
-                    ? `$${formatNumberWithCommas(info.max_budget, 4)}`
+                    ? `${symbol}${formatNumberWithCommas(toDisplay(info.max_budget), 4)}`
                     : t("teams.teamInfo.settingsView.noLimit")}
                 </div>
                 <div>
                   {t("teams.teamInfo.settingsView.softBudget")}{" "}
                   {info.soft_budget !== null && info.soft_budget !== undefined
-                    ? `$${formatNumberWithCommas(info.soft_budget, 4)}`
+                    ? `${symbol}${formatNumberWithCommas(toDisplay(info.soft_budget), 4)}`
                     : t("teams.teamInfo.settingsView.noLimit")}
                 </div>
                 <div>
@@ -2595,7 +2600,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                       model,
                       limit:
                         budgetLimit !== null
-                          ? `$${formatNumberWithCommas(budgetLimit, 4)}`
+                          ? `${symbol}${formatNumberWithCommas(toDisplay(budgetLimit), 4)}`
                           : t("teams.teamInfo.settingsView.noLimit"),
                       period: timePeriod,
                     })}

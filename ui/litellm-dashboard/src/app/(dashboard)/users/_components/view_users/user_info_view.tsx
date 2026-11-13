@@ -38,6 +38,7 @@ import OnboardingModal, { InvitationLink } from "@/components/onboarding_link";
 import { formatNumberWithCommas, copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
 import { ArrowLeft, CheckIcon, CopyIcon, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "@/lib/toast";
+import { useCurrency } from "@/lib/useCurrency";
 import { getBudgetDurationLabel } from "@/components/common_components/budget_duration_dropdown";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -92,6 +93,7 @@ export default function UserInfoView({
   startInEditMode = false,
 }: UserInfoViewProps) {
   const { t } = useTranslation();
+  const { symbol, toDisplay } = useCurrency();
   const { premiumUser, userId: signedInUserId } = useAuthorized();
   const canViewAutoRouterUsage = hasProxyWideSpendView(userRole);
   const canViewSavings = canViewAutoRouterUsage || (Boolean(userId.trim()) && userId === signedInUserId);
@@ -401,7 +403,9 @@ export default function UserInfoView({
   const unknownTimestamp = t("users.userInfo.details.unknown");
   const unlimitedLabel = t("users.userInfo.unlimited");
   const budgetLimit =
-    userData.max_budget !== null ? `$${formatNumberWithCommas(userData.max_budget, 2)}` : unlimitedLabel;
+    userData.max_budget !== null
+      ? `${symbol}${formatNumberWithCommas(toDisplay(userData.max_budget), 2)}`
+      : unlimitedLabel;
   const teamPickerPlaceholder = t("users.userInfo.addTeamDialog.teamPlaceholder");
 
   // Build a legacy-compatible shape for UserEditView
@@ -527,7 +531,10 @@ export default function UserInfoView({
                 />
               </p>
               <div className="mt-2">
-                <h3 className="text-lg font-medium">${formatNumberWithCommas(userData.spend || 0, 2)}</h3>
+                <h3 className="text-lg font-medium">
+                  {symbol}
+                  {formatNumberWithCommas(toDisplay(userData.spend || 0), 2)}
+                </h3>
                 <p>{t("users.userInfo.overview.budgetOf", { budget: budgetLimit })}</p>
               </div>
             </Card>
@@ -700,7 +707,7 @@ export default function UserInfoView({
                   <p className="font-medium">{t("users.userInfo.details.maxBudget")}</p>
                   <p>
                     {userData.max_budget !== null && userData.max_budget !== undefined
-                      ? `$${formatNumberWithCommas(userData.max_budget, 4)}`
+                      ? `${symbol}${formatNumberWithCommas(toDisplay(userData.max_budget), 4)}`
                       : unlimitedLabel}
                   </p>
                 </div>

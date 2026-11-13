@@ -16,8 +16,8 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 import i18n from "@/i18n/i18n";
 import { useZodForm } from "@/lib/forms/useZodForm";
 
@@ -82,12 +82,13 @@ function SpendLimitField({ form }: { form: BudgetForm }) {
           control={form.control}
           name="max_budget"
           render={({ field }) => (
-            <InputGroup>
-              <InputGroupAddon>
-                <InputGroupText>$</InputGroupText>
-              </InputGroupAddon>
-              <InputGroupInput {...numberProps(field)} id={amountId} step={0.01} />
-            </InputGroup>
+            <MoneyInput
+              id={amountId}
+              value={field.value ?? null}
+              onChange={field.onChange}
+              step={0.01}
+              placeholder={t("budgets.form.noLimit")}
+            />
           )}
         />
         <Controller

@@ -293,7 +293,7 @@ describe("TeamMembersComponent", () => {
     expect(screen.getByText("$100.50")).toBeInTheDocument();
     expect(screen.getByText("$1,538.26")).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "$100.50" })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: /^Team Member Budget \(USD\)/ })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: /^Team Member Budget/ })).toHaveClass("text-right");
     expect(screen.getByRole("columnheader", { name: "User Email" })).not.toHaveClass("text-right");
     expect(screen.getByText(/100 RPM/)).toBeInTheDocument();
     expect(screen.getByText(/10000 TPM/)).toBeInTheDocument();
@@ -333,7 +333,7 @@ describe("TeamMembersComponent", () => {
     );
 
     expect(screen.getByRole("columnheader", { name: /^Budget Period/ })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /^Current Period Spend \(USD\)/ })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^Current Period Spend/ })).toBeInTheDocument();
     expect(screen.getByText("Jun 15 - Jul 15, 2026")).toBeInTheDocument();
     expect(screen.queryByText("Jul 15, 2026 12:00")).not.toBeInTheDocument();
     expect(screen.queryByText(/cycle/i)).not.toBeInTheDocument();

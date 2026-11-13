@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { InheritedBudgetHint, type InheritedBudgetGate } from "@/components/shared/InheritedBudgetHint";
 import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import i18n from "@/i18n/i18n";
-import { formatNumberWithCommas, getSpendString } from "@/utils/dataUtils";
+import { useCurrency } from "@/lib/useCurrency";
+import { formatNumberWithCommas } from "@/utils/dataUtils";
 
 interface SpendBudgetCellProps {
   spend: number | null | undefined;
@@ -22,31 +23,19 @@ export const getSpendBudgetMeterTone = (pct: number): "default" | "warning" | "o
   return "default";
 };
 
-const getBudgetLabel = (
-  budget: number | null,
-  usesTeamMemberBudget: boolean,
-  memberSpendText: string,
-  budgetDecimals: number,
-): string => {
-  if (budget === null) return i18n.t("shared.tableCells.spendBudgetCell.unlimited");
-  const formattedBudget = formatNumberWithCommas(budget, budgetDecimals);
+const getBudgetLabel = (budgetText: string | null, usesTeamMemberBudget: boolean, memberSpendText: string): string => {
+  if (budgetText === null) return i18n.t("shared.tableCells.spendBudgetCell.unlimited");
   if (usesTeamMemberBudget)
     return i18n.t("shared.tableCells.spendBudgetCell.memberBudget", {
       spend: memberSpendText,
-      budget: formattedBudget,
+      budget: budgetText,
     });
-  return i18n.t("shared.tableCells.spendBudgetCell.ofBudget", { budget: formattedBudget });
+  return i18n.t("shared.tableCells.spendBudgetCell.ofBudget", { budget: budgetText });
 };
 
-const getMeterValueText = (
-  hasBudget: boolean,
-  budget: number | null,
-  meterSpendText: string,
-  budgetDecimals: number,
-): string => {
-  if (!hasBudget || budget === null) return "";
-  const formattedBudget = formatNumberWithCommas(budget, budgetDecimals);
-  return i18n.t("shared.tableCells.spendBudgetCell.meterValue", { spend: meterSpendText, budget: formattedBudget });
+const getMeterValueText = (hasBudget: boolean, budgetText: string | null, meterSpendText: string): string => {
+  if (!hasBudget || budgetText === null) return "";
+  return i18n.t("shared.tableCells.spendBudgetCell.meterValue", { spend: meterSpendText, budget: budgetText });
 };
 
 export function SpendBudgetCell({
@@ -58,6 +47,11 @@ export function SpendBudgetCell({
   budgetDecimals = 0,
 }: SpendBudgetCellProps) {
   const { t } = useTranslation();
+  const { toDisplay, symbol } = useCurrency();
+
+  const formatUsd = (usd: number, decimals: number) =>
+    `${symbol}${formatNumberWithCommas(toDisplay(usd), decimals, false, true)}`;
+
   const spendValue = typeof spend === "number" && !Number.isNaN(spend) ? spend : 0;
   const ownBudget = maxBudget ?? null;
   const budget = ownBudget ?? teamMemberGate?.maxBudget ?? null;
@@ -68,13 +62,15 @@ export function SpendBudgetCell({
   const hasBudget = typeof budget === "number" && budget > 0;
   const pct = hasBudget ? (meterSpendValue / budget) * 100 : 0;
 
-  const spendText = spendValue > 0 ? getSpendString(spendValue, spendDecimals) : "$0.00";
-  const memberSpendText = memberSpendValue > 0 ? getSpendString(memberSpendValue, spendDecimals) : "$0.00";
-  const budgetLabel = getBudgetLabel(budget, usesTeamMemberBudget, memberSpendText, budgetDecimals);
+  // 与前端约定保持一致：无消费时固定展示两位小数的 0，而不是连字符
+  const spendText = spendValue > 0 ? formatUsd(spendValue, spendDecimals) : formatUsd(0, 2);
+  const memberSpendText = memberSpendValue > 0 ? formatUsd(memberSpendValue, spendDecimals) : formatUsd(0, 2);
+  const budgetText = budget === null ? null : formatUsd(budget, budgetDecimals);
+  const budgetLabel = getBudgetLabel(budgetText, usesTeamMemberBudget, memberSpendText);
   const meterSpendText = usesTeamMemberBudget
     ? t("shared.tableCells.spendBudgetCell.memberSpend", { spend: memberSpendText })
     : spendText;
-  const meterValueText = getMeterValueText(hasBudget, budget, meterSpendText, budgetDecimals);
+  const meterValueText = getMeterValueText(hasBudget, budgetText, meterSpendText);
 
   return (
     <div className="flex min-w-[130px] flex-col gap-1">

@@ -1,0 +1,74 @@
+{
+  "name": "ai-tagent-gateway-dev",
+  "services": {
+    "gateway": {
+      "image": "${DEV_GATEWAY_IMAGE:?Set reviewed local gateway image digest}",
+      "pull_policy": "never",
+      "ports": [
+        "127.0.0.1:4400:4000"
+      ],
+      "environment": {
+        "DATABASE_URL": "postgresql://dev_gateway:${DEV_DB_PASSWORD:?Run init_env.py}@db:5432/dev_gateway",
+        "LITELLM_MASTER_KEY": "${DEV_MASTER_KEY:?Run init_env.py}",
+        "UI_USERNAME": "${DEV_UI_USERNAME:?Run init_env.py}",
+        "UI_PASSWORD": "${DEV_UI_PASSWORD:?Run init_env.py}",
+        "LITELLM_TELEMETRY_DISABLED": "true",
+        "LITELLM_OFFLINE_MODE": "true",
+        "LITELLM_LOCAL_MODEL_COST_MAP": "true"
+      },
+      "volumes": [
+        "./proxy_config.json:/app/dev_proxy_config.json:ro"
+      ],
+      "command": [
+        "--config",
+        "/app/dev_proxy_config.json",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "4000"
+      ],
+      "networks": [
+        "isolated"
+      ],
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy"
+        }
+      },
+      "restart": "no"
+    },
+    "db": {
+      "image": "${DEV_POSTGRES_IMAGE:?Set reviewed local PostgreSQL image digest}",
+      "pull_policy": "never",
+      "environment": {
+        "POSTGRES_DB": "dev_gateway",
+        "POSTGRES_USER": "dev_gateway",
+        "POSTGRES_PASSWORD": "${DEV_DB_PASSWORD:?Run init_env.py}"
+      },
+      "volumes": [
+        "dev_database:/var/lib/postgresql/data"
+      ],
+      "networks": [
+        "isolated"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U dev_gateway -d dev_gateway"
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 10
+      },
+      "restart": "no"
+    }
+  },
+  "networks": {
+    "isolated": {
+      "internal": true
+    }
+  },
+  "volumes": {
+    "dev_database": {}
+  }
+}

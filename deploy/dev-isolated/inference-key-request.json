@@ -1,0 +1,11 @@
+{
+  "key_alias": "ai-tagent-local-inference",
+  "key_type": "llm_api",
+  "models": [
+    "dev-mock"
+  ],
+  "duration": "1h",
+  "max_budget": 1,
+  "rpm_limit": 10,
+  "tpm_limit": 1000
+}

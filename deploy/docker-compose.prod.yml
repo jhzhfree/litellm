@@ -1,0 +1,89 @@
+# AI-Tokengw 产品部署编排（参考仓库根目录 docker-compose.yml 拆分）
+#
+# 三个服务、三类镜像，全部来自内网 registry 192.168.22.6:5000，目标服务器无需外网：
+#   核心应用  ai-gw/gateway:1     (LiteLLM Proxy + UI + Rust 网关)
+#   数据库    ai-gw/postgres:16   (PostgreSQL, 业务数据持久化)
+#   监控      ai-gw/prometheus:1  (指标抓取, 抓取 core 的 /metrics)
+#
+# 所有可修改的配置均挂载自 deploy/ 目录（bind mount），在宿主机直接编辑后重启对应服务生效：
+#   proxy_config.yaml  核心应用主配置（模型列表/路由/回调/限流等）  -> docker restart ai-tokengw-core
+#   prometheus.yml     监控抓取配置                                -> docker restart ai-tokengw-monitor
+#   metrics-token      /metrics 抓取凭据（由 prepare.sh 从 .env 生成）-> docker restart ai-tokengw-monitor
+#
+# 使用（目标服务器需先在 /etc/docker/daemon.json 配置 insecure-registries 并重启 docker）：
+#   cp deploy/env.example deploy/.env && vi deploy/.env
+#   bash deploy/prepare.sh
+#   docker compose -f deploy/docker-compose.prod.yml --project-directory deploy up -d
+#
+# 升级核心应用：
+#   docker compose -f deploy/docker-compose.prod.yml --project-directory deploy pull core
+#   docker compose -f deploy/docker-compose.prod.yml --project-directory deploy up -d core
+
+name: ai-tokengw
+
+services:
+  core:
+    image: 192.168.22.6:5000/ai-gw/gateway:1
+    container_name: ai-tokengw-core
+    ports:
+      - "${CORE_PORT:-4000}:4000"
+    environment:
+      DATABASE_URL: "postgresql://llmproxy:${DB_PASSWORD:-dbpassword9090}@db:5432/litellm"
+      STORE_MODEL_IN_DB: "True" # 允许通过 UI 添加模型（首次启动自动执行数据库迁移）
+      # 默认管理员口令（开箱即用）；生产环境请在 deploy/.env 中覆盖
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-ai-gw-default}
+      UI_USERNAME: ${UI_USERNAME:-admin}
+      UI_PASSWORD: ${UI_PASSWORD:-AI-Tokengw@2026}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-} # 默认模型 deepseek-chat 的密钥（deploy/.env）
+    volumes:
+      - ./proxy_config.yaml:/app/proxy_config.yaml:ro # 主配置外置，改完 docker restart ai-tokengw-core
+    command: ["--config", "/app/proxy_config.yaml", "--port", "4000"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: 192.168.22.6:5000/ai-gw/postgres:16
+    container_name: ai-tokengw-db
+    restart: always
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: llmproxy
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dbpassword9090}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d litellm -U llmproxy"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  monitor:
+    image: 192.168.22.6:5000/ai-gw/prometheus:1
+    container_name: ai-tokengw-monitor
+    ports:
+      - "${MONITOR_PORT:-9090}:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro # 抓取配置外置
+      - ./metrics-token:/etc/prometheus/metrics-token:ro # /metrics Bearer 凭据（prepare.sh 生成）
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+    restart: always
+
+volumes:
+  postgres_data:
+    name: ai_tokengw_postgres_data
+  prometheus_data:
+    name: ai_tokengw_prometheus_data

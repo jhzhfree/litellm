@@ -170,6 +170,8 @@ COPY --from=builder /app/litellm/proxy/prisma_migration.py /app/litellm/proxy/pr
 # enterprise.enterprise_hooks from it)
 COPY --from=builder /app/enterprise /app/enterprise
 COPY --from=builder /app/litellm-proxy-extras /app/litellm-proxy-extras
+# 默认产品配置烤入镜像（外置挂载同路径时优先），裸启动即含内容审计
+COPY --from=builder /app/deploy/proxy_config.yaml /app/proxy_config.yaml
 # Prisma CLI + engines are baked under /opt/prisma, a fixed path every
 # runtime uid can read and that no cache volume mount shadows. The paths are
 # pinned via PRISMA_BINARY_CACHE_DIR / PRISMA_CLI_PATH and recorded into the
@@ -187,4 +189,4 @@ RUN find /app/.venv -type f -path "*/tornado/test/*" -delete && \
 EXPOSE 4000/tcp
 
 ENTRYPOINT ["docker/prod_entrypoint.sh"]
-CMD ["--port", "4000"]
+CMD ["--config", "/app/proxy_config.yaml", "--port", "4000"]

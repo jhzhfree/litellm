@@ -1,0 +1,27 @@
+# 核心应用主配置（挂载到 ai-tokengw-core:/app/proxy_config.yaml）
+# 修改后执行: docker restart ai-tokengw-core
+# 该文件同时烤入镜像作为默认配置（/app/proxy_config.yaml），外置挂载优先于镜像内置版本。
+#
+# ── 添加模型 ─────────────────────────────────────────────
+# 默认已配置 deepseek-chat，密钥来自 deploy/.env 的 DEEPSEEK_API_KEY。
+# 追加更多模型可继续在 model_list 中补充：
+#   - model_name: gpt-4o-mini
+#     litellm_params:
+#       model: openai/gpt-4o-mini
+#       api_key: os.environ/OPENAI_API_KEY
+# 也可不改本文件，直接在 UI「模型与端点」页添加（store_model_in_db: true）。
+# ─────────────────────────────────────────────────────────
+
+model_list:
+  - model_name: deepseek-chat # 调用时使用的模型名
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_key: os.environ/DEEPSEEK_API_KEY # 从环境变量读取（deploy/.env）
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY # 管理密钥（deploy/.env）
+  store_model_in_db: true # 允许 UI 动态添加模型
+  store_prompts_in_spend_logs: true # 内容审计: 日志中记录请求与响应内容（UI「日志」页可查）
+
+litellm_settings:
+  success_callback: ["prometheus"] # 挂载 /metrics 供监控服务抓取

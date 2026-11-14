@@ -12,7 +12,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 REGISTRY="192.168.22.6:5000"
-IMAGE="litellm/ai-tokengw"
+IMAGE="ai-gw/gateway"
 STAMP="$(date +%Y%m%d-%H%M)"
 DOCKERFILE="${DOCKERFILE:-/root/Dockerfile.build}"
 PROXY="${HTTP_PROXY:-http://192.168.24.200:7890}"
@@ -29,7 +29,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-TAGS=("$REGISTRY/$IMAGE:latest" "$REGISTRY/$IMAGE:$STAMP" "${EXTRA_TAGS[@]}")
+TAGS=("$REGISTRY/$IMAGE:1" "$REGISTRY/$IMAGE:$STAMP" "${EXTRA_TAGS[@]}")
 T_ARGS=()
 for t in "${TAGS[@]}"; do T_ARGS+=(-t "$t"); done
 

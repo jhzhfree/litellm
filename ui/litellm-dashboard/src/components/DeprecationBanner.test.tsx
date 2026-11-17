@@ -13,7 +13,7 @@ describe("DeprecationBanner", () => {
     render(<DeprecationBanner featureName="Workflows" />);
 
     const link = screen.getByRole("link", { name: "deprecation discussion" });
-    expect(link).toHaveAttribute("href", "https://github.com/BerriAI/litellm/discussions/32090");
+    expect(link).toHaveAttribute("href", "/docs");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });

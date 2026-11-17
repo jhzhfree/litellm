@@ -56,7 +56,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
   const getHeadersConfig = () => {
     const headers: Record<string, any> = {
-      "x-litellm-api-key": "Bearer YOUR_LITELLM_API_KEY",
+      "x-ai-gateway-api-key": "Bearer YOUR_AI_GATEWAY_API_KEY",
     };
     if (useServerHeader && serverName) {
       const formattedServerName = serverName.replace(/\s+/g, "_");
@@ -281,7 +281,7 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
             "server_url": "litellm_proxy",
             "require_approval": "never",
             "headers": {
-                "x-litellm-api-key": "Bearer YOUR_LITELLM_VIRTUAL_KEY",
+                "x-ai-gateway-api-key": "Bearer YOUR_LITELLM_VIRTUAL_KEY",
                 "x-mcp-servers": "Zapier_MCP,dev-group"
             }
         }
@@ -372,7 +372,7 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
             "server_url": "${proxyBaseUrl}/mcp",
             "require_approval": "never",
             "headers": {
-                "x-litellm-api-key": "Bearer YOUR_LITELLM_API_KEY",
+                "x-ai-gateway-api-key": "Bearer YOUR_AI_GATEWAY_API_KEY",
                 "x-mcp-servers": "Zapier_MCP,dev-group"
             }
         }
@@ -438,7 +438,7 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
       "Zapier_MCP": {
         "url": "${proxyBaseUrl}/mcp",
         "headers": {
-          "x-litellm-api-key": "Bearer YOUR_LITELLM_API_KEY",
+          "x-ai-gateway-api-key": "Bearer YOUR_AI_GATEWAY_API_KEY",
           "x-mcp-servers": "Zapier_MCP,dev-group"
         }
       }
@@ -483,7 +483,7 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
             title={t("mcpServers.connect.codeBlocks.headersConfiguration")}
             code={JSON.stringify(
               {
-                "x-litellm-api-key": "Bearer YOUR_LITELLM_API_KEY",
+                "x-ai-gateway-api-key": "Bearer YOUR_AI_GATEWAY_API_KEY",
               },
               null,
               2,

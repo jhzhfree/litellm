@@ -32,11 +32,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 const DOCS_LINKS: readonly { labelKey: ParseKeys; href: string }[] = [
   {
     labelKey: "costTracking.settings.docsLinks.customPricing",
-    href: "https://docs.litellm.ai/docs/proxy/custom_pricing",
+    href: "/docs",
   },
   {
     labelKey: "costTracking.settings.docsLinks.spendTracking",
-    href: "https://docs.litellm.ai/docs/proxy/cost_tracking",
+    href: "/docs",
   },
 ];
 

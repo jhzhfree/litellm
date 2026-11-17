@@ -7,7 +7,7 @@ import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const BLOG_URL = "https://docs.litellm.ai/blog";
+export const BLOG_URL = "/docs";
 const MAX_ROWS = 6;
 const DAY_MS = 86_400_000;
 
@@ -32,7 +32,6 @@ const Row = ({ children }: { children: React.ReactNode }) => (
   </li>
 );
 
-/** Latest posts from the LiteLLM blog RSS feed, via /public/litellm_blog_posts, one row per post. */
 export default function UpdatesFeed({ className }: { className?: string }) {
   const { t } = useTranslation();
   const disabled = useDisableBlogPosts();

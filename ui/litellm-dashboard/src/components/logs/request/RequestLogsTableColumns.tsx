@@ -40,7 +40,7 @@ function RequestIdWithCallIdTooltip({ requestId, callId }: { requestId: string; 
     <span className="flex flex-col gap-0.5">
       <span>{requestId}</span>
       <span className="inline-flex items-center gap-1">
-        <span>x-litellm-call-id: {callId}</span>
+        <span>x-ai-gateway-call-id: {callId}</span>
         <button
           type="button"
           aria-label={t("logs.request.columns.copyCallId")}

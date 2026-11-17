@@ -442,7 +442,7 @@ describe("PlaygroundChat", () => {
     chatRequest
       .mockImplementationOnce(replyWith("unreported reply"))
       .mockImplementationOnce(async (...args: ChatArgs) => {
-        args[27]?.(new Headers({ "x-litellm-call-id": "call-reported" }));
+        args[27]?.(new Headers({ "x-ai-gateway-call-id": "call-reported" }));
         args[1]("reported reply", args[2]);
       });
     preload({ selectedModel: "gpt-fast", selectedGuardrails: JSON.stringify(["pii-mask"]) });
@@ -492,11 +492,11 @@ describe("PlaygroundChat", () => {
     const first = deferred();
     chatRequest
       .mockImplementationOnce(async (...args: ChatArgs) => {
-        args[27]?.(new Headers({ "x-litellm-call-id": "call-stopped" }));
+        args[27]?.(new Headers({ "x-ai-gateway-call-id": "call-stopped" }));
         await first.promise;
       })
       .mockImplementationOnce(async (...args: ChatArgs) => {
-        args[27]?.(new Headers({ "x-litellm-call-id": "call-fresh" }));
+        args[27]?.(new Headers({ "x-ai-gateway-call-id": "call-fresh" }));
         args[1]("fresh reply", args[2]);
       });
     preload({ selectedModel: "gpt-fast" });

@@ -28,7 +28,7 @@ const RAISE_MAX_BUDGET_HELP_LABEL = "About raising the team's max budget";
 const RAISE_MAX_BUDGET_TOOLTIP =
   "Lets team admins raise the budget too, capped by the organization's budget when the team has one. Only proxy admins can remove it.";
 const RAISE_MAX_BUDGET_DOCS_URL =
-  "https://docs.litellm.ai/docs/proxy/access_control#choosing-what-team-admins-can-edit";
+  "/docs";
 
 const mockSettings = (supported: readonly string[], enabled: readonly string[]) =>
   mockUseUISettings.mockReturnValue({

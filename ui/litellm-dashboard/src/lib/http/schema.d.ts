@@ -41,32 +41,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/.well-known/jwks.json": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Jwks Json
-         * @description JSON Web Key Set endpoint.
-         *
-         *     Returns the RSA public key used by MCPJWTSigner to sign outbound MCP tokens.
-         *     MCP servers and gateways use this endpoint to verify liteLLM-issued JWTs.
-         *
-         *     Returns an empty key set if MCPJWTSigner is not configured.
-         */
-        get: operations["jwks_json__well_known_jwks_json_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/.well-known/litellm-cli-auth": {
+    "/.well-known/ai-gateway-cli-auth": {
         parameters: {
             query?: never;
             header?: never;
@@ -87,7 +62,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/.well-known/litellm-ui-config": {
+    "/.well-known/ai-gateway-ui-config": {
         parameters: {
             query?: never;
             header?: never;
@@ -96,6 +71,31 @@ export interface paths {
         };
         /** Get Ui Config */
         get: operations["get_ui_config__well_known_litellm_ui_config_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/.well-known/jwks.json": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Jwks Json
+         * @description JSON Web Key Set endpoint.
+         *
+         *     Returns the RSA public key used by MCPJWTSigner to sign outbound MCP tokens.
+         *     MCP servers and gateways use this endpoint to verify liteLLM-issued JWTs.
+         *
+         *     Returns an empty key set if MCPJWTSigner is not configured.
+         */
+        get: operations["jwks_json__well_known_jwks_json_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -936,6 +936,23 @@ export interface paths {
         };
         /** Get Agent Daily Activity Export */
         get: operations["get_agent_daily_activity_export_agent_daily_activity_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ai-gateway/.well-known/ui-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Ui Config */
+        get: operations["get_ui_config_litellm__well_known_litellm_ui_config_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -9413,23 +9430,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/litellm/.well-known/litellm-ui-config": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Ui Config */
-        get: operations["get_ui_config_litellm__well_known_litellm_ui_config_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/live/sessions": {
         parameters: {
             query?: never;
@@ -13827,30 +13827,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/public/litellm_blog_posts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Litellm Blog Posts
-         * @description Public endpoint to get the latest LiteLLM blog posts, each with its RSS categories as ``tags``.
-         *
-         *     Fetches the docs RSS feed with a 1-hour in-process cache.
-         *     Falls back to the bundled local backup on any failure.
-         */
-        get: operations["get_litellm_blog_posts_public_litellm_blog_posts_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/public/litellm_model_cost_map": {
+    "/public/gateway_model_cost_map": {
         parameters: {
             query?: never;
             header?: never;
@@ -13864,6 +13841,26 @@ export interface paths {
          *     With catalog_only=true, returns the catalog as loaded, without entries registered at runtime for proxy deployments.
          */
         get: operations["get_litellm_model_cost_map_public_litellm_model_cost_map_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/gateway_updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Litellm Blog Posts
+         * @description Return product updates. No product announcements have been published yet.
+         */
+        get: operations["get_litellm_blog_posts_public_litellm_blog_posts_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -53124,26 +53121,6 @@ export interface operations {
             };
         };
     };
-    jwks_json__well_known_jwks_json_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
     native_client_auth_discovery__well_known_litellm_cli_auth_get: {
         parameters: {
             query?: never;
@@ -53180,6 +53157,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UiDiscoveryEndpoints"];
+                };
+            };
+        };
+    };
+    jwks_json__well_known_jwks_json_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
@@ -54217,6 +54214,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ui_config_litellm__well_known_litellm_ui_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UiDiscoveryEndpoints"];
                 };
             };
         };
@@ -66566,26 +66583,6 @@ export interface operations {
             };
         };
     };
-    get_ui_config_litellm__well_known_litellm_ui_config_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UiDiscoveryEndpoints"];
-                };
-            };
-        };
-    };
     websocket_live_sessions_websocket_endpoint_get: {
         parameters: {
             query?: never;
@@ -72357,26 +72354,6 @@ export interface operations {
             };
         };
     };
-    get_litellm_blog_posts_public_litellm_blog_posts_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BlogPostsResponse"];
-                };
-            };
-        };
-    };
     get_litellm_model_cost_map_public_litellm_model_cost_map_get: {
         parameters: {
             query?: {
@@ -72404,6 +72381,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_litellm_blog_posts_public_litellm_blog_posts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BlogPostsResponse"];
                 };
             };
         };

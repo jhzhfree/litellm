@@ -126,7 +126,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
           <CardTitle className="text-base">{t("loggingAndAlerts.emailSettings.title")}</CardTitle>
           <p className="text-sm">
             <a
-              href="https://docs.litellm.ai/docs/proxy/email"
+              href="/docs"
               target="_blank"
               rel="noreferrer"
               className="text-primary underline underline-offset-4"

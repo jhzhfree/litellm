@@ -15,7 +15,7 @@ export interface BlogPostsResponse {
 
 async function fetchBlogPosts(): Promise<BlogPostsResponse> {
   const baseUrl = getProxyBaseUrl();
-  const response = await fetch(`${baseUrl}/public/litellm_blog_posts`);
+  const response = await fetch(`${baseUrl}/public/gateway_updates`);
   if (!response.ok) {
     throw new Error(`Failed to fetch blog posts: ${response.statusText}`);
   }

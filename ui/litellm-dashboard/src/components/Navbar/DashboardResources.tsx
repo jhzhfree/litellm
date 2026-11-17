@@ -23,7 +23,7 @@ function DiscordIcon() {
 
 const COMMUNITY = [
   {
-    href: "https://www.litellm.ai/support",
+    href: "/docs",
     label: "Slack",
     accessibleLabel: "shell.dashboardCommunityLinks.joinSlack",
     Icon: Slack,
@@ -35,7 +35,7 @@ const COMMUNITY = [
     Icon: DiscordIcon,
   },
   {
-    href: "https://github.com/BerriAI/litellm",
+    href: "/docs",
     label: "GitHub",
     accessibleLabel: "shell.dashboardCommunityLinks.github",
     Icon: Github,
@@ -44,11 +44,11 @@ const COMMUNITY = [
 type ResourceLink = { href: string; label: ParseKeys; Icon: typeof BookOpen };
 
 const DOCS: readonly ResourceLink[] = [
-  { href: "https://docs.litellm.ai/docs/", label: "shell.dashboardResources.links.docs", Icon: BookOpen },
-  { href: "https://docs.litellm.ai/release_notes", label: "shell.dashboardResources.links.releases", Icon: ScrollText },
+  { href: "/docs", label: "shell.dashboardResources.links.docs", Icon: BookOpen },
+  { href: "/docs", label: "shell.dashboardResources.links.releases", Icon: ScrollText },
 ];
 const BLOG: ResourceLink = {
-  href: "https://docs.litellm.ai/blog",
+  href: "/docs",
   label: "shell.dashboardResources.links.blog",
   Icon: Newspaper,
 };

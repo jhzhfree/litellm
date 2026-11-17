@@ -5,7 +5,7 @@ export interface CurlCommandInput {
   authHeaderName: string;
 }
 
-export const CURL_KEY_PLACEHOLDER = "$LITELLM_API_KEY";
+export const CURL_KEY_PLACEHOLDER = "$AI_GATEWAY_API_KEY";
 
 const shellSingleQuote = (value: string): string => `'${value.replace(/'/g, `'\\''`)}'`;
 

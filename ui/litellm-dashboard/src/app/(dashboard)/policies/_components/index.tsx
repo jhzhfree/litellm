@@ -78,7 +78,7 @@ const AboutPoliciesAlert = () => {
         <li>{t("policies.panel.aboutPolicies.benefits.inherit")}</li>
       </ul>
       <a
-        href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies"
+        href="/docs"
         target="_blank"
         rel="noopener noreferrer"
         className="mt-1 inline-block text-primary underline underline-offset-4"
@@ -569,7 +569,7 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({ accessToken, userRole }) 
               </li>
             </ul>
             <a
-              href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies#attachments"
+              href="/docs"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-1 inline-block text-primary underline underline-offset-4"

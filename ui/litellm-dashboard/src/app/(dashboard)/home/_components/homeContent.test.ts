@@ -6,7 +6,7 @@ const post = (title: string, date: string, tags: string[] = [DAY_ZERO_TAG]): Blo
   title,
   description: "d",
   date,
-  url: `https://docs.litellm.ai/blog/${title}`,
+  url: `/updates/${title}`,
   tags,
 });
 

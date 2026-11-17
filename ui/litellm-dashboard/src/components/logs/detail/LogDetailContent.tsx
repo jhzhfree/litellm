@@ -412,9 +412,9 @@ function getUncachedInputTextTokens(metadata: Record<string, any>): number | und
 }
 
 const RESPONSE_CACHE_TOOLTIP: ParseKeys = "logs.detail.metrics.responseCacheTooltip";
-const RESPONSE_CACHE_DOCS_URL = "https://docs.litellm.ai/docs/proxy/caching";
+const RESPONSE_CACHE_DOCS_URL = "/docs";
 const CACHE_KEY_TOOLTIP: ParseKeys = "logs.detail.metrics.cacheKeyTooltip";
-const PROMPT_CACHE_DOCS_URL = "https://docs.litellm.ai/docs/completion/prompt_caching";
+const PROMPT_CACHE_DOCS_URL = "/docs";
 
 function MetricLabel({ label, tooltip, docsUrl }: { label: string; tooltip: string; docsUrl: string }) {
   const { t } = useTranslation();

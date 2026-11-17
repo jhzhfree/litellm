@@ -302,7 +302,7 @@ function LoginPageContent() {
                         i18nKey="login.form.defaultCredentials.help"
                         components={{
                           docs: (
-                            <a href="https://docs.litellm.ai/docs/proxy/ui" target="_blank" rel="noopener noreferrer" />
+                            <a href="/docs" target="_blank" rel="noopener noreferrer" />
                           ),
                         }}
                       />

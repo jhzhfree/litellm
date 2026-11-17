@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-const DEPRECATION_DISCUSSION_URL = "https://github.com/BerriAI/litellm/discussions/32090";
+const DEPRECATION_DISCUSSION_URL = "/docs";
 
 interface DeprecationBannerProps {
   featureName: string;

@@ -172,7 +172,7 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
                 components={{
                   docs: (
                     <a
-                      href="https://docs.litellm.ai/docs/proxy/tag_routing"
+                      href="/docs"
                       target="_blank"
                       rel="noopener noreferrer"
                     />

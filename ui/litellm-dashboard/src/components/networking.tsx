@@ -1,3 +1,4 @@
+import { productFetch } from "@/lib/http/productContract";
 // Shared date formatter for daily activity endpoints
 export const formatDate = (date: Date) => {
   const year = date.getFullYear();
@@ -460,7 +461,7 @@ export const getProviderCreateMetadata = async (): Promise<ProviderCreateInfo[]>
    * This is used by the UI to dynamically render provider-specific credential fields.
    */
   const url = proxyBaseUrl ? `${proxyBaseUrl}/public/providers/fields` : `/public/providers/fields`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
   });
 
@@ -504,7 +505,7 @@ export const getAgentCreateMetadata = async (): Promise<AgentCreateInfo[]> => {
    * This is used by the UI to dynamically render agent-specific credential fields.
    */
   const url = proxyBaseUrl ? `${proxyBaseUrl}/public/agents/fields` : `/public/agents/fields`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
   });
 
@@ -550,7 +551,7 @@ registerErrorHandler(handleError);
 
 export const makeModelGroupPublic = async (accessToken: string, modelGroups: string[]) => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/model_group/make_public` : `/model_group/make_public`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -570,7 +571,7 @@ export const getUiConfig = async () => {
     : await (async (): Promise<string | null> => {
         try {
           // eslint-disable-next-line no-restricted-syntax -- read the UI static config before the API origin is known
-          const response = await fetch("/ui/litellm-runtime-config.json", { cache: "no-store" });
+          const response = await productFetch("/ui/ai-gateway-runtime-config.json", { cache: "no-store" });
           if (!response.ok) return null;
           const runtimeConfig: unknown = await response.json();
           if (
@@ -589,9 +590,9 @@ export const getUiConfig = async () => {
   runtimeBackendBaseUrl = runtimeBackendUrl;
   const discoveryBaseUrl = defaultProxyBaseUrl ?? runtimeBackendUrl;
   const url = discoveryBaseUrl
-    ? `${discoveryBaseUrl}/litellm/.well-known/litellm-ui-config`
-    : `/litellm/.well-known/litellm-ui-config`;
-  const response = await fetch(url);
+    ? `${discoveryBaseUrl}/ai-gateway/.well-known/ui-config`
+    : `/ai-gateway/.well-known/ui-config`;
+  const response = await productFetch(url);
   const jsonData: LiteLLMWellKnownUiConfig = await response.json();
   /**
    * Update the proxy base url and server root path
@@ -604,23 +605,23 @@ export const getUiConfig = async () => {
 
 export const getPublicModelHubInfo = async () => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/public/model_hub/info` : `/public/model_hub/info`;
-  const response = await fetch(url);
+  const response = await productFetch(url);
   const jsonData: PublicModelHubInfo = await response.json();
   return jsonData;
 };
 
 export const getOpenAPISchema = async () => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/openapi.json` : `/openapi.json`;
-  const response = await fetch(url);
+  const response = await productFetch(url);
   const jsonData = await response.json();
   return jsonData;
 };
 
 export const modelCostMap = async (catalogOnly = false) => {
   try {
-    const path = catalogOnly ? "/public/litellm_model_cost_map?catalog_only=true" : "/public/litellm_model_cost_map";
+    const path = catalogOnly ? "/public/gateway_model_cost_map?catalog_only=true" : "/public/gateway_model_cost_map";
     const url = proxyBaseUrl ? `${proxyBaseUrl}${path}` : path;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -637,7 +638,7 @@ export const modelCostMap = async (catalogOnly = false) => {
 export const reloadModelCostMap = async (accessToken: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/reload/model_cost_map` : `/reload/model_cost_map`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -657,7 +658,7 @@ export const scheduleModelCostMapReload = async (accessToken: string, hours: num
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/schedule/model_cost_map_reload?hours=${hours}`
       : `/schedule/model_cost_map_reload?hours=${hours}`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -675,7 +676,7 @@ export const scheduleModelCostMapReload = async (accessToken: string, hours: num
 export const cancelModelCostMapReload = async (accessToken: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/schedule/model_cost_map_reload` : `/schedule/model_cost_map_reload`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "DELETE",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -693,7 +694,7 @@ export const cancelModelCostMapReload = async (accessToken: string) => {
 export const getModelCostMapSource = async (accessToken: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/model/cost_map/source` : `/model/cost_map/source`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -719,7 +720,7 @@ export const getModelCostMapReloadStatus = async (accessToken: string) => {
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/schedule/model_cost_map_reload/status`
       : `/schedule/model_cost_map_reload/status`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -896,7 +897,7 @@ export const keyCreateServiceAccountCall = async (
     }
 
     const url = proxyBaseUrl ? `${proxyBaseUrl}/key/service-account/generate` : `/key/service-account/generate`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -954,7 +955,7 @@ export const keyCreateCall = async (
     }
 
     const url = proxyBaseUrl ? `${proxyBaseUrl}/key/generate` : `/key/generate`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1002,7 +1003,7 @@ export const keyCreateForAgentCall = async (
   if (metadata && Object.keys(metadata).length > 0) {
     body.metadata = metadata;
   }
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1051,7 +1052,7 @@ export const userCreateCall = async (
     }
 
     const url = proxyBaseUrl ? `${proxyBaseUrl}/user/new` : `/user/new`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1264,7 +1265,7 @@ export const organizationInfoCall = async (accessToken: string, organizationID: 
     if (organizationID) {
       url = `${url}?organization_id=${organizationID}`;
     }
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1291,7 +1292,7 @@ export const organizationInfoCall = async (accessToken: string, organizationID: 
 export const organizationDeleteCall = async (accessToken: string, organizationID: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/delete` : `/organization/delete`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "DELETE",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1324,7 +1325,7 @@ export const transformRequestCall = async (accessToken: string, request: object)
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/utils/transform_request` : `/utils/transform_request`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1516,7 +1517,7 @@ export const getOnboardingCredentials = async (inviteUUID: string) => {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/onboarding/get_token` : `/onboarding/get_token`;
     url += `?invite_link=${inviteUUID}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -1594,7 +1595,7 @@ export const regenerateKeyCall = async (accessToken: string, keyToRegenerate: st
       ? `${proxyBaseUrl}/key/${keyToRegenerate}/regenerate`
       : `/key/${keyToRegenerate}/regenerate`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1685,7 +1686,7 @@ export const modelInfoCall = async (
       url += `?${params.toString()}`;
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1723,7 +1724,7 @@ export const modelInfoCall = async (
 
 export const modelHubPublicModelsCall = async () => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/public/model_hub` : `/public/model_hub`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -1738,7 +1739,7 @@ export const modelHubPublicModelsCall = async () => {
 
 export const agentHubPublicModelsCall = async () => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/public/agent_hub` : `/public/agent_hub`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -1753,7 +1754,7 @@ export const agentHubPublicModelsCall = async () => {
 
 export const mcpHubPublicServersCall = async () => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/public/mcp_hub` : `/public/mcp_hub`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -1768,7 +1769,7 @@ export const mcpHubPublicServersCall = async () => {
 
 export const skillHubPublicCall = async () => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/public/skill_hub` : `/public/skill_hub`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -1963,7 +1964,7 @@ export const uiSpendLogsCall = async ({
       url += `?${queryString}`;
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -1996,7 +1997,7 @@ export const testConnectionRequest = async (
     // Construct the URL based on environment
     const url = proxyBaseUrl ? `${proxyBaseUrl}/health/test_connection` : `/health/test_connection`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -2150,7 +2151,7 @@ export const keyInfoV1Call = async (accessToken: string, key: string) => {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/key/info` : `/key/info`;
     url = `${url}?key=${key}`; // Add key as query parameter
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2517,7 +2518,7 @@ export const keyUpdateCall = async (
       }
     }
     const url = proxyBaseUrl ? `${proxyBaseUrl}/key/update` : `/key/update`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2549,7 +2550,7 @@ export const teamUpdateCall = async (
 ) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/team/update` : `/team/update`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2608,7 +2609,7 @@ export const teamMemberAddCall = async (accessToken: string, teamId: string, for
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/team/member_add` : `/team/member_add`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2669,7 +2670,7 @@ export const teamBulkMemberAddCall = async (
       requestBody.max_budget_in_team = maxBudgetInTeam;
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2746,7 +2747,7 @@ export const teamMemberUpdateCall = async (
       requestBody.model_max_budget = formValues.model_max_budget;
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2813,7 +2814,7 @@ export const organizationMemberAddCall = async (
 ) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/organization/member_add` : `/organization/member_add`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2955,7 +2956,7 @@ export const serviceHealthCheck = async (accessToken: string, service: string) =
       ? `${proxyBaseUrl}/health/services?service=${service}`
       : `/health/services?service=${service}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -2999,7 +3000,7 @@ export const getGeneralSettingsCall = async (accessToken: string) => {
       ? `${proxyBaseUrl}/config/list?config_type=general_settings`
       : `/config/list?config_type=general_settings`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3137,7 +3138,7 @@ export const getConfigFieldSetting = async (accessToken: string, fieldName: stri
       ? `${proxyBaseUrl}/config/field/info?field_name=${fieldName}`
       : `/config/field/info?field_name=${fieldName}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3219,7 +3220,7 @@ export const deletePassThroughEndpointsCall = async (accessToken: string, endpoi
       ? `${proxyBaseUrl}/config/pass_through_endpoint?endpoint_id=${endpointId}`
       : `/config/pass_through_endpoint?endpoint_id=${endpointId}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "DELETE",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3271,7 +3272,7 @@ export const individualModelHealthCheckCall = async (accessToken: string, modelI
       ? `${proxyBaseUrl}/health?model_id=${encodeURIComponent(modelId)}`
       : `/health?model_id=${encodeURIComponent(modelId)}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3301,7 +3302,7 @@ export const cachingHealthCheckCall = async (accessToken: string) => {
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/cache/ping` : `/cache/ping`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3331,7 +3332,7 @@ export const latestHealthChecksCall = async (accessToken: string) => {
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/health/latest` : `/health/latest`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3389,7 +3390,7 @@ export const updateMCPSemanticFilterSettings = async (accessToken: string, setti
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/update/mcp_semantic_filter_settings`
       : `/update/mcp_semantic_filter_settings`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "PATCH",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3448,7 +3449,7 @@ export const testMCPSemanticFilter = async (accessToken: string, model: string, 
    */
   try {
     const url = `${getGatewayBaseUrl()}/v1/responses`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3475,8 +3476,8 @@ export const testMCPSemanticFilter = async (accessToken: string, model: string, 
     });
 
     // Extract headers before checking response status
-    const filterHeader = response.headers.get("x-litellm-semantic-filter");
-    const toolsHeader = response.headers.get("x-litellm-semantic-filter-tools");
+    const filterHeader = response.headers.get("x-ai-gateway-semantic-filter");
+    const toolsHeader = response.headers.get("x-ai-gateway-semantic-filter-tools");
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -3504,7 +3505,7 @@ export const testMCPSemanticFilter = async (accessToken: string, model: string, 
 export const getGuardrailsList = async (accessToken: string) => {
   try {
     const v2Url = proxyBaseUrl ? `${proxyBaseUrl}/v2/guardrails/list` : `/v2/guardrails/list`;
-    const response = await fetch(v2Url, {
+    const response = await productFetch(v2Url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3521,7 +3522,7 @@ export const getGuardrailsList = async (accessToken: string) => {
   } catch (error) {
     try {
       const v1Url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/list` : `/guardrails/list`;
-      const fallbackResponse = await fetch(v1Url, {
+      const fallbackResponse = await productFetch(v1Url, {
         method: "GET",
         headers: {
           [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3632,7 +3633,7 @@ export const getGuardrailsUsageLogs = async (
     if (options.startDate) params.append("start_date", options.startDate);
     if (options.endDate) params.append("end_date", options.endDate);
     if (params.toString()) url += `?${params.toString()}`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3711,7 +3712,7 @@ export const testPoliciesAndGuardrails = async (
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/utils/test_policies_and_guardrails`
       : `/utils/test_policies_and_guardrails`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       signal,
       headers: {
@@ -3783,7 +3784,7 @@ export const enrichPolicyTemplate = async (
     const body: any = { template_id: templateId, parameters };
     if (model) body.model = model;
     if (competitors) body.competitors = competitors;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3863,7 +3864,7 @@ export const enrichPolicyTemplateStream = async (
   if (options?.instruction) body.instruction = options.instruction;
   if (options?.existingCompetitors) body.competitors = options.existingCompetitors;
 
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3943,7 +3944,7 @@ export const listPolicyVersions = async (
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/policies/name/${encodedName}/versions`
       : `/policies/name/${encodedName}/versions`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -3975,7 +3976,7 @@ export const createPolicyVersion = async (
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/policies/name/${encodedName}/versions`
       : `/policies/name/${encodedName}/versions`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4061,7 +4062,7 @@ export const deletePolicyAttachmentCall = async (accessToken: string, attachment
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/policies/attachments/${attachmentId}`
       : `/policies/attachments/${attachmentId}`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "DELETE",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4106,7 +4107,7 @@ export const getResolvedGuardrails = async (accessToken: string, policyId: strin
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/policies/${policyId}/resolved-guardrails`
       : `/policies/${policyId}/resolved-guardrails`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4146,7 +4147,7 @@ export const estimateAttachmentImpactCall = async (accessToken: string, attachme
     const url = proxyBaseUrl
       ? `${proxyBaseUrl}/policies/attachments/estimate-impact`
       : `/policies/attachments/estimate-impact`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4204,7 +4205,7 @@ export const getPromptVersions = async (
     if (environment) {
       url += `?environment=${encodeURIComponent(environment)}`;
     }
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4273,7 +4274,7 @@ export const convertPromptFileToJson = async (
 
     const url = proxyBaseUrl ? `${proxyBaseUrl}/utils/dotprompt_json_converter` : `/utils/dotprompt_json_converter`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4299,7 +4300,7 @@ export const createAgentCall = async (accessToken: string, agentData: any) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents` : `/v1/agents`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4357,7 +4358,7 @@ export const createGuardrailCall = async (accessToken: string, guardrailData: an
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails` : `/guardrails`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4389,7 +4390,7 @@ export const uiSpendLogDetailsCall = async (accessToken: string, logId: string, 
       ? `${proxyBaseUrl}/spend/logs/ui/${encodeURIComponent(logId)}?start_date=${encodeURIComponent(start_date)}`
       : `/spend/logs/ui/${encodeURIComponent(logId)}?start_date=${encodeURIComponent(start_date)}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4416,7 +4417,7 @@ export const fetchOpenAPIRegistry = async (accessToken: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/openapi-registry` : `/v1/mcp/openapi-registry`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: HTTP_REQUEST.GET,
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4515,7 +4516,7 @@ export const fetchMCPClientIp = async (accessToken: string): Promise<string | nu
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/network/client-ip` : `/v1/mcp/network/client-ip`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: HTTP_REQUEST.GET,
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4627,7 +4628,7 @@ export const registerMCPServer = async (accessToken: string, formValues: Record<
 export const fetchMCPSubmissions = async (accessToken: string) => {
   try {
     const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/submissions`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: HTTP_REQUEST.GET,
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4680,7 +4681,7 @@ export const revokeMCPServerUserCredential = async (
 export const approveMCPServer = async (accessToken: string, serverId: string) => {
   try {
     const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/${encodeURIComponent(serverId)}/approve`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: HTTP_REQUEST.PUT,
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4702,7 +4703,7 @@ export const approveMCPServer = async (accessToken: string, serverId: string) =>
 export const rejectMCPServer = async (accessToken: string, serverId: string, reviewNotes?: string) => {
   try {
     const url = (proxyBaseUrl ? `${proxyBaseUrl}` : "") + `/v1/mcp/server/${encodeURIComponent(serverId)}/reject`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: HTTP_REQUEST.PUT,
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4780,7 +4781,7 @@ export const fetchAvailableSearchProviders = async (accessToken: string) => {
       ? `${proxyBaseUrl}/search_tools/ui/available_providers`
       : `/search_tools/ui/available_providers`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: HTTP_REQUEST.GET,
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -4837,7 +4838,7 @@ export const listMCPTools = async (
 
   let response: Response;
   try {
-    response = await fetch(url, {
+    response = await productFetch(url, {
       method: "GET",
       headers,
     });
@@ -4921,7 +4922,7 @@ export const callMCPTool = async (
       body.litellm_metadata = { guardrails: options.guardrails };
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers,
       body: JSON.stringify(body),
@@ -4997,7 +4998,7 @@ export const tagInfoCall = async (accessToken: string, tagNames: string[]): Prom
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/info` : `/tag/info`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -5043,7 +5044,7 @@ export const tagListCall = async (
       url = `${url}?${params.toString()}`;
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5068,7 +5069,7 @@ export const tagDeleteCall = async (accessToken: string, tagName: string): Promi
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/tag/delete` : `/tag/delete`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -5116,7 +5117,7 @@ export const getTeamPermissionsCall = async (accessToken: string, teamId: string
       ? `${proxyBaseUrl}/team/permissions_list?team_id=${teamId}`
       : `/team/permissions_list?team_id=${teamId}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -5178,7 +5179,7 @@ export const sessionSpendLogsCall = async (
       ? `${proxyBaseUrl}/spend/logs/session/ui?${params.toString()}`
       : `/spend/logs/session/ui?${params.toString()}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5205,7 +5206,7 @@ export const vectorStoreCreateCall = async (accessToken: string, formValues: Rec
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/new` : `/vector_store/new`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -5234,7 +5235,7 @@ export const vectorStoreListCall = async (
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/list` : `/vector_store/list`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -5272,7 +5273,7 @@ export const vectorStoreDeleteCall = async (accessToken: string, vectorStoreId: 
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/delete` : `/vector_store/delete`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -5297,7 +5298,7 @@ export const vectorStoreInfoCall = async (accessToken: string, vectorStoreId: st
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/info` : `/vector_store/info`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -5322,7 +5323,7 @@ export const vectorStoreUpdateCall = async (accessToken: string, formValues: Rec
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/vector_store/update` : `/vector_store/update`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -5382,7 +5383,7 @@ export const ragIngestCall = async (
 
     formData.append("request", JSON.stringify(ingestOptions));
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5406,7 +5407,7 @@ export const getEmailEventSettings = async (accessToken: string): Promise<EmailE
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/email/event_settings` : `/email/event_settings`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5432,7 +5433,7 @@ export const updateEmailEventSettings = async (accessToken: string, settings: Em
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/email/event_settings` : `/email/event_settings`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "PATCH",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5459,7 +5460,7 @@ export const resetEmailEventSettings = async (accessToken: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/email/event_settings/reset` : `/email/event_settings/reset`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5487,7 +5488,7 @@ export const deleteAgentCall = async (accessToken: string, agentId: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents/${agentId}` : `/v1/agents/${agentId}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "DELETE",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5513,7 +5514,7 @@ export const makeAgentsPublicCall = async (accessToken: string, agentIds: string
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents/make_public` : `/v1/agents/make_public`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5542,7 +5543,7 @@ export const makeMCPPublicCall = async (accessToken: string, mcpServerIds: strin
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/make_public` : `/v1/mcp/make_public`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5571,7 +5572,7 @@ export const deleteGuardrailCall = async (accessToken: string, guardrailId: stri
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/${guardrailId}` : `/guardrails/${guardrailId}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "DELETE",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5599,7 +5600,7 @@ export const getGuardrailUISettings = async (accessToken: string) => {
       ? `${proxyBaseUrl}/guardrails/ui/add_guardrail_settings`
       : `/guardrails/ui/add_guardrail_settings`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5627,7 +5628,7 @@ export const getGuardrailProviderSpecificParams = async (accessToken: string) =>
       ? `${proxyBaseUrl}/guardrails/ui/provider_specific_params`
       : `/guardrails/ui/provider_specific_params`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5657,7 +5658,7 @@ export const getCategoryYaml = async (accessToken: string, categoryName: string)
       ? `${proxyBaseUrl}/guardrails/ui/category_yaml/${encodedCategoryName}`
       : `/guardrails/ui/category_yaml/${encodedCategoryName}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5684,7 +5685,7 @@ export const getMajorAirlines = async (accessToken: string) => {
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/ui/major_airlines` : `/guardrails/ui/major_airlines`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5739,7 +5740,7 @@ export const getGuardrailInfo = async (accessToken: string, guardrailId: string)
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/${guardrailId}/info` : `/guardrails/${guardrailId}/info`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5780,7 +5781,7 @@ export const patchAgentCall = async (
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/agents/${agentId}` : `/v1/agents/${agentId}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "PATCH",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5816,7 +5817,7 @@ export const updateGuardrailCall = async (
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/${guardrailId}` : `/guardrails/${guardrailId}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "PATCH",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5867,7 +5868,7 @@ export const applyGuardrail = async (
       requestBody.metadata = metadata;
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5950,7 +5951,7 @@ export const testCustomCodeGuardrail = async (
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/guardrails/test_custom_code` : `/guardrails/test_custom_code`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -5994,7 +5995,7 @@ export const validateBlockedWordsFile = async (accessToken: string, fileContent:
       ? `${proxyBaseUrl}/guardrails/validate_blocked_words_file`
       : `/guardrails/validate_blocked_words_file`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6032,7 +6033,7 @@ export const updateSSOSettings = async (accessToken: string, settings: Record<st
     // Construct base URL
     let url = proxyBaseUrl ? `${proxyBaseUrl}/update/sso_settings` : `/update/sso_settings`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "PATCH",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6110,7 +6111,7 @@ export const uiAuditLogsCall = async ({
 
     url += `?${queryParams.toString()}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6145,7 +6146,7 @@ export const getRemainingUsers = async (
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/user/available_users` : `/user/available_users`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6185,7 +6186,7 @@ export const getLicenseInfo = async (accessToken: string): Promise<LicenseInfo |
   try {
     const url = proxyBaseUrl ? `${proxyBaseUrl}/health/license` : `/health/license`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "GET",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6220,7 +6221,7 @@ export const updatePassThroughEndpoint = async (
       ? `${proxyBaseUrl}/config/pass_through_endpoint/${encodeURIComponent(endpointPath)}`
       : `/config/pass_through_endpoint/${encodeURIComponent(endpointPath)}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6276,7 +6277,7 @@ export const testMCPToolsListRequest = async (
       "Content-Type": "application/json",
     };
     if (accessToken) {
-      headers["x-litellm-api-key"] = accessToken;
+      headers["x-ai-gateway-api-key"] = accessToken;
       if (globalLitellmHeaderName.toLowerCase() !== "authorization") {
         headers[globalLitellmHeaderName] = `Bearer ${accessToken}`;
       }
@@ -6287,7 +6288,7 @@ export const testMCPToolsListRequest = async (
       headers[globalLitellmHeaderName] = `Bearer ${accessToken}`;
     }
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers,
       body: JSON.stringify(mcpServerConfig),
@@ -6339,7 +6340,7 @@ export const testMCPToolsListRequest = async (
 
 export const cacheTemporaryMcpServer = async (accessToken: string, payload: Record<string, any>) => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/server/oauth/session` : `/v1/mcp/server/oauth/session`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6373,7 +6374,7 @@ export const registerMcpOAuthClient = async (
   const normalizedServerId = encodeURIComponent(serverId.trim());
   const url = `${base}/v1/mcp/server/oauth/${normalizedServerId}/register`;
 
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6470,7 +6471,7 @@ export const exchangeMcpOAuthToken = async ({
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers,
     body: body.toString(),
@@ -6495,7 +6496,7 @@ export const vectorStoreSearchCall = async (
 ): Promise<any> => {
   try {
     const url = `${getGatewayBaseUrl()}/v1/vector_stores/${vectorStoreId}/search`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6528,7 +6529,7 @@ export const searchToolQueryCall = async (
 ): Promise<any> => {
   try {
     const url = `${getGatewayBaseUrl()}/v1/search/${searchToolName}`;
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6727,7 +6728,7 @@ export const loginCall = async (username: string, password: string, useV3?: bool
     password,
   });
 
-  const response = await fetch(loginUrl, {
+  const response = await productFetch(loginUrl, {
     method: "POST",
     body,
     credentials: "include",
@@ -6748,7 +6749,7 @@ export const loginCall = async (username: string, password: string, useV3?: bool
   if (useV3 && data.code) {
     const exchangeUrl = proxyBaseUrl ? `${proxyBaseUrl}/v3/login/exchange` : "/v3/login/exchange";
 
-    const exchangeResponse = await fetch(exchangeUrl, {
+    const exchangeResponse = await productFetch(exchangeUrl, {
       method: "POST",
       body: JSON.stringify({ code: data.code }),
       credentials: "include",
@@ -6781,7 +6782,7 @@ export const loginCall = async (username: string, password: string, useV3?: bool
  */
 export const exchangeLoginCode = async (code: string, workerBaseUrl?: string | null): Promise<string> => {
   const base = workerBaseUrl || getProxyBaseUrl();
-  const response = await fetch(`${base}/v3/login/exchange`, {
+  const response = await productFetch(`${base}/v3/login/exchange`, {
     method: "POST",
     body: JSON.stringify({ code }),
     headers: { "Content-Type": "application/json" },
@@ -6802,7 +6803,7 @@ export const exchangeLoginCode = async (code: string, workerBaseUrl?: string | n
 export const getUiSettings = async () => {
   const proxyBaseUrl = getProxyBaseUrl();
   const url = proxyBaseUrl ? `${proxyBaseUrl}/get/ui_settings` : `/get/ui_settings`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
   });
   if (!response.ok) {
@@ -6817,7 +6818,7 @@ export const getUiSettings = async () => {
 export const updateUiSettings = async (accessToken: string, settings: Record<string, any>) => {
   const proxyBaseUrl = getProxyBaseUrl();
   const url = proxyBaseUrl ? `${proxyBaseUrl}/update/ui_settings` : `/update/ui_settings`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "PATCH",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -6971,7 +6972,7 @@ export const enableClaudeCodePlugin = async (accessToken: string, pluginName: st
       ? `${proxyBaseUrl}/claude-code/plugins/${pluginName}/enable`
       : `/claude-code/plugins/${pluginName}/enable`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7006,7 +7007,7 @@ export const disableClaudeCodePlugin = async (accessToken: string, pluginName: s
       ? `${proxyBaseUrl}/claude-code/plugins/${pluginName}/disable`
       : `/claude-code/plugins/${pluginName}/disable`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "POST",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7041,7 +7042,7 @@ export const deleteClaudeCodePlugin = async (accessToken: string, pluginName: st
       ? `${proxyBaseUrl}/claude-code/plugins/${pluginName}`
       : `/claude-code/plugins/${pluginName}`;
 
-    const response = await fetch(url, {
+    const response = await productFetch(url, {
       method: "DELETE",
       headers: {
         [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7092,7 +7093,7 @@ export const checkEuAiActCompliance = async (
   payload: ComplianceCheckRequest,
 ): Promise<ComplianceResponse> => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/compliance/eu-ai-act` : `/compliance/eu-ai-act`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7112,7 +7113,7 @@ export const checkGdprCompliance = async (
   payload: ComplianceCheckRequest,
 ): Promise<ComplianceResponse> => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/compliance/gdpr` : `/compliance/gdpr`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7164,7 +7165,7 @@ export interface ToolPolicyOptionsResponse {
 
 export const fetchToolPolicyOptions = async (accessToken: string): Promise<ToolPolicyOptionsResponse> => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/tool/policy/options` : `/v1/tool/policy/options`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7180,7 +7181,7 @@ export const fetchToolPolicyOptions = async (accessToken: string): Promise<ToolP
 
 export const fetchToolsList = async (accessToken: string): Promise<ToolRow[]> => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/tool/list` : `/v1/tool/list`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7271,7 +7272,7 @@ export const getToolUsageLogs = async (
   if (options.startDate) params.append("start_date", options.startDate);
   if (options.endDate) params.append("end_date", options.endDate);
   const fullUrl = params.toString() ? `${url}?${params.toString()}` : url;
-  const response = await fetch(fullUrl, {
+  const response = await productFetch(fullUrl, {
     method: "GET",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7288,7 +7289,7 @@ export const getToolUsageLogs = async (
 export const fetchToolDetail = async (accessToken: string, toolName: string): Promise<ToolDetailResponse> => {
   const encoded = encodeURIComponent(toolName);
   const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/tool/${encoded}/detail` : `/v1/tool/${encoded}/detail`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7317,7 +7318,7 @@ export const updateToolPolicy = async (
   if (options?.team_id != null) body.team_id = options.team_id || undefined;
   if (options?.key_hash != null) body.key_hash = options.key_hash || undefined;
   if (options?.key_alias != null) body.key_alias = options.key_alias || undefined;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7345,7 +7346,7 @@ export const deleteToolPolicyOverride = async (
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/v1/tool/${encoded}/overrides${query ? `?${query}` : ""}`
     : `/v1/tool/${encoded}/overrides${query ? `?${query}` : ""}`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "DELETE",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7386,7 +7387,7 @@ export const storeMCPOAuthUserCredential = async (
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/v1/mcp/server/${serverId}/oauth-user-credential`
     : `/v1/mcp/server/${serverId}/oauth-user-credential`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7421,7 +7422,7 @@ export const deleteMCPOAuthUserCredential = async (
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/v1/mcp/server/${serverId}/oauth-user-credential`
     : `/v1/mcp/server/${serverId}/oauth-user-credential`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "DELETE",
     headers: { [globalLitellmHeaderName]: `Bearer ${accessToken}` },
   });
@@ -7452,7 +7453,7 @@ export const getMCPOAuthUserCredentialStatus = async (
   const url = proxyBaseUrl
     ? `${proxyBaseUrl}/v1/mcp/server/${serverId}/oauth-user-credential/status`
     : `/v1/mcp/server/${serverId}/oauth-user-credential/status`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: { [globalLitellmHeaderName]: `Bearer ${accessToken}` },
   });
@@ -7464,7 +7465,7 @@ export const getMCPOAuthUserCredentialStatus = async (
 
 export const listMCPUserCredentials = async (accessToken: string): Promise<MCPUserCredentialListItem[]> => {
   const url = proxyBaseUrl ? `${proxyBaseUrl}/v1/mcp/user-credentials` : `/v1/mcp/user-credentials`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: { [globalLitellmHeaderName]: `Bearer ${accessToken}` },
   });
@@ -7566,7 +7567,7 @@ export const fetchMemoryList = async (
   if (options.page != null) params.append("page", String(options.page));
   if (options.pageSize != null) params.append("page_size", String(options.pageSize));
   const url = params.toString() ? `${base}?${params.toString()}` : base;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "GET",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7590,7 +7591,7 @@ export const createMemory = async (
     value: payload.value,
   };
   if (payload.metadata !== undefined) body.metadata = payload.metadata;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "POST",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7612,7 +7613,7 @@ export const updateMemory = async (
 ): Promise<MemoryRow> => {
   const encoded = encodeMemoryKeyForPath(key);
   const url = `${getGatewayBaseUrl()}/v1/memory/${encoded}`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "PUT",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,
@@ -7630,7 +7631,7 @@ export const updateMemory = async (
 export const deleteMemory = async (accessToken: string, key: string): Promise<void> => {
   const encoded = encodeMemoryKeyForPath(key);
   const url = `${getGatewayBaseUrl()}/v1/memory/${encoded}`;
-  const response = await fetch(url, {
+  const response = await productFetch(url, {
     method: "DELETE",
     headers: {
       [globalLitellmHeaderName]: `Bearer ${accessToken}`,

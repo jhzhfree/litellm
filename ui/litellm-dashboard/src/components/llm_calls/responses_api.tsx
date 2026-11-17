@@ -227,7 +227,7 @@ export async function makeOpenAIResponsesRequest(
           const nonStreamingResponse = await (client as any).responses
             .create({ ...requestBody, stream: false }, { signal })
             .withResponse();
-          servedFromResponseCache = nonStreamingResponse.response.headers.get("x-litellm-cache-key") !== null;
+          servedFromResponseCache = nonStreamingResponse.response.headers.get("x-ai-gateway-cache-key") !== null;
           return nonStreamingResponse.data;
         })();
     const events = streamingEnabled ? response : responseAsEvents(response);

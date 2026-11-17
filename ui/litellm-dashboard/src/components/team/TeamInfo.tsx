@@ -2141,7 +2141,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     label={labelWithDocsHint(
                       t("teams.teamInfo.editForm.guardrails"),
                       t("teams.teamInfo.editForm.guardrailsHint"),
-                      "https://docs.litellm.ai/docs/proxy/guardrails/quick_start",
+                      "/docs",
                     )}
                   >
                     {({ id, value, onChange }) => (
@@ -2206,7 +2206,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                       label={labelWithDocsHint(
                         t("teams.teamInfo.editForm.policies"),
                         t("teams.teamInfo.editForm.policiesHint"),
-                        "https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies",
+                        "/docs",
                       )}
                     >
                       {({ id, value, onChange }) => (

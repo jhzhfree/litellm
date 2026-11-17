@@ -39,7 +39,7 @@ const RAISE_MAX_BUDGET_TOOLTIP: ParseKeys = "adminPanel.teamAdminEditableFields.
 const METADATA_HELP_LABEL: ParseKeys = "adminPanel.teamAdminEditableFields.metadataHelp.ariaLabel";
 const METADATA_TOOLTIP: ParseKeys = "adminPanel.teamAdminEditableFields.metadataHelp.tooltip";
 const TEAM_ADMIN_FIELDS_DOCS_URL =
-  "https://docs.litellm.ai/docs/proxy/access_control#choosing-what-team-admins-can-edit";
+  "/docs";
 
 const toggleEditableField = (
   supportedFields: readonly string[],

@@ -7,8 +7,8 @@ describe("logoTreatmentFor", () => {
   });
 
   it("inverts the bundled LiteLLM monogram into the white brand mark on dark", () => {
-    expect(logoTreatmentFor("/litellm-asset-prefix/_next/static/media/litellm_monogram.16r2_rdj4dq8r.svg")).toBe(
-      "invert",
+    expect(logoTreatmentFor("/ai-gateway-assets/_next/static/media/ai_gw_logo.16r2_rdj4dq8r.svg")).toBe(
+      "plate",
     );
   });
 
@@ -26,7 +26,7 @@ describe("logoTreatmentFor", () => {
   });
 
   it("resolves through a bundler fingerprint in the filename", () => {
-    expect(logoTreatmentFor("/litellm-asset-prefix/_next/static/media/openrouter.1xk7748-_jixf.svg")).toBe("invert");
+    expect(logoTreatmentFor("/ai-gateway-assets/_next/static/media/openrouter.1xk7748-_jixf.svg")).toBe("invert");
   });
 
   it("resolves a bundled asset served under a proxy root path", () => {

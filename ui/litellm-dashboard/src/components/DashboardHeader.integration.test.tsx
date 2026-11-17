@@ -19,7 +19,7 @@ beforeEach(() => {
     vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
       if (url.endsWith("/get/ui_settings")) return Response.json({ values: {} });
-      if (url.endsWith("/litellm/.well-known/litellm-ui-config")) {
+      if (url.endsWith("/ai-gateway/.well-known/ui-config")) {
         const config = {
           server_root_path: "",
           proxy_base_url: "",
@@ -34,7 +34,7 @@ beforeEach(() => {
       if (url.endsWith("/api/plugins")) {
         return Response.json([{ name: "metrics", display_name: "Metrics", url: "/metrics" }]);
       }
-      if (url.endsWith("/public/litellm_blog_posts")) {
+      if (url.endsWith("/public/gateway_updates")) {
         return Response.json({
           posts: [
             {
@@ -91,7 +91,7 @@ describe("dashboard header controls", () => {
     );
     expect(within(tools).getByRole("link", { name: "Docs", exact: true })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/",
+      "/docs",
     );
     expect(within(tools).getByRole("link", { name: "Discord", exact: true })).toBeVisible();
   });

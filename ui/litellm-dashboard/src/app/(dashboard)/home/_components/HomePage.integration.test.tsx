@@ -7,6 +7,7 @@ import { EMPTY_DAILY_ACTIVITY_METADATA } from "@/components/UsagePage/dailyActiv
 import { all_admin_roles } from "@/utils/roles";
 import { LiteAdminFrame } from "@/components/liteadmin/LiteAdmin";
 import HomePage from "./HomePage";
+import i18n from "@/i18n/i18n";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const auth = vi.hoisted(() => ({
@@ -38,7 +39,7 @@ const post = (title: string, date: string, tags: string[] = []) => ({
   title,
   description: `${title} description`,
   date,
-  url: title === "Post one" ? "https://x/1" : `https://docs.litellm.ai/blog/${title}`,
+  url: title === "Post one" ? "https://x/1" : `/updates/${title}`,
   tags,
 });
 
@@ -129,10 +130,10 @@ describe("HomePage", () => {
   it("shows the usage totals from the daily activity API and links Create New Virtual Key to the key creation flow", async () => {
     renderHome();
     expect(screen.getByRole("heading", { level: 1, name: "Home" })).toBeInTheDocument();
-    expect(await screen.findByText("$501.74")).toBeInTheDocument();
+    expect(await screen.findByText(i18n.t("format.usd", { val: activity.metadata.total_spend }))).toBeInTheDocument();
     expect(screen.getByText("5,118")).toBeInTheDocument();
-    expect(screen.getByText("98.6M")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /create new virtual key/i })).toHaveAttribute(
+    expect(screen.getByText(i18n.t("format.compactNumber", { val: activity.metadata.total_tokens }))).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /create new virtual key/i })).toHaveAttribute(
       "href",
       expect.stringMatching(/\/api-keys\?create=true$/),
     );
@@ -142,7 +143,7 @@ describe("HomePage", () => {
   it("hides Create New Virtual Key from view-only users", () => {
     auth.isViewOnly = true;
     renderHome();
-    expect(screen.queryByRole("link", { name: /create new virtual key/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /create new virtual key/i })).not.toBeInTheDocument();
   });
 
   it("keeps Home focused on usage without an embedded Aria composer", async () => {
@@ -155,7 +156,7 @@ describe("HomePage", () => {
     );
     expect(screen.queryByRole("region", { name: "Ask Aria Agent" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Send message" })).not.toBeInTheDocument();
-    expect(await screen.findByText("$501.74")).toBeInTheDocument();
+    expect(await screen.findByText(i18n.t("format.usd", { val: activity.metadata.total_spend }))).toBeInTheDocument();
   });
 
   it("shows an error with a retry instead of zero totals when the usage request fails", async () => {
@@ -164,7 +165,7 @@ describe("HomePage", () => {
     expect(await screen.findByText("Failed to load usage")).toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Retry" }));
-    expect(await screen.findByText("$501.74")).toBeInTheDocument();
+    expect(await screen.findByText(i18n.t("format.usd", { val: activity.metadata.total_spend }))).toBeInTheDocument();
     expect(network.aggregated).toHaveBeenCalledTimes(2);
   });
 
@@ -184,9 +185,9 @@ describe("HomePage", () => {
         .getAllByRole("link")
         .map((link) => link.getAttribute("href")),
     ).toEqual([
-      "https://docs.litellm.ai/blog/new",
-      "https://docs.litellm.ai/blog/mid",
-      "https://docs.litellm.ai/blog/old",
+      "/updates/new",
+      "/updates/mid",
+      "/updates/old",
     ]);
     expect(within(section).getByText("Oct 11")).toBeInTheDocument();
     expect(within(section).queryByText("townhall")).not.toBeInTheDocument();
@@ -229,10 +230,10 @@ describe("HomePage", () => {
     expect(within(rows[1]!).getByText("claude-haiku-5-5")).toBeInTheDocument();
   });
 
-  it("renders the blog posts fetched from /public/litellm_blog_posts in the Updates feed", async () => {
+  it("renders the blog posts fetched from /public/gateway_updates in the Updates feed", async () => {
     renderHome();
     const updates = screen.getByTestId("home-updates");
     expect(await within(updates).findByRole("link", { name: /post one/i })).toHaveAttribute("href", "https://x/1");
-    expect(fetch).toHaveBeenCalledWith("http://proxy.test/public/litellm_blog_posts");
+    expect(fetch).toHaveBeenCalledWith("http://proxy.test/public/gateway_updates");
   });
 });

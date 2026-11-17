@@ -106,7 +106,7 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, acces
             components={{
               pricing: (
                 <a
-                  href="https://www.litellm.ai/#pricing"
+                  href="/docs"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline-offset-4 hover:underline"

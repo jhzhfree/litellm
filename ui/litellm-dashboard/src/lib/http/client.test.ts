@@ -23,7 +23,7 @@ describe("createApiClient", () => {
     const fetchImpl = vi.fn(async () => okResponse({ ok: true }));
     const client = createApiClient({
       getBaseUrl: () => "https://proxy.example",
-      getAuthHeaderName: () => "x-litellm-key",
+      getAuthHeaderName: () => "x-ai-gateway-key",
       fetchImpl,
     });
 
@@ -37,7 +37,7 @@ describe("createApiClient", () => {
     expect(init.headers).toEqual({
       Accept: "application/json",
       "Content-Type": "application/json",
-      "x-litellm-key": "Bearer sk-123",
+      "x-ai-gateway-key": "Bearer sk-123",
     });
     expect(init.body).toBeUndefined();
   });
@@ -147,7 +147,9 @@ describe("createApiClient", () => {
     const client = createApiClient({ getBaseUrl: () => "" });
 
     const original = globalThis.fetch;
-    const swapped = vi.fn(async () => okResponse({ swapped: true }));
+    const swapped = vi.fn(
+      async () => new Response(JSON.stringify({ swapped: true }), { headers: { "content-type": "application/json" } }),
+    );
     globalThis.fetch = swapped as unknown as typeof fetch;
     try {
       const result = await client.get("/ping", { accessToken: "sk" });

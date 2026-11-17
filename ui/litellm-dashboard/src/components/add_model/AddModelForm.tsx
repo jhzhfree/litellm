@@ -343,7 +343,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                                 strong: <strong />,
                                 docs: (
                                   <a
-                                    href="https://docs.litellm.ai/docs/proxy/health#health"
+                                    href="/docs"
                                     target="_blank"
                                     rel="noreferrer"
                                     className="text-primary hover:underline"
@@ -507,7 +507,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                   <div className="flex justify-between items-center mb-4">
                     <SimpleTooltip content={t("addModel.addModelForm.helpTooltip")}>
                       <a
-                        href="https://github.com/BerriAI/litellm/issues"
+                        href="/docs"
                         className="text-sm text-primary hover:underline"
                       >
                         {t("addModel.addModelForm.needHelp")}

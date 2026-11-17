@@ -174,7 +174,7 @@ function gateway(
     const body: Record<string, unknown> = request.method === "GET" ? {} : await request.clone().json();
     const recorded = { url: request.url, headers: request.headers, body, signal: request.signal };
     const path = new URL(request.url).pathname;
-    if (path.endsWith("/ui/litellm-runtime-config.json")) return json({});
+    if (path.endsWith("/ui/ai-gateway-runtime-config.json")) return json({});
     if (path.endsWith("/management/v1/users/me")) return json({ ...signedInUser, user_email: null });
     requests.push(recorded);
     if (path.endsWith("/litellm-ui-config")) {

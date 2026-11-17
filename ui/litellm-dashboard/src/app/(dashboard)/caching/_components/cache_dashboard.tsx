@@ -212,7 +212,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                 components={{
                   cacheDocs: (
                     <a
-                      href="https://docs.litellm.ai/docs/proxy/caching"
+                      href="/docs"
                       target="_blank"
                       rel="noreferrer"
                       className="underline"
@@ -220,7 +220,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                   ),
                   promptDocs: (
                     <a
-                      href="https://docs.litellm.ai/docs/completion/prompt_caching"
+                      href="/docs"
                       target="_blank"
                       rel="noreferrer"
                       className="underline"

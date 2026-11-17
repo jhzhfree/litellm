@@ -46,7 +46,7 @@ describe("EmailSettings", () => {
     expect(screen.getByText("Email Server Settings")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /LiteLLM Docs: email alerts/ })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/proxy/email",
+      "/docs",
     );
   });
 

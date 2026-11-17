@@ -26,12 +26,12 @@ const STATIC_CONTENT: Readonly<Record<string, DeploymentWarningContent & { title
         }}
       />
     ),
-    docsUrl: "https://docs.litellm.ai/docs/proxy/ui",
+    docsUrl: "/docs",
   },
   no_redis: {
     title: "shell.deploymentWarnings.noRedis.title",
     fix: <Trans i18nKey="shell.deploymentWarnings.noRedis.fix" />,
-    docsUrl: "https://docs.litellm.ai/docs/proxy/redis_requirements",
+    docsUrl: "/docs",
   },
   detailed_debug: {
     title: "shell.deploymentWarnings.detailedDebug.title",
@@ -41,7 +41,7 @@ const STATIC_CONTENT: Readonly<Record<string, DeploymentWarningContent & { title
         components={{ loglevel: <code>LITELLM_LOG=DEBUG</code> }}
       />
     ),
-    docsUrl: "https://docs.litellm.ai/docs/proxy/prod",
+    docsUrl: "/docs",
   },
 };
 
@@ -59,7 +59,7 @@ const licenseExpiryContent = (expirationDate: string, now: Date): DeploymentWarn
     ? {
         title: i18n.t("shell.deploymentWarnings.license.expiredTitle", { date: formattedDate }),
         fix: <Trans i18nKey="shell.deploymentWarnings.license.expiredFix" components={{ sales: salesLink }} />,
-        docsUrl: "https://docs.litellm.ai/docs/enterprise",
+        docsUrl: "/docs",
       }
     : {
         title: i18n.t("shell.deploymentWarnings.license.expiringTitle", {
@@ -67,7 +67,7 @@ const licenseExpiryContent = (expirationDate: string, now: Date): DeploymentWarn
           date: formattedDate,
         }),
         fix: <Trans i18nKey="shell.deploymentWarnings.license.expiringFix" components={{ sales: salesLink }} />,
-        docsUrl: "https://docs.litellm.ai/docs/enterprise",
+        docsUrl: "/docs",
       };
 };
 

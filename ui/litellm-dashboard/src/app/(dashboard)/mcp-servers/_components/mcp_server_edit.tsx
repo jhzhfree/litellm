@@ -1164,7 +1164,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                     <p className="text-sm text-muted-foreground mb-2">
                       {t("mcpServers.serverEdit.aws.intro")}{" "}
                       <a
-                        href="https://docs.litellm.ai/docs/mcp_aws_sigv4"
+                        href="/docs"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-info hover:text-info/80"

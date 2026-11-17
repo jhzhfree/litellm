@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export const DOCS_URL = "https://docs.litellm.ai/docs/";
+export const DOCS_URL = "/docs";
 
 const ChevronWidthSpacer: React.FC = () => (
   <ChevronDown className="pointer-events-none size-2.5 opacity-0" aria-hidden />

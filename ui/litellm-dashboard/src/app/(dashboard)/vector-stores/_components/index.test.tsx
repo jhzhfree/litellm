@@ -176,11 +176,11 @@ describe("VectorStoreManagement Indexes tab", () => {
     await user.click(screen.getByRole("tab", { name: "Indexes" }));
     expect(screen.getByRole("link", { name: "vector store index docs" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/providers/azure_ai/azure_ai_vector_stores_passthrough",
+      "/docs",
     );
     expect(screen.getByRole("link", { name: "file a GitHub issue" })).toHaveAttribute(
       "href",
-      "https://github.com/BerriAI/litellm/issues",
+      "/docs",
     );
     expect(screen.getByText(/supported for Azure AI Search and Milvus today/)).toBeInTheDocument();
   });

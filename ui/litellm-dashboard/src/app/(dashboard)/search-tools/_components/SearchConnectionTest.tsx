@@ -190,7 +190,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
       <Separator className="mt-6 mb-4" />
       <div className="flex items-center justify-between">
         <a
-          href="https://docs.litellm.ai/docs/search"
+          href="/docs"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"

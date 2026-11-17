@@ -280,7 +280,7 @@ export default function CredentialModal({
 
               <div className="flex justify-between items-center">
                 <SimpleTooltip content={t("modelAdd.credentialModal.helpTooltip")}>
-                  <a href="https://github.com/BerriAI/litellm/issues" className="text-sm text-primary hover:underline">
+                  <a href="/docs" className="text-sm text-primary hover:underline">
                     {t("modelAdd.credentialModal.needHelp")}
                   </a>
                 </SimpleTooltip>

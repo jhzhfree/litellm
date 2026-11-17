@@ -5,7 +5,7 @@ import copilotLogo from "../../../../../../../public/assets/logos/github_copilot
 import githubLogo from "../../../../../../../public/assets/logos/github.svg";
 import hermesLogo from "../../../../../../../public/assets/logos/hermes.png";
 import langchainLogo from "../../../../../../../public/assets/logos/langchain.svg";
-import litellmLogo from "../../../../../../../public/assets/logos/litellm_monogram.svg";
+import litellmLogo from "../../../../../../../public/assets/logos/ai_gw_logo.svg";
 import openaiLogo from "../../../../../../../public/assets/logos/openai_small.svg";
 import openaiAgentsLogo from "../../../../../../../public/assets/logos/openai-agents.svg";
 import opencodeLogo from "../../../../../../../public/assets/moyai/logos/opencode.svg";

@@ -583,7 +583,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         title={t("usage.entityUsage.spendPerEntity", { entity: capitalizedEntityLabel })}
         action={
           <a
-            href="https://docs.litellm.ai/docs/proxy/cost_tracking"
+            href="/docs"
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
             {t("usage.entityUsage.trackCostPer", { entity: entityType })}

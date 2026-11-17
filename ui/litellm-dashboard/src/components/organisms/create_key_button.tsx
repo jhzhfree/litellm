@@ -1361,7 +1361,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                             {t("createKey.guardrails.label")}{" "}
                             <SimpleTooltip content={t("createKey.guardrails.tooltip")}>
                               <a
-                                href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
+                                href="/docs"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()} // Prevent accordion from collapsing when clicking link
@@ -1397,7 +1397,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                               {t("createKey.disableGlobalGuardrails.label")}{" "}
                               <SimpleTooltip content={t("createKey.disableGlobalGuardrails.tooltip")}>
                                 <a
-                                  href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
+                                  href="/docs"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()} // Prevent accordion from collapsing when clicking link
@@ -1433,7 +1433,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                               {t("createKey.policies.label")}{" "}
                               <SimpleTooltip content={t("createKey.policies.tooltip")}>
                                 <a
-                                  href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies"
+                                  href="/docs"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()} // Prevent accordion from collapsing when clicking link
@@ -1468,7 +1468,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                               {t("createKey.prompts.label")}{" "}
                               <SimpleTooltip content={t("createKey.prompts.tooltip")}>
                                 <a
-                                  href="https://docs.litellm.ai/docs/proxy/prompt_management"
+                                  href="/docs"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()} // Prevent accordion from collapsing when clicking link
@@ -1523,7 +1523,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                             {t("createKey.passThroughRoutes.label")}{" "}
                             <SimpleTooltip content={t("createKey.passThroughRoutes.tooltip")}>
                               <a
-                                href="https://docs.litellm.ai/docs/proxy/pass_through"
+                                href="/docs"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()} // Prevent accordion from collapsing when clicking link
@@ -1755,8 +1755,8 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           content={
                             <span>
                               {t("createKey.logging.enterpriseTooltip")}
-                              <a href="https://www.litellm.ai/enterprise" target="_blank">
-                                https://www.litellm.ai/enterprise
+                              <a href="/docs" target="_blank">
+                                /docs
                               </a>
                             </span>
                           }

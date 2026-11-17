@@ -53,7 +53,7 @@ describe("APIReferenceView", () => {
     expect(screen.getByText(/LiteLLM is OpenAI Compatible/)).toBeInTheDocument();
 
     const docsLink = screen.getByRole("link", { name: /API Reference Docs/ });
-    expect(docsLink).toHaveAttribute("href", "https://docs.litellm.ai/docs/proxy/user_keys");
+    expect(docsLink).toHaveAttribute("href", "/docs");
     expect(docsLink).toHaveAttribute("target", "_blank");
   });
 

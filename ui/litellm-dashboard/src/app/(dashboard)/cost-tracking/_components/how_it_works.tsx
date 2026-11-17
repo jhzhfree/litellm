@@ -69,19 +69,19 @@ const HowItWorks: React.FC = () => {
         <div className="space-y-1.5">
           <div className="flex items-start gap-3">
             <code className="whitespace-nowrap rounded-sm bg-muted px-2 py-1 font-mono text-xs text-foreground">
-              x-litellm-response-cost
+              x-ai-gateway-response-cost
             </code>
             <p className="text-xs text-muted-foreground">{t("costTracking.howItWorks.headers.responseCost")}</p>
           </div>
           <div className="flex items-start gap-3">
             <code className="whitespace-nowrap rounded-sm bg-muted px-2 py-1 font-mono text-xs text-foreground">
-              x-litellm-response-cost-original
+              x-ai-gateway-response-cost-original
             </code>
             <p className="text-xs text-muted-foreground">{t("costTracking.howItWorks.headers.originalCost")}</p>
           </div>
           <div className="flex items-start gap-3">
             <code className="whitespace-nowrap rounded-sm bg-muted px-2 py-1 font-mono text-xs text-foreground">
-              x-litellm-response-cost-discount-amount
+              x-ai-gateway-response-cost-discount-amount
             </code>
             <p className="text-xs text-muted-foreground">{t("costTracking.howItWorks.headers.discountAmount")}</p>
           </div>

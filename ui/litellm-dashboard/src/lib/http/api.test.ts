@@ -52,24 +52,24 @@ describe("typed api client middleware", () => {
 
   it("injects the bearer token under the registered auth header name", async () => {
     registerAuthTokenGetter(() => "sk-test");
-    registerAuthHeaderNameGetter(() => "x-litellm-key");
+    registerAuthHeaderNameGetter(() => "x-ai-gateway-key");
     const { fetch, requests } = capturingFetch(jsonResponse(200, { data: [] }));
 
     await fetchClient.GET("/model_group/info", { fetch });
 
-    expect(requests[0].headers.get("x-litellm-key")).toBe("Bearer sk-test");
+    expect(requests[0].headers.get("x-ai-gateway-key")).toBe("Bearer sk-test");
     expect(requests[0].headers.get("Authorization")).toBeNull();
   });
 
   it("preserves an explicit token when the session has a different token", async () => {
     registerAuthTokenGetter(() => "session-token");
-    registerAuthHeaderNameGetter(() => "x-litellm-key");
+    registerAuthHeaderNameGetter(() => "x-ai-gateway-key");
     const { fetch, requests } = capturingFetch(jsonResponse(200, { data: [] }));
     await fetchClient.GET("/model_group/info", {
       fetch,
-      headers: { "x-litellm-key": "Bearer explicit-token" },
+      headers: { "x-ai-gateway-key": "Bearer explicit-token" },
     });
-    expect(requests[0].headers.get("x-litellm-key")).toBe("Bearer explicit-token");
+    expect(requests[0].headers.get("x-ai-gateway-key")).toBe("Bearer explicit-token");
   });
 
   it("asks for JSON on a bodyless GET so the next dev rewrite routes it to the proxy, not the page", async () => {

@@ -53,7 +53,7 @@ const signIn = (userRole: string) => {
 
 const handleRequest = async (request: Request): Promise<Response> => {
   const { pathname } = new URL(request.url);
-  if (pathname === "/litellm/.well-known/litellm-ui-config") {
+  if (pathname === "/ai-gateway/.well-known/ui-config") {
     return Response.json({ server_root_path: "", proxy_base_url: "", admin_ui_disabled: false });
   }
   if (pathname === "/management/v1/users/me") {
@@ -245,7 +245,7 @@ describe("deployment health panel", () => {
     ).toEqual(["No Redis configured"]);
     expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/proxy/redis_requirements",
+      "/docs",
     );
     expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute("target", "_blank");
     expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute(

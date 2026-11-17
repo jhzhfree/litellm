@@ -37,7 +37,7 @@ export function PremiumLoggingSettings({
               components={{
                 docs: (
                   <a
-                    href="https://www.litellm.ai/#pricing"
+                    href="/docs"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline"

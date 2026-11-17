@@ -86,13 +86,13 @@ describe("embeddings_api", () => {
       "abcdef",
       ["team-a"],
       undefined,
-      { "x-litellm-tags": "team-b", "x-request-source": "playground" },
+      { "x-ai-gateway-tags": "team-b", "x-request-source": "playground" },
     );
 
     expect(mockFetch.mock.calls[0][1]).toMatchObject({
       headers: {
         Authorization: "Bearer abcdef",
-        "x-litellm-tags": "team-b",
+        "x-ai-gateway-tags": "team-b",
         "x-request-source": "playground",
       },
     });

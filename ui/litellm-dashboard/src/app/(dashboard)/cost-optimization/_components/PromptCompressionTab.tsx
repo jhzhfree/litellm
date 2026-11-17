@@ -114,7 +114,7 @@ const PromptCompressionTab: React.FC<PromptCompressionTabProps> = ({ accessToken
               components={{
                 docs: (
                   <a
-                    href="https://docs.litellm.ai/docs/proxy/headroom"
+                    href="/docs"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-info underline"
@@ -200,7 +200,7 @@ const PromptCompressionTab: React.FC<PromptCompressionTabProps> = ({ accessToken
                     components={{
                       pricing: (
                         <a
-                          href="https://www.litellm.ai/#pricing"
+                          href="/docs"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="underline"

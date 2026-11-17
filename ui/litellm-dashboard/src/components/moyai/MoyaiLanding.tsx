@@ -25,7 +25,7 @@ import { productNames } from "@/i18n/untranslated/productNames";
 
 export const MOYAI_GITHUB_URL = "https://github.com/BerriAI/moyai";
 export const MOYAI_WALKTHROUGH_URL = `${MOYAI_GITHUB_URL}#see-it-in-action`;
-export const MOYAI_LAUNCH_POST_URL = "https://docs.litellm.ai/blog/moyai-open-source";
+export const MOYAI_LAUNCH_POST_URL = "/docs";
 const MOYAI_DEMO_GIF_URL = "https://github.com/user-attachments/assets/2de74e6a-c37c-48d6-8a99-de2166c88626";
 
 interface LogoItem {

@@ -106,7 +106,7 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
   const [proxyConfigured, setProxyConfigured] = useState<boolean>(false);
   const [agentHubData, setAgentHubData] = useState<AgentCard[] | null>(null);
   const [mcpHubData, setMcpHubData] = useState<MCPServerData[] | null>(null);
-  const [pageTitle, setPageTitle] = useState<string>("LiteLLM Gateway");
+  const [pageTitle, setPageTitle] = useState<string>("AI-Tokengw");
   const [customDocsDescription, setCustomDocsDescription] = useState<string | null>(null);
   const [litellmVersion, setLitellmVersion] = useState<string>("");
   const [usefulLinks, setUsefulLinks] = useState<Record<string, string | { url: string; index: number }>>({});
@@ -1446,7 +1446,7 @@ config = {
         "${selectedMcpServer.server_name}": {
             "url": "${getProxyBaseUrl()}/${selectedMcpServer.server_name}/mcp",
             "headers": {
-                "x-litellm-api-key": "Bearer <your-master-key>"
+                "x-ai-gateway-api-key": "Bearer <your-master-key>"
             }
         }
     }
@@ -1486,7 +1486,7 @@ config = {
         "${selectedMcpServer.server_name}": {
             "url": "${getProxyBaseUrl()}/${selectedMcpServer.server_name}/mcp",
             "headers": {
-                "x-litellm-api-key": "Bearer <your-master-key>"
+                "x-ai-gateway-api-key": "Bearer <your-master-key>"
             }
         }
     }

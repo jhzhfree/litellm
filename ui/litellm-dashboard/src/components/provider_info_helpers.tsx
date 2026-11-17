@@ -34,7 +34,7 @@ import hostingerLogo from "../../public/assets/logos/hostinger.png";
 import infinityLogo from "../../public/assets/logos/infinity.png";
 import jinaLogo from "../../public/assets/logos/jina.png";
 import lambdaLogo from "../../public/assets/logos/lambda.svg";
-import litellmLogo from "../../public/assets/logos/litellm_monogram.svg";
+import litellmLogo from "../../public/assets/logos/ai_gw_logo.svg";
 import lmstudioLogo from "../../public/assets/logos/lmstudio.svg";
 import metaLlamaLogo from "../../public/assets/logos/meta_llama.svg";
 import microsoft365CopilotLogo from "../../public/assets/logos/microsoft_365_copilot.svg";
@@ -142,7 +142,7 @@ export enum Providers {
   LAMBDA_AI = "Lambda Ai",
   Laya = "Laya",
   LEMONADE = "Lemonade",
-  LITELLM_PROXY = "LiteLLM Gateway",
+  LITELLM_PROXY = "AI-Tokengw Gateway",
   LLAMAFILE = "Llamafile",
   LM_STUDIO = "Lm Studio",
   LLAMA = "Meta Llama",

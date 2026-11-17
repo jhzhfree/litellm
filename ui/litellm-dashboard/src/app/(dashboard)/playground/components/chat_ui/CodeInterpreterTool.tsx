@@ -15,7 +15,7 @@ interface CodeInterpreterToolProps {
   disabled?: boolean;
 }
 
-const GITHUB_FEATURE_REQUEST_URL = "https://github.com/BerriAI/litellm/issues/new?template=feature_request.yml";
+const GITHUB_FEATURE_REQUEST_URL = "/docs";
 
 const isOpenAIModel = (model: string): boolean => {
   if (!model) return false;

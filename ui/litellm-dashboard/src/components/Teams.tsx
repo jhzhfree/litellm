@@ -761,7 +761,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           label={labelWithDocsHint(
                             t("teams.page.create.fields.organization.label"),
                             t("teams.page.create.fields.organization.hint"),
-                            "https://docs.litellm.ai/docs/proxy/user_management_heirarchy",
+                            "/docs",
                           )}
                           description={
                             isOrgAdmin && isSingleOrg
@@ -1028,7 +1028,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           label={labelWithDocsHint(
                             t("teams.page.create.fields.guardrails.label"),
                             t("teams.page.create.fields.guardrails.hint"),
-                            "https://docs.litellm.ai/docs/proxy/guardrails/quick_start",
+                            "/docs",
                           )}
                           description={t("teams.page.create.fields.guardrails.description")}
                         >
@@ -1090,7 +1090,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                             label={labelWithDocsHint(
                               t("teams.page.create.fields.policies.label"),
                               t("teams.page.create.fields.policies.hint"),
-                              "https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies",
+                              "/docs",
                             )}
                             description={t("teams.page.create.fields.policies.description")}
                           >

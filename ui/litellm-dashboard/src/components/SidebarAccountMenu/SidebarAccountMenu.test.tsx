@@ -153,7 +153,7 @@ describe("SidebarAccountMenu", () => {
     await openMenu(user);
 
     const versionLink = screen.getByRole("link", { name: /v1\.99\.0/ });
-    expect(versionLink).toHaveAttribute("href", "https://docs.litellm.ai/release_notes");
+    expect(versionLink).toHaveAttribute("href", "/docs");
     expect(versionLink).toHaveAttribute("target", "_blank");
   });
 

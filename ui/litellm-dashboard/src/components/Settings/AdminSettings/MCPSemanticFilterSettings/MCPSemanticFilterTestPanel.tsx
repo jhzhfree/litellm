@@ -161,7 +161,7 @@ export default function MCPSemanticFilterTestPanel({
               <ul className="mt-0 mr-0 mb-3 ml-0 list-disc pl-5">
                 <li>
                   <span>
-                    {t("mcpServers.semanticFilterTestPanel.api.filterHeader", { header: "x-litellm-semantic-filter" })}
+                    {t("mcpServers.semanticFilterTestPanel.api.filterHeader", { header: "x-ai-gateway-semantic-filter" })}
                   </span>
                   <span className="block text-sm text-muted-foreground">
                     {t("mcpServers.semanticFilterTestPanel.api.filterHeaderExample")}
@@ -170,7 +170,7 @@ export default function MCPSemanticFilterTestPanel({
                 <li>
                   <span>
                     {t("mcpServers.semanticFilterTestPanel.api.toolsHeader", {
-                      header: "x-litellm-semantic-filter-tools",
+                      header: "x-ai-gateway-semantic-filter-tools",
                     })}
                   </span>
                   <span className="block text-sm text-muted-foreground">

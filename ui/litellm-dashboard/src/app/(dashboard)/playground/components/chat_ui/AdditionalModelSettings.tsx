@@ -166,7 +166,7 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
                   components={{
                     docs: (
                       <a
-                        href="https://docs.litellm.ai/docs/proxy/keys_teams_router_settings"
+                        href="/docs"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-info hover:text-info/80"

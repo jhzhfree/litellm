@@ -4,6 +4,16 @@ import warnings
 import dotenv
 
 
+def apply_product_environment() -> None:
+    os.environ.update(
+        {
+            "LITELLM_" + key.removeprefix("AI_GATEWAY_"): value
+            for key, value in tuple(os.environ.items())
+            if key.startswith("AI_GATEWAY_")
+        }
+    )
+
+
 def _dev_env_hot_reload_enabled() -> bool:
     """The proxy exports this flag when started with ``--reload``. A reloaded
     worker is a fresh process that inherits the reloader's environment, so an
@@ -13,6 +23,7 @@ def _dev_env_hot_reload_enabled() -> bool:
 
 
 def apply_process_defaults() -> None:
+    apply_product_environment()
     warnings.filterwarnings("ignore", message=".*conflict with protected namespace.*")
     # Suppress Pydantic 2.11+ deprecation warning about accessing model_fields on instances
     # This warning can accumulate during streaming and cause memory leaks
@@ -22,3 +33,4 @@ def apply_process_defaults() -> None:
     warnings.filterwarnings("ignore", message=".*`ReadOnly` qualifier.*")
     if os.getenv("LITELLM_MODE", "DEV") == "DEV":
         dotenv.load_dotenv(override=_dev_env_hot_reload_enabled())
+    apply_product_environment()

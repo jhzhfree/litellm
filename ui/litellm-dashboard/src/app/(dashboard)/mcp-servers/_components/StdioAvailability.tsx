@@ -14,7 +14,7 @@ export const STDIO_DISABLED_MESSAGE_KEY: ParseKeys = "mcpServers.stdioAvailabili
 export const STDIO_DISABLED_MESSAGE = en.mcpServers.stdioAvailability.disabledMessage;
 
 export const useMcpStdioEnabled = (): boolean =>
-  $api.useQuery("get", "/.well-known/litellm-ui-config").data?.mcp_stdio_enabled !== false;
+  $api.useQuery("get", "/.well-known/ai-gateway-ui-config").data?.mcp_stdio_enabled !== false;
 
 export const TransportSelectItems: FC<{ stdioEnabled: boolean }> = ({ stdioEnabled }) => {
   const { t } = useTranslation();

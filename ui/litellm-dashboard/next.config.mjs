@@ -43,7 +43,7 @@ const nextConfig = {
     unoptimized: true,
   },
   basePath: "",
-  assetPrefix: "/litellm-asset-prefix",
+  assetPrefix: "/ai-gateway-assets",
   trailingSlash: !devProxyUrl,
   skipTrailingSlashRedirect: Boolean(devProxyUrl),
   turbopack: {

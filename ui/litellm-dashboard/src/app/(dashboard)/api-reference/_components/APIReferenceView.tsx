@@ -29,7 +29,7 @@ const APIReferenceView: React.FC<ApiRefProps> = ({ proxySettings }) => {
         {/* Header row with Docs link on the right */}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold text-foreground">{t("apiReference.view.title")}</h1>
-          <DocLink className="ml-3 shrink-0" href="https://docs.litellm.ai/docs/proxy/user_keys" />
+          <DocLink className="ml-3 shrink-0" href="/docs" />
         </div>
 
         <p className="mt-2 mb-2 text-sm text-muted-foreground">{t("apiReference.view.description")} </p>
@@ -52,7 +52,7 @@ const APIReferenceView: React.FC<ApiRefProps> = ({ proxySettings }) => {
               code={`import openai
 client = openai.OpenAI(
     api_key="your_api_key",
-    base_url="${base_url}" # LiteLLM Proxy is OpenAI compatible, Read More: https://docs.litellm.ai/docs/proxy/user_keys
+    base_url="${base_url}" # AI-Tokengw is OpenAI compatible, Read More: /docs
 )
 
 response = client.chat.completions.create(
@@ -79,17 +79,17 @@ from llama_index.embeddings import AzureOpenAIEmbedding
 from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
 
 llm = AzureOpenAI(
-    engine="azure-gpt-3.5",               # model_name on litellm proxy
+    engine="azure-gpt-3.5",               # model_name on AI-Tokengw
     temperature=0.0,
-    azure_endpoint="${base_url}", # litellm proxy endpoint
-    api_key="<your-master-key>",          # litellm proxy API Key
+    azure_endpoint="${base_url}", # AI-Tokengw endpoint
+    api_key="<your-virtual-key>",          # AI-Tokengw API Key
     api_version="2023-07-01-preview",
 )
 
 embed_model = AzureOpenAIEmbedding(
     deployment_name="azure-embedding-model",
     azure_endpoint="${base_url}",
-    api_key="<your-master-key>",
+    api_key="<your-virtual-key>",
     api_version="2023-07-01-preview",
 )
 
@@ -125,7 +125,7 @@ messages = [
         content="You are a helpful assistant that im using to make a test request to."
     ),
     HumanMessage(
-        content="test from litellm. tell me why it's amazing in 1 sentence"
+        content="test from AI-Tokengw. tell me why it's amazing in 1 sentence"
     ),
 ]
 response = chat(messages)

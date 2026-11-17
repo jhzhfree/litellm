@@ -31,7 +31,7 @@ function EmptyState() {
           components={{
             docs: (
               <a
-                href="https://docs.litellm.ai/docs/proxy/self_serve#all-settings-for-self-serve--sso-flow"
+                href="/docs"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary underline-offset-4 hover:underline"

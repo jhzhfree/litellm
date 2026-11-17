@@ -417,7 +417,7 @@ const menuGroups: MenuGroup[] = [
         page: "learning-resources",
         label: "shell.nav.items.learningResources",
         icon: <BookOpen {...ICON} />,
-        external_url: "https://models.litellm.ai/cookbook",
+        external_url: "/docs",
       },
       {
         key: "caching",

@@ -41,7 +41,7 @@ describe("useClaudeCodeMarketplaceRequiresKey", () => {
     await settled();
     expect(result.current).toBe(requiresKey);
     expect(fetchSpy.mock.calls.map(([request]) => new URL((request as Request).url).pathname)).toEqual([
-      "/.well-known/litellm-ui-config",
+      "/.well-known/ai-gateway-ui-config",
     ]);
   });
 

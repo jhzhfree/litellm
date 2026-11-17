@@ -598,7 +598,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
           <div className="flex items-center justify-between">
             <div>
               <span className="text-sm font-medium text-foreground">
-                {t("agents.addForm.governance.tracing.inbound.label", { header: "x-litellm-trace-id" })}
+                {t("agents.addForm.governance.tracing.inbound.label", { header: "x-ai-gateway-trace-id" })}
               </span>
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("agents.addForm.governance.tracing.inbound.description")}
@@ -610,10 +610,10 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
           <div className="flex items-center justify-between">
             <div>
               <span className="text-sm font-medium text-foreground">
-                {t("agents.addForm.governance.tracing.outbound.label", { header: "x-litellm-trace-id" })}
+                {t("agents.addForm.governance.tracing.outbound.label", { header: "x-ai-gateway-trace-id" })}
               </span>
               <p className="mt-1 text-xs text-muted-foreground">
-                {t("agents.addForm.governance.tracing.outbound.description", { header: "x-litellm-trace-id" })}
+                {t("agents.addForm.governance.tracing.outbound.description", { header: "x-ai-gateway-trace-id" })}
               </p>
             </div>
             <Switch
@@ -637,7 +637,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
         <div className="space-y-4">
           {!requireTraceIdOutbound && (
             <div className="rounded-lg border border-warning/20 bg-warning/10 p-3 text-sm text-warning">
-              {t("agents.addForm.governance.budgets.requiresOutbound", { header: "x-litellm-trace-id" })}
+              {t("agents.addForm.governance.budgets.requiresOutbound", { header: "x-ai-gateway-trace-id" })}
             </div>
           )}
 
@@ -712,7 +712,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
             {t("agents.addForm.governance.rateLimits.session.title")}
           </div>
           <p className="text-xs text-muted-foreground">
-            {t("agents.addForm.governance.rateLimits.session.description", { header: "x-litellm-trace-id" })}
+            {t("agents.addForm.governance.rateLimits.session.description", { header: "x-ai-gateway-trace-id" })}
           </p>
           <div className="grid grid-cols-2 gap-4">
             {rateLimitField(

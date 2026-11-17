@@ -27,7 +27,7 @@ import React, { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/i18n";
 
-export const AUTO_ROUTER_DOCS_URL = "https://docs.litellm.ai/docs/proxy/auto_routing";
+export const AUTO_ROUTER_DOCS_URL = "/docs";
 
 interface Announcement {
   readKey: string;

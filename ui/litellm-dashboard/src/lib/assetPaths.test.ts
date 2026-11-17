@@ -53,8 +53,8 @@ describe("resolveLogoSrc", () => {
     expect(resolveLogoSrc("/_next/static/media/openai_small.abc123.svg")).toBe(
       "/_next/static/media/openai_small.abc123.svg",
     );
-    expect(resolveLogoSrc("/litellm-asset-prefix/_next/static/media/openai_small.abc123.svg")).toBe(
-      "/litellm-asset-prefix/_next/static/media/openai_small.abc123.svg",
+    expect(resolveLogoSrc("/ai-gateway-assets/_next/static/media/openai_small.abc123.svg")).toBe(
+      "/ai-gateway-assets/_next/static/media/openai_small.abc123.svg",
     );
     expect(resolveLogoSrc("/litellm/_next/static/media/openai_small.abc123.svg")).toBe(
       "/litellm/_next/static/media/openai_small.abc123.svg",

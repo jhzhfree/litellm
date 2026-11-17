@@ -929,6 +929,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.websockets import WebSocketState
 
 from litellm.proxy import tracing_endpoints
+from litellm.proxy.common_utils.product_contract import public_header, public_path
 from litellm.proxy.middleware.admission_control_middleware import (
     AdmissionControlMiddleware,
     admission_control_state,
@@ -942,6 +943,7 @@ from litellm.proxy.middleware.per_request_root_path_middleware import (
     PerRequestRootPathMiddleware,
     get_server_root_paths,
 )
+from litellm.proxy.middleware.product_contract_middleware import ProductContractMiddleware
 from litellm.proxy.middleware.prometheus_auth_middleware import PrometheusAuthMiddleware
 from litellm.proxy.middleware.request_body_decompression_middleware import RequestBodyDecompressionMiddleware
 from litellm.proxy.middleware.request_size_limit_middleware import (
@@ -1296,17 +1298,9 @@ custom_swagger_message: Final = (
 )
 
 ### CUSTOM BRANDING [ENTERPRISE FEATURE] ###
-title: Final = os.getenv("DOCS_TITLE", "LiteLLM API") if premium_user else "LiteLLM API"
-
+title: Final = os.getenv("DOCS_TITLE", "AI-Tokengw API")
 _title: Final = title
-_description: Final = (
-    os.getenv(
-        "DOCS_DESCRIPTION",
-        f"Enterprise Edition \n\nProxy Server to call 100+ LLMs in the OpenAI format. {custom_swagger_message}\n\n{ui_message}",
-    )
-    if premium_user
-    else f"Proxy Server to call 100+ LLMs in the OpenAI format. {custom_swagger_message}\n\n{ui_message}"
-)
+_description: Final = os.getenv("DOCS_DESCRIPTION", "AI词元治理网关，提供模型接入、路由、密钥与用量管理接口。")
 
 
 def cleanup_router_config_variables():
@@ -2278,6 +2272,7 @@ def _build_openapi_schema(inputs: _OpenAPIInputs) -> OpenAPISchema:
     if server_root_path:
         openapi_schema["servers"] = [{"url": "/" + server_root_path.strip("/")}]
 
+    openapi_schema["paths"] = {public_path(path): spec for path, spec in openapi_schema.get("paths", {}).items()}
     return openapi_schema
 
 
@@ -2313,6 +2308,7 @@ def _build_docs_filtered_openapi_schema(inputs: _OpenAPIInputs) -> OpenAPISchema
     if server_root_path:
         openapi_schema["servers"] = [{"url": "/" + server_root_path.strip("/")}]
 
+    openapi_schema["paths"] = {public_path(path): spec for path, spec in openapi_schema.get("paths", {}).items()}
     return openapi_schema
 
 
@@ -2962,6 +2958,7 @@ _ROUTE_MAX_REQUEST_SIZE_MB: Final[Mapping[tuple[str, str], float]] = MappingProx
 )
 
 
+app.add_middleware(ProductContractMiddleware)
 app.add_middleware(
     RequestBodyDecompressionMiddleware,
     get_max_request_size_mb=lambda: configured_max_request_size_mb() if premium_user is True else None,
@@ -2973,7 +2970,7 @@ app.add_middleware(
     allow_credentials=allow_cors_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=[*LITELLM_UI_ALLOW_HEADERS, *trace_response_expose_headers()],
+    expose_headers=[public_header(name) for name in (*LITELLM_UI_ALLOW_HEADERS, *trace_response_expose_headers())],
 )
 
 app.add_middleware(PrometheusAuthMiddleware)

@@ -1453,7 +1453,7 @@
           "openai": "OpenAI SDK",
           "azure": "Azure SDK",
           "copyLabel": "代码",
-          "description": "从您自己的应用发送此请求。将 YOUR_LITELLM_API_KEY 替换为虚拟密钥"
+          "description": "从您自己的应用发送此请求。将 YOUR_AI_GATEWAY_API_KEY 替换为虚拟密钥"
         },
         "tabs": {
           "trace": "追踪",
@@ -2293,7 +2293,7 @@
         "title": "cURL 请求",
         "fixIssues_one": "复制前请先在“表单”标签页修复 {{count}} 个问题",
         "fixIssues_other": "复制前请先在“表单”标签页修复 {{count}} 个问题",
-        "replaceKey": "将 $LITELLM_API_KEY 替换为虚拟密钥",
+        "replaceKey": "将 $AI_GATEWAY_API_KEY 替换为虚拟密钥",
         "copy": "复制 cURL"
       },
       "decisionFormControls": {
@@ -2763,7 +2763,7 @@
           },
           "requireTraceId": {
             "label": "要求 Trace ID",
-            "hint": "拒绝该团队未发送 Trace ID 的 LLM、MCP 和 Agent 请求（x-litellm-trace-id 请求头，LLM 请求也可以使用 traceparent 或 metadata.trace_id）"
+            "hint": "拒绝该团队未发送 Trace ID 的 LLM、MCP 和 Agent 请求（x-ai-gateway-trace-id 请求头，LLM 请求也可以使用 traceparent 或 metadata.trace_id）"
           },
           "policies": {
             "label": "策略",
@@ -2959,7 +2959,7 @@
         "disableGlobalGuardrails": "停用所有全局防护栏",
         "disableGlobalGuardrailsHint": "紧急开关：为该团队绕过所有全局防护栏，包括将来新增的防护栏。若只想针对单个防护栏退出，请使用上方的防护栏下拉菜单。",
         "requireTraceId": "要求 Trace ID",
-        "requireTraceIdHint": "拒绝该团队中未发送 trace ID 的 LLM、MCP 和 agent 请求（x-litellm-trace-id 请求头，LLM 请求也可使用 traceparent 或 metadata.trace_id）",
+        "requireTraceIdHint": "拒绝该团队中未发送 trace ID 的 LLM、MCP 和 agent 请求（x-ai-gateway-trace-id 请求头，LLM 请求也可使用 traceparent 或 metadata.trace_id）",
         "policies": "策略",
         "policiesHint": "为该团队应用策略，以控制防护栏和其他设置",
         "policiesPlaceholder": "选择或输入策略",
@@ -3580,17 +3580,17 @@
     },
     "destinationText": {
       "every": "每 {{seconds}} 秒",
-      "http": "每个 worker 每 {{every}} 发送一份 JSON 报告，并在关闭时发送一次，通过 HTTP POST 发送至 LITELLM_TELEMETRY_ENDPOINT。发送失败将在下一个窗口重试",
+      "http": "每个 worker 每 {{every}} 发送一份 JSON 报告，并在关闭时发送一次，通过 HTTP POST 发送至 AI_GATEWAY_TELEMETRY_ENDPOINT。发送失败将在下一个窗口重试",
       "localTable_one": "每个 worker 每 {{every}} 生成一份报告并在关闭时生成一次，存储在本代理的 AI词元治理网关_TelemetryReport 表中，保留 {{count}} 天。数据不会离开该代理。管理员可通过 GET /telemetry/reports 导出",
       "localTable_other": "每个 worker 每 {{every}} 生成一份报告并在关闭时生成一次，存储在本代理的 AI词元治理网关_TelemetryReport 表中，保留 {{count}} 天。数据不会离开该代理。管理员可通过 GET /telemetry/reports 导出",
       "none": "未选择目标，因此不会记录任何数据"
     },
     "destination": {
       "localTable": "本地表（本代理数据库中的 AI词元治理网关_TelemetryReport）",
-      "http": "HTTP（POST 至 LITELLM_TELEMETRY_ENDPOINT）",
+      "http": "HTTP（POST 至 AI_GATEWAY_TELEMETRY_ENDPOINT）",
       "title": "目标",
       "missing": "遥测已开启但未选择目标，因此不会记录任何数据",
-      "setByEnvironment": "由 LITELLM_TELEMETRY_DESTINATION 设置"
+      "setByEnvironment": "由 AI_GATEWAY_TELEMETRY_DESTINATION 设置"
     },
     "groupList": {
       "slicesBy": "切片维度：",
@@ -3612,7 +3612,7 @@
     "howSent": {
       "title": "发送方式与时机",
       "changesApply": "更改将从下一个窗口生效",
-      "offByDefault": "默认关闭。每个开关仅添加聚合统计值，绝不会包含提示词、响应、密钥、ID 或请求头值。LITELLM_TELEMETRY_DISABLED=true 可关闭全部遥测"
+      "offByDefault": "默认关闭。每个开关仅添加聚合统计值，绝不会包含提示词、响应、密钥、ID 或请求头值。AI_GATEWAY_TELEMETRY_DISABLED=true 可关闭全部遥测"
     },
     "enterpriseDialog": {
       "premiumTitle": "联系您的企业代表",
@@ -4259,7 +4259,7 @@
         "fields": {
           "name": {
             "label": "名称（标识符）",
-            "description": "用于 URL 和配置。不能包含空格，例如 litellm-platform-plugin"
+            "description": "用于 URL 和配置。不能包含空格，例如 AI-Tokengw-platform-plugin"
           },
           "displayName": {
             "label": "显示名称"
@@ -4270,7 +4270,7 @@
           },
           "pluginKey": {
             "label": "插件密钥",
-            "description": "可选。插件自身的凭据，仅在 litellm 对插件后端的 API 调用进行反向代理（/plugin-proxy/<name>/*）时，作为 Authorization: Bearer <key> 注入。对于使用 litellm 转发用户令牌的插件（例如 iframe 插件）请留空——该路径使用用户令牌，而非此密钥。",
+            "description": "可选。插件自身的凭据，仅在 AI-Tokengw 对插件后端的 API 调用进行反向代理（/plugin-proxy/<name>/*）时，作为 Authorization: Bearer <key> 注入。对于使用 AI-Tokengw 转发用户令牌的插件（例如 iframe 插件）请留空——该路径使用用户令牌，而非此密钥。",
             "keepCurrentPlaceholder": "留空以保留当前密钥",
             "newPlaceholder": "sk-...（可选）",
             "show": "显示插件密钥",
@@ -5431,7 +5431,7 @@
         "title": "需要配置 PG Vector",
         "intro": "AI词元治理网关 提供了一个用于连接 PG Vector 的服务。要使用此提供商：",
         "steps": {
-          "deploy": "从以下位置部署 litellm-pgvector 服务：",
+          "deploy": "从以下位置部署 AI-Tokengw-pgvector 服务：",
           "configure": "为您的 PostgreSQL 数据库配置 pgvector 扩展",
           "start": "启动服务并记录 API 基础 URL 和 API Key",
           "enter": "在下方字段中填入这些信息"
@@ -5512,8 +5512,8 @@
       },
       "tooltips": {
         "pgVector": {
-          "apiBase": "输入您部署的 litellm-pgvector 服务的基础 URL（例如 http://your-server:8000）",
-          "apiKey": "输入您部署的 litellm-pgvector 服务的 API key"
+          "apiBase": "输入您部署的 AI-Tokengw-pgvector 服务的基础 URL（例如 http://your-server:8000）",
+          "apiKey": "输入您部署的 AI-Tokengw-pgvector 服务的 API key"
         },
         "vertexAiSearch": {
           "project": "托管 Vertex AI Search 数据存储的 Google Cloud 项目 ID。",
@@ -7207,7 +7207,7 @@
         "budgetFallbacksHint": "当某个模型超出其单模型预算时，请求会自动改道到回退模型而不是直接失败",
         "defaultCustomerBudget": "默认客户预算",
         "throttleOnBudgetExceeded": "超出预算时限流",
-        "throttleOnBudgetExceededHint": "当该密钥超出最大预算时，将其 TPM/RPM 限流到全局配置的百分比，而不是完全阻止访问。需要在 litellm_settings 中配置 budget_exceeded_throttle_percentage，并在密钥上设置 TPM/RPM 限制。",
+        "throttleOnBudgetExceededHint": "当该密钥超出最大预算时，将其 TPM/RPM 限流到全局配置的百分比，而不是完全阻止访问。需要在 gateway_settings 中配置 budget_exceeded_throttle_percentage，并在密钥上设置 TPM/RPM 限制。",
         "enablePromptCaching": "启用提示词缓存",
         "enablePromptCachingHint": "自动为使用该密钥发起的请求添加提示词缓存断点（cache_control 标记），降低重复提示词的输入成本。适用于 Anthropic 和 Bedrock Claude 模型；已自行设置 cache_control 标记的请求不会被改动。",
         "maxParallelRequests": "最大并行请求数",
@@ -7502,7 +7502,7 @@
     },
     "throttle": {
       "label": "超出预算时限流",
-      "tooltip": "当此密钥超出最大预算时，将其 TPM/RPM 限制为全局配置的百分比，而不是完全禁止访问。需要在 litellm_settings 中配置 budget_exceeded_throttle_percentage，且密钥需设置 TPM/RPM 限制。"
+      "tooltip": "当此密钥超出最大预算时，将其 TPM/RPM 限制为全局配置的百分比，而不是完全禁止访问。需要在 gateway_settings 中配置 budget_exceeded_throttle_percentage，且密钥需设置 TPM/RPM 限制。"
     },
     "promptCaching": {
       "label": "启用提示词缓存",
@@ -7676,7 +7676,7 @@
       "addWindow": "+ 添加预算窗口"
     },
     "endUserBudgetSelect": {
-      "hint": "应用于此密钥通过 `user` 或 x-litellm-end-user-id 创建的每个新客户（最终用户）的可复用预算。覆盖 proxy 全局的 max_end_user_budget_id；已有自身预算的客户保持不变。",
+      "hint": "应用于此密钥通过 `user` 或 x-ai-gateway-end-user-id 创建的每个新客户（最终用户）的可复用预算。覆盖 proxy 全局的 max_end_user_budget_id；已有自身预算的客户保持不变。",
       "resets": "{{duration}}重置",
       "ariaLabel": "默认客户预算",
       "placeholder": "无默认预算",
@@ -7939,7 +7939,7 @@
       "pointfive": "PointFive 日志集成",
       "zerobus": "Databricks Zerobus Ingest 日志集成",
       "s3": "S3 Bucket (AWS) 日志集成",
-      "signoz": "SigNoz 日志集成。设置：https://signoz.io/docs/litellm-observability/",
+      "signoz": "SigNoz 日志集成。设置：https://signoz.io/docs/AI-Tokengw-observability/",
       "sqs": "SQS 队列 (AWS) 日志集成"
     }
   },
@@ -8025,8 +8025,8 @@
       "calculator": {
         "title": "折扣计算器",
         "body": "输入响应头中的值以验证折扣：",
-        "responseCostLabel": "响应成本（x-litellm-response-cost）",
-        "discountAmountLabel": "折扣金额（x-litellm-response-cost-discount-amount）"
+        "responseCostLabel": "响应成本（x-ai-gateway-response-cost）",
+        "discountAmountLabel": "折扣金额（x-ai-gateway-response-cost-discount-amount）"
       },
       "results": {
         "title": "计算结果",
@@ -10192,7 +10192,7 @@
       "about": {
         "title": "关于",
         "defaultDescription": "以 OpenAI 格式调用 100+ LLM 的代理服务器。",
-        "builtWith": "基于 litellm 构建：v{{version}}"
+        "builtWith": "基于 AI-Tokengw 构建：v{{version}}"
       },
       "usefulLinks": {
         "title": "实用链接"
@@ -10680,7 +10680,7 @@
       "noPublished": "没有明确发布的服务器",
       "savingSummary_one": "保存后将用 <strong>{{count}}</strong> 个 MCP 服务器替换发布列表。旧版模式仍可能列出已启用公网 IP 访问的服务器",
       "savingSummary_other": "保存后将用 <strong>{{count}}</strong> 个 MCP 服务器替换发布列表。旧版模式仍可能列出已启用公网 IP 访问的服务器",
-      "noMetadata": "此代理未提供每个 MCP 服务器的明确发布状态。请更新代理以便在此管理可见性，或在其现有配置中编辑 litellm_settings.public_mcp_servers",
+      "noMetadata": "此代理未提供每个 MCP 服务器的明确发布状态。请更新代理以便在此管理可见性，或在其现有配置中编辑 gateway_settings.public_mcp_servers",
       "loadingSettings": "正在加载发布设置",
       "cancel": "取消",
       "previous": "上一步",
@@ -12946,8 +12946,8 @@
         "guardrailNamePlaceholder": "例如 pii-detection",
         "mode": "模式",
         "apiBase": "API 基础 URL",
-        "extraParams": "附加 litellm_params（可选）",
-        "extraParamsHint": "合并到 litellm_params 中的 JSON 对象。例如 forward_api_key、headers、model、unreachable_fallback",
+        "extraParams": "附加 AI-Tokengw_params（可选）",
+        "extraParamsHint": "合并到 AI-Tokengw_params 中的 JSON 对象。例如 forward_api_key、headers、model、unreachable_fallback",
         "guardrailInfo": "护栏信息（可选）",
         "cancel": "取消",
         "submit": "提交审核"
@@ -13139,11 +13139,11 @@
         },
         "skipSystemMessages": {
           "label": "在 guardrail 中跳过系统消息",
-          "hint": "仅适用于统一 guardrails：在 guardrail 评估输入中省略 role: system（OpenAI chat + Anthropic messages）。模型仍会接收完整消息。使用全局默认值时遵循 litellm_settings.skip_system_message_in_guardrail。"
+          "hint": "仅适用于统一 guardrails：在 guardrail 评估输入中省略 role: system（OpenAI chat + Anthropic messages）。模型仍会接收完整消息。使用全局默认值时遵循 gateway_settings.skip_system_message_in_guardrail。"
         },
         "skipToolMessages": {
           "label": "在 guardrail 中跳过工具消息",
-          "hint": "仅适用于统一 guardrails：在 guardrail 评估输入中省略 role: tool（OpenAI chat + Anthropic messages）。模型仍会接收完整消息。使用全局默认值时遵循 litellm_settings.skip_tool_message_in_guardrail。"
+          "hint": "仅适用于统一 guardrails：在 guardrail 评估输入中省略 role: tool（OpenAI chat + Anthropic messages）。模型仍会接收完整消息。使用全局默认值时遵循 gateway_settings.skip_tool_message_in_guardrail。"
         }
       },
       "endpoint": {
@@ -13476,9 +13476,9 @@
           "no": "否"
         },
         "skipSystemMessagesLabel": "在 guardrail 中跳过系统消息",
-        "skipSystemMessagesHint": "统一 guardrails：在 guardrail 输入中省略 role: system（LLM 仍会收到完整消息）。使用全局默认值时遵循 litellm_settings.skip_system_message_in_guardrail。",
+        "skipSystemMessagesHint": "统一 guardrails：在 guardrail 输入中省略 role: system（LLM 仍会收到完整消息）。使用全局默认值时遵循 gateway_settings.skip_system_message_in_guardrail。",
         "skipToolMessagesLabel": "在 guardrail 中跳过工具消息",
-        "skipToolMessagesHint": "统一 guardrails：在 guardrail 输入中省略 role: tool（LLM 仍会收到完整消息）。使用全局默认值时遵循 litellm_settings.skip_tool_message_in_guardrail。",
+        "skipToolMessagesHint": "统一 guardrails：在 guardrail 输入中省略 role: tool（LLM 仍会收到完整消息）。使用全局默认值时遵循 gateway_settings.skip_tool_message_in_guardrail。",
         "sections": {
           "piiProtection": "PII 防护",
           "providerSettings": "提供商设置",
@@ -13748,7 +13748,7 @@
       }
     },
     "stdioAvailability": {
-      "disabledMessage": "此代理已禁用 stdio MCP 服务器。请在代理上设置 LITELLM_ENABLE_MCP_STDIO=true 并重启以启用",
+      "disabledMessage": "此代理已禁用 stdio MCP 服务器。请在代理上设置 AI_GATEWAY_ENABLE_MCP_STDIO=true 并重启以启用",
       "banner": {
         "title": "此代理已禁用 stdio",
         "description": "{{disabledMessage}}。在此之前，此服务器无法以 stdio 方式启动或保存。"
@@ -14288,7 +14288,7 @@
       "sessionName": {
         "label": "AWS 会话名称",
         "tooltip": "可选。AssumeRole 调用的会话名称 — 会出现在 CloudTrail 日志中。省略则自动生成。",
-        "placeholder": "litellm-prod（可选，留空则自动生成）"
+        "placeholder": "AI-Tokengw-prod（可选，留空则自动生成）"
       }
     },
     "passthroughAuthorizeSection": {
@@ -14772,7 +14772,7 @@
       },
       "allowedClients": {
         "title": "允许的客户端",
-        "description": "只有此处列出的 MCP 客户端应用才能使用网关。留空则允许所有客户端。使用 JWT 进行身份验证的客户端由代理配置中 litellm_jwtauth.mcp_client_id_jwt_field 指定的 claim（例如 azp 或 client_id）标识，该 claim 由您的身份提供方断言，客户端无法自行更改。其他客户端则由下方配置的请求头标识（如果您启用了该请求头）。",
+        "description": "只有此处列出的 MCP 客户端应用才能使用网关。留空则允许所有客户端。使用 JWT 进行身份验证的客户端由代理配置中 AI-Tokengw_jwtauth.mcp_client_id_jwt_field 指定的 claim（例如 azp 或 client_id）标识，该 claim 由您的身份提供方断言，客户端无法自行更改。其他客户端则由下方配置的请求头标识（如果您启用了该请求头）。",
         "malformedWarning": "已存储的允许列表不是有效的别名和值对列表，因此所有客户端均被拒绝。添加您需要的客户端并保存以替换它，或在列表为空时保存以移除它并重新允许所有客户端。",
         "emptyWarning": "当前存储了空的允许列表，因此所有客户端均被拒绝。在列表为空时保存即可移除它并重新允许所有客户端。",
         "add": "添加客户端",
@@ -16172,7 +16172,7 @@
         "publicModelOrSearchToolPlaceholder": "输入公开模型或搜索工具…"
       },
       "columns": {
-        "copyCallId": "复制 x-litellm-call-id",
+        "copyCallId": "复制 x-ai-gateway-call-id",
         "time": "时间",
         "type": "类型",
         "sessionLlmCount_one": "{{count}} 个 LLM",
@@ -16471,7 +16471,7 @@
     },
     "modelViewToggle": {
       "publicModelName": "公开模型名称",
-      "litellmModelName": "Litellm 模型名称"
+      "litellmModelName": "AI-Tokengw 模型名称"
     },
     "userRecordLink": {
       "view": "查看用户记录"
@@ -16678,7 +16678,7 @@
         "aider": "终端中的 AI 结对编程",
         "openaiAgents": "OpenAI Agents SDK",
         "githubActions": "CI 工作流",
-        "litellmSdk": "litellm Python SDK",
+        "litellmSdk": "AI-Tokengw Python SDK",
         "openaiSdk": "OpenAI 客户端库",
         "anthropicSdk": "Anthropic 客户端库",
         "curl": "命令行",
@@ -16904,7 +16904,7 @@
         "tokens": "Token 数"
       },
       "topPublicModelNames": "Top 公开模型名称",
-      "topLitellmModels": "Top Litellm 模型",
+      "topLitellmModels": "Top AI-Tokengw 模型",
       "spendOverview": "{{entity}}支出概览",
       "spendPerEntity": "每个{{entity}}的支出",
       "trackCostPer": "跟踪每个{{entity}}的成本",
@@ -18566,8 +18566,8 @@
     "escalationKeywords": {
       "title": "升级关键词",
       "tooltip": "用户可在消息中包含的区分大小写的短语，用于在结果不满意时强制提升到下一个更高复杂度层级。用户可以强制使用更强的模型，但不能指定具体是哪一个。",
-      "description": "可选：当用户消息包含这些短语之一时，请求会被提升一个比原定路由更高的层级。匹配区分大小写，因此 \"LITELLM ESCALATE\" 仅在全大写的精确形式下生效。留空则禁用。",
-      "placeholder": "例如：LITELLM ESCALATE",
+      "description": "可选：当用户消息包含这些短语之一时，请求会被提升一个比原定路由更高的层级。匹配区分大小写，因此 \"AI-Tokengw ESCALATE\" 仅在全大写的精确形式下生效。留空则禁用。",
+      "placeholder": "例如：AI-Tokengw ESCALATE",
       "typeToAddPhrase": "输入以添加短语"
     },
     "modalityRoutingControls": {
@@ -18694,14 +18694,14 @@
       "kubernetesPodDiscovery": "Kubernetes Pod 发现",
       "kubernetesPodDiscoveryHint": "将 API Base 主机名视为 Kubernetes 无头服务：将其解析为就绪的 Pod IP，并将请求分散到各 Pod。AI词元治理网关 必须运行在同一集群内。",
       "litellmParams": "AI词元治理网关 参数",
-      "litellmParamsHint": "用于发起 litellm.completion() 调用的可选 litellm 参数。",
-      "litellmParamsDocs": "传入 litellm 支持参数的 JSON <docs>litellm.completion() 调用</docs>",
+      "litellmParamsHint": "用于发起补全请求的可选网关参数。",
+      "litellmParamsDocs": "以 JSON 格式传入网关支持的参数。<docs>查看接口文档</docs>",
       "modelInfo": "模型信息",
       "modelInfoHint": "可选的模型信息参数。调用 `/model/info` 端点时返回。"
     },
     "conditionalPublicModelName": {
       "publicNameDescription": "你在调用 AI词元治理网关 Proxy 的 API 请求中指定的名称",
-      "publicNameExample": "<strong>示例：</strong>如果你将公开模型命名为 <publicName/>，并选择 <litellmModel/> 作为 AI词元治理网关 模型",
+      "publicNameExample": "<strong>示例：</strong>如果你将公开模型命名为 <publicName/>，并选择 <AI-TokengwModel/> 作为 AI词元治理网关 模型",
       "publicNameUsage": "<strong>用法：</strong>你使用 <request/> 向 AI词元治理网关 proxy 发起 API 调用",
       "publicNameResult": "<strong>结果：</strong>AI词元治理网关 会向提供商发送 <providerModel/>",
       "publicModelName": "公开模型名称",
@@ -18748,7 +18748,7 @@
     },
     "cacheControlSettings": {
       "label": "缓存控制注入点",
-      "tooltip": "告知 litellm 在何处注入缓存控制检查点。您可以按角色指定（应用到该角色的所有消息），也可以按特定消息索引指定。",
+      "tooltip": "告知 AI-Tokengw 在何处注入缓存控制检查点。您可以按角色指定（应用到该角色的所有消息），也可以按特定消息索引指定。",
       "locations": {
         "message": "消息"
       },
@@ -18757,9 +18757,9 @@
         "system": "系统",
         "assistant": "助手"
       },
-      "description": "Anthropic、Bedrock API 等供应商要求用户指定在何处注入缓存控制检查点，litellm 可以自动为您添加，以节省成本。",
+      "description": "Anthropic、Bedrock API 等供应商要求用户指定在何处注入缓存控制检查点，AI-Tokengw 可以自动为您添加，以节省成本。",
       "roleHint": "AI词元治理网关 会将该角色的所有消息标记为可缓存",
-      "indexHint": "（可选）设置后，litellm 会将此索引处的消息标记为可缓存",
+      "indexHint": "（可选）设置后，AI-Tokengw 会将此索引处的消息标记为可缓存",
       "labelHelp": "{{label}} 帮助",
       "type": "类型",
       "role": "角色",
@@ -19781,7 +19781,7 @@
       "modelsLoaded": "已加载模型数：",
       "loadedFrom": "加载自：",
       "attemptedUrl": "尝试访问的 URL：",
-      "envForced": "通过 <code>LITELLM_LOCAL_MODEL_COST_MAP</code> 或 <code>LITELLM_OFFLINE_MODE</code> 强制使用本地模式",
+      "envForced": "通过 <code>AI_GATEWAY_LOCAL_MODEL_COST_MAP</code> 或 <code>AI_GATEWAY_OFFLINE_MODE</code> 强制使用本地模式",
       "fallback": "已回退到本地：{{reason}}"
     },
     "schedule": {

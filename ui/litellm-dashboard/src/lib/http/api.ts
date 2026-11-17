@@ -1,3 +1,4 @@
+import { productFetch } from "@/lib/http/productContract";
 import createFetchClient, { type Middleware } from "openapi-fetch";
 import createQueryClient from "openapi-react-query";
 import type { paths } from "./schema";
@@ -74,13 +75,13 @@ const jsonMiddleware = (report: (message: string) => void): Middleware => ({
  */
 export const fetchClient = createFetchClient<paths>({
   Request: BaseAwareRequest,
-  fetch: (request) => globalThis.fetch(request),
+  fetch: (request) => productFetch(request),
 });
 fetchClient.use(jsonMiddleware(reportError));
 
 export const backgroundFetchClient = createFetchClient<paths>({
   Request: BaseAwareRequest,
-  fetch: (request) => globalThis.fetch(request),
+  fetch: (request) => productFetch(request),
 });
 backgroundFetchClient.use(jsonMiddleware(() => {}));
 

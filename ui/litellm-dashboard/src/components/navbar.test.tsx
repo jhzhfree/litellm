@@ -79,10 +79,10 @@ vi.mock("./Navbar/UserDropdown/UserDropdown", async (importOriginal) => {
 vi.mock("./Navbar/CommunityEngagementButtons/CommunityEngagementButtons", () => ({
   CommunityEngagementButtons: () => (
     <div data-testid="community-engagement-buttons">
-      <a href="https://www.litellm.ai/support" target="_blank" rel="noopener noreferrer">
+      <a href="/docs" target="_blank" rel="noopener noreferrer">
         Join Slack
       </a>
-      <a href="https://github.com/BerriAI/litellm" target="_blank" rel="noopener noreferrer">
+      <a href="/docs" target="_blank" rel="noopener noreferrer">
         Star us on GitHub
       </a>
     </div>

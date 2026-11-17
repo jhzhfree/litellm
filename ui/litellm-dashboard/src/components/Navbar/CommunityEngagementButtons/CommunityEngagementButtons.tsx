@@ -10,13 +10,13 @@ import { useTranslation } from "react-i18next";
 
 const COMMUNITY_LINKS = [
   {
-    href: "https://www.litellm.ai/support",
+    href: "/docs",
     label: "shell.communityButtons.slackLabel",
     tooltip: "shell.communityButtons.slackTooltip",
     Icon: Slack,
   },
   {
-    href: "https://github.com/BerriAI/litellm",
+    href: "/docs",
     label: "shell.communityButtons.githubLabel",
     tooltip: "shell.communityButtons.githubTooltip",
     Icon: Github,

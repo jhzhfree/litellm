@@ -175,7 +175,7 @@ export default function CyberArk() {
               <AlertTitle>{t("adminPanel.cyberArk.hotReloadInfo.title")}</AlertTitle>
               <AlertDescription>
                 <a
-                  href="https://docs.litellm.ai/docs/secret_managers/cyberark"
+                  href="/docs"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1"

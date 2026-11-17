@@ -151,7 +151,7 @@ export async function makeOpenAIChatCompletionRequest(
           const nonStreamingResponse = await client.chat.completions
             .create({ ...requestBody, stream: false }, { signal })
             .withResponse();
-          servedFromResponseCache = nonStreamingResponse.response.headers.get("x-litellm-cache-key") !== null;
+          servedFromResponseCache = nonStreamingResponse.response.headers.get("x-ai-gateway-cache-key") !== null;
           return [completionAsSingleChunk(nonStreamingResponse.data)];
         })();
 

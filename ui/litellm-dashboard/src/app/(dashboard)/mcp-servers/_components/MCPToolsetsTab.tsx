@@ -538,7 +538,7 @@ function ToolsetUsageGuide() {
   "mcpServers": {
     "my-toolset": {
       "url": "${gatewayBaseUrl}/toolset/<toolset-name>/mcp",
-      "headers": { "x-litellm-api-key": "Bearer <your-api-key>" }
+      "headers": { "x-ai-gateway-api-key": "Bearer <your-api-key>" }
     }
   }
 }`;

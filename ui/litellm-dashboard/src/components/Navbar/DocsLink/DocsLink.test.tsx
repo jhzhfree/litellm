@@ -10,7 +10,7 @@ describe("DocsLink", () => {
     render(<DocsLink />);
 
     const link = screen.getByRole("link", { name: "Docs" });
-    expect(link).toHaveAttribute("href", "https://docs.litellm.ai/docs/");
+    expect(link).toHaveAttribute("href", "/docs");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });

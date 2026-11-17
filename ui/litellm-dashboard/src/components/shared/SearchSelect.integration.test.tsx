@@ -31,11 +31,11 @@ describe("SearchSelect", () => {
     expect(screen.getByRole("combobox")).toHaveValue("Growth");
   });
 
-  it("should keep the LiteLLM Gateway logo visible after selection and remove it when cleared", async () => {
+  it("should keep the AI-Tokengw Gateway logo visible after selection and remove it when cleared", async () => {
     const user = userEvent.setup();
     const options = [
       {
-        label: "LiteLLM Gateway",
+        label: "AI-Tokengw Gateway",
         value: "LITELLM_PROXY",
         icon: <ProviderLogo provider="litellm_proxy" className="w-5 h-5" />,
       },
@@ -47,13 +47,13 @@ describe("SearchSelect", () => {
     render(<Controlled />);
     const input = screen.getByRole("combobox", { name: "Provider" });
 
-    await chooseSelectOption(user, input, /LiteLLM Gateway/);
+    await chooseSelectOption(user, input, /AI-Tokengw Gateway/);
     await user.tab();
 
-    expect(input).toHaveValue("LiteLLM Gateway");
+    expect(input).toHaveValue("AI-Tokengw Gateway");
     expect(screen.getByRole("img", { name: "litellm_proxy logo" })).toHaveAttribute(
       "src",
-      expect.stringContaining("litellm_monogram"),
+      expect.stringContaining("ai_gw_logo"),
     );
 
     await user.click(screen.getByRole("button", { name: "Clear" }));

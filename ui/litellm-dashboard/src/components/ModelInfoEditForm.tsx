@@ -610,7 +610,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                 {t("modelInfoEditForm.fields.guardrails.label")}
                 <DocsHint
                   text={t("modelInfoEditForm.fields.guardrails.hint")}
-                  href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
+                  href="/docs"
                 />
               </FieldLabel>
               {isEditing ? (
@@ -634,7 +634,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                 {t("modelInfoEditForm.fields.knowledgeBases.label")}
                 <DocsHint
                   text={t("modelInfoEditForm.fields.knowledgeBases.hint")}
-                  href="https://docs.litellm.ai/docs/completion/knowledgebase"
+                  href="/docs"
                 />
               </FieldLabel>
               {isEditing ? (
@@ -831,7 +831,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                 {t("modelInfoEditForm.fields.litellmParams.label")}
                 <DocsHint
                   text={t("modelInfoEditForm.fields.litellmParams.hint")}
-                  href="https://docs.litellm.ai/docs/completion/input"
+                  href="/docs"
                 />
               </FieldLabel>
               {isEditing ? (

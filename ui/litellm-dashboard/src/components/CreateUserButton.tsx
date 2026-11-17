@@ -151,7 +151,7 @@ const EmailInvitationsNotice: React.FC = () => {
       <AlertTitle>{t("users.createUser.emailNotice.title")}</AlertTitle>
       <AlertDescription>
         {t("users.createUser.emailNotice.body")}{" "}
-        <a href="https://docs.litellm.ai/docs/proxy/email" target="_blank" rel="noreferrer">
+        <a href="/docs" target="_blank" rel="noreferrer">
           {t("users.createUser.emailNotice.docsLink")}
         </a>
       </AlertDescription>

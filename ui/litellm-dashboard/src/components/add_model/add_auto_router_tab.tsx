@@ -758,7 +758,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
                   <TooltipTrigger
                     render={
                       <a
-                        href="https://github.com/BerriAI/litellm/issues"
+                        href="/docs"
                         className="text-sm text-primary underline-offset-4 hover:underline"
                       >
                         {t("addModel.addAutoRouterTab.needHelp")}

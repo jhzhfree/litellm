@@ -34,15 +34,15 @@ describe("parseStoredHeaderPairs", () => {
 });
 
 describe("buildPlaygroundHeaders", () => {
-  it("joins tags into x-litellm-tags and lets custom headers override it", () => {
+  it("joins tags into x-ai-gateway-tags and lets custom headers override it", () => {
     expect(buildPlaygroundHeaders(["a", "b"], { "x-custom": "1" })).toEqual({
-      "x-litellm-tags": "a,b",
+      "x-ai-gateway-tags": "a,b",
       "x-custom": "1",
     });
-    expect(buildPlaygroundHeaders(["a"], { "x-litellm-tags": "b" })).toEqual({ "x-litellm-tags": "b" });
+    expect(buildPlaygroundHeaders(["a"], { "x-ai-gateway-tags": "b" })).toEqual({ "x-ai-gateway-tags": "b" });
   });
 
-  it("omits x-litellm-tags when there are no tags", () => {
+  it("omits x-ai-gateway-tags when there are no tags", () => {
     expect(buildPlaygroundHeaders([], { "x-custom": "1" })).toEqual({ "x-custom": "1" });
     expect(buildPlaygroundHeaders(undefined, undefined)).toEqual({});
   });

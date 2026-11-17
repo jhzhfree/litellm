@@ -21,7 +21,7 @@ const exampleModel = (group: RoutingGroup): string =>
 const buildCurlSnippet = (group: RoutingGroup, baseUrl: string): string =>
   `curl -X POST '${baseUrl}/v1/chat/completions' \\
   -H 'Content-Type: application/json' \\
-  -H "Authorization: Bearer $LITELLM_API_KEY" \\
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \\
   -d '{
     "model": "${exampleModel(group)}",
     "messages": [{"role": "user", "content": "Hello!"}]

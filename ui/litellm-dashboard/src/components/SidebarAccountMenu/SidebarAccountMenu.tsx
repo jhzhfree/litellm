@@ -26,7 +26,7 @@ import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { productNames } from "@/i18n/untranslated/productNames";
 
-const RELEASE_NOTES_URL = "https://docs.litellm.ai/release_notes";
+const RELEASE_NOTES_URL = "/docs";
 
 function hueFromString(seed: string): number {
   let h = 0;

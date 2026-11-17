@@ -133,7 +133,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   {t("addModel.advancedSettings.knowledgeBases")}{" "}
                   <SimpleTooltip content={t("addModel.advancedSettings.knowledgeBasesTooltip")}>
                     <a
-                      href="https://docs.litellm.ai/docs/completion/knowledgebase"
+                      href="/docs"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -163,7 +163,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   {t("addModel.advancedSettings.guardrails")}{" "}
                   <SimpleTooltip content={t("addModel.advancedSettings.guardrailsTooltip")}>
                     <a
-                      href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
+                      href="/docs"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()} // Prevent accordion from collapsing when clicking link
@@ -459,7 +459,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     components={{
                       docs: (
                         <a
-                          href="https://docs.litellm.ai/docs/pass_through/vertex_ai"
+                          href="/docs"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary underline-offset-4 hover:underline"
@@ -543,7 +543,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   components={{
                     docs: (
                       <a
-                        href="https://docs.litellm.ai/docs/completion/input"
+                        href="/docs"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary underline-offset-4 hover:underline"

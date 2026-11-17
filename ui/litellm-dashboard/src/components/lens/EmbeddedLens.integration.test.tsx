@@ -46,15 +46,15 @@ it("renders the published Lens settings and uses the gateway session, prefix, an
   expect(await screen.findByRole("heading", { name: "Add an analysis provider" })).toBeVisible();
   expect(screen.getByRole("link", { name: "Configure analysis models" })).toHaveAttribute(
     "href",
-    "https://github.com/BerriAI/lens/blob/main/docs/analysis.md",
+    "/docs",
   );
   expect(screen.getByText("Tracing enabled")).toBeVisible();
   const analysis = within(screen.getByRole("region", { name: "Analysis", exact: true }));
   const copyPrompt = analysis.getByRole("button", { name: "Set it up for me" });
   await user.click(copyPrompt);
   const prompt = await navigator.clipboard.readText();
-  expect(prompt).toContain("I opened Lens from an existing LiteLLM admin dashboard.");
-  expect(prompt).toContain('LiteLLM API base: "https://gateway.test/prefix"');
+  expect(prompt).toContain("I opened Lens from an existing AI-Tokengw admin dashboard.");
+  expect(prompt).toContain('AI-Tokengw API base: "https://gateway.test/prefix"');
   expect(prompt).toContain("Configure Lens investigations");
   expect(prompt).not.toContain("standalone Lens app");
   expect(prompt).not.toContain("gateway-session");
@@ -106,18 +106,18 @@ it("keeps manual installation on the unconfigured gateway landing and copies its
   expect(setup.getByRole("button", { name: /Install Lens/ })).toHaveAttribute("aria-expanded", "true");
   expect(await setup.findByRole("link", { name: "Helm setup" })).toHaveAttribute(
     "href",
-    "https://docs.litellm.ai/docs/proxy/lens/deployment/kubernetes#existing-deployment",
+    "/docs",
   );
   expect(setup.getByRole("link", { name: "Docker setup" })).toHaveAttribute(
     "href",
-    "https://docs.litellm.ai/docs/proxy/lens/deployment/docker-compose",
+    "/docs",
   );
   expect(setup.getByRole("button", { name: "Check setup" })).toBeEnabled();
 
   await user.click(setup.getByRole("button", { name: "Set it up for me" }));
   const prompt = await navigator.clipboard.readText();
-  expect(prompt).toContain("existing LiteLLM admin dashboard");
-  expect(prompt).toContain('LiteLLM API base: "https://gateway.test/prefix"');
+  expect(prompt).toContain("existing AI-Tokengw admin dashboard");
+  expect(prompt).toContain('AI-Tokengw API base: "https://gateway.test/prefix"');
   expect(prompt).toContain("Lens connection is not configured");
   expect(prompt).toContain("Check for an existing Lens service before installing another");
   expect(prompt).not.toContain("gateway-session");

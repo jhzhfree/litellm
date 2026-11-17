@@ -214,7 +214,7 @@ ${formattedBody}
               issues: (
                 <a
                   className="underline underline-offset-4"
-                  href="https://github.com/BerriAI/litellm/issues"
+                  href="/docs"
                   target="_blank"
                   rel="noopener noreferrer"
                 />

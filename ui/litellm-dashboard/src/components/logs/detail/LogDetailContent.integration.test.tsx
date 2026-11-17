@@ -584,7 +584,7 @@ describe("LogDetailContent", () => {
 
     expect(await screen.findByRole("link", { name: "Docs" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/proxy/caching",
+      "/docs",
     );
   });
 
@@ -609,7 +609,7 @@ describe("LogDetailContent", () => {
 
     expect(await screen.findByRole("link", { name: "Docs" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/completion/prompt_caching",
+      "/docs",
     );
   });
 

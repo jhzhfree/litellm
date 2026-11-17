@@ -37,13 +37,13 @@ describe("CommunityEngagementButtons", () => {
 
     const joinSlackLink = screen.getByRole("link", { name: /join slack/i });
     expect(joinSlackLink).toBeInTheDocument();
-    expect(joinSlackLink).toHaveAttribute("href", "https://www.litellm.ai/support");
+    expect(joinSlackLink).toHaveAttribute("href", "/docs");
     expect(joinSlackLink).toHaveAttribute("target", "_blank");
     expect(joinSlackLink).toHaveAttribute("rel", "noopener noreferrer");
 
     const githubLink = screen.getByRole("link", { name: /litellm on github/i });
     expect(githubLink).toBeInTheDocument();
-    expect(githubLink).toHaveAttribute("href", "https://github.com/BerriAI/litellm");
+    expect(githubLink).toHaveAttribute("href", "/docs");
     expect(githubLink).toHaveAttribute("target", "_blank");
     expect(githubLink).toHaveAttribute("rel", "noopener noreferrer");
   });

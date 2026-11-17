@@ -76,7 +76,7 @@ const PassThroughGuardrailsSection: React.FC<PassThroughGuardrailsSectionProps> 
           <AlertTitle>
             {t("passThroughGuardrailsSection.fieldTargeting.title")}{" "}
             <a
-              href="https://docs.litellm.ai/docs/proxy/pass_through_guardrails#field-level-targeting"
+              href="/docs"
               target="_blank"
               rel="noopener noreferrer"
               className="text-info underline hover:text-info/80"

@@ -92,7 +92,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
                   <TooltipTrigger
                     render={
                       <a
-                        href="https://github.com/BerriAI/litellm/issues"
+                        href="/docs"
                         className="text-sm text-primary underline-offset-4 hover:underline"
                       >
                         {t("modelAdd.reuseCredentials.needHelp")}

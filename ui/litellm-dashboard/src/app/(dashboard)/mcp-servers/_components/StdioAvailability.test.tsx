@@ -80,7 +80,7 @@ describe("useMcpStdioEnabled", () => {
     await settled();
     expect(result.current).toBe(false);
     expect(fetchSpy.mock.calls.map(([request]) => (request as Request).url)).toEqual([
-      "http://worker-b.example:4000/.well-known/litellm-ui-config",
+      "http://worker-b.example:4000/.well-known/ai-gateway-ui-config",
     ]);
   });
 

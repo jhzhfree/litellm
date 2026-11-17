@@ -4,19 +4,19 @@ import { gatewayTraceFromHeaders } from "./reply_trace";
 describe("gatewayTraceFromHeaders", () => {
   it("reads routing, timing, cost and guardrail details from the gateway headers", () => {
     const headers = new Headers([
-      ["x-litellm-call-id", "call-1"],
-      ["x-litellm-model-group", "fast"],
-      ["x-litellm-model-id", "deployment-1"],
-      ["x-litellm-model-name", "provider/model-a"],
-      ["x-litellm-model-api-base", "https://provider.test/v1"],
-      ["x-litellm-attempted-fallbacks", "1"],
-      ["x-litellm-attempted-retries", "2"],
-      ["x-litellm-overhead-duration-ms", "12.5"],
-      ["x-litellm-response-duration-ms", "840"],
-      ["x-litellm-response-cost", "0.0004"],
-      ["x-litellm-applied-guardrails", "pii-mask, toxicity"],
-      ["x-litellm-applied-policies", "strict"],
-      ["x-litellm-cache-key", "abc"],
+      ["x-ai-gateway-call-id", "call-1"],
+      ["x-ai-gateway-model-group", "fast"],
+      ["x-ai-gateway-model-id", "deployment-1"],
+      ["x-ai-gateway-model-name", "provider/model-a"],
+      ["x-ai-gateway-model-api-base", "https://provider.test/v1"],
+      ["x-ai-gateway-attempted-fallbacks", "1"],
+      ["x-ai-gateway-attempted-retries", "2"],
+      ["x-ai-gateway-overhead-duration-ms", "12.5"],
+      ["x-ai-gateway-response-duration-ms", "840"],
+      ["x-ai-gateway-response-cost", "0.0004"],
+      ["x-ai-gateway-applied-guardrails", "pii-mask, toxicity"],
+      ["x-ai-gateway-applied-policies", "strict"],
+      ["x-ai-gateway-cache-key", "abc"],
     ]);
     const trace = gatewayTraceFromHeaders(headers);
 
@@ -41,9 +41,9 @@ describe("gatewayTraceFromHeaders", () => {
   it("leaves details unset when headers are missing, blank or not numeric", () => {
     const trace = gatewayTraceFromHeaders(
       new Headers({
-        "x-litellm-model-group": "  ",
-        "x-litellm-attempted-fallbacks": "none",
-        "x-litellm-applied-guardrails": " , ",
+        "x-ai-gateway-model-group": "  ",
+        "x-ai-gateway-attempted-fallbacks": "none",
+        "x-ai-gateway-applied-guardrails": " , ",
       }),
     );
 
@@ -54,8 +54,8 @@ describe("gatewayTraceFromHeaders", () => {
   });
 
   it("leaves policies unknown when the gateway's own headers are hidden from the page", () => {
-    const hidden = gatewayTraceFromHeaders(new Headers({ "x-litellm-applied-guardrails": "pii-mask" }));
-    const visible = gatewayTraceFromHeaders(new Headers({ "x-litellm-call-id": "call-1" }));
+    const hidden = gatewayTraceFromHeaders(new Headers({ "x-ai-gateway-applied-guardrails": "pii-mask" }));
+    const visible = gatewayTraceFromHeaders(new Headers({ "x-ai-gateway-call-id": "call-1" }));
 
     expect(hidden.appliedGuardrails).toEqual(["pii-mask"]);
     expect(hidden.appliedPolicies).toBeUndefined();

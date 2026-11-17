@@ -746,7 +746,7 @@ function DetailPanel({
                 components={{
                   docs: (
                     <a
-                      href="https://docs.litellm.ai/docs/adding_provider/generic_guardrail_api"
+                      href="/docs"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-info hover:underline"

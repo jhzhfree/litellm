@@ -44,7 +44,7 @@ beforeEach(() => {
       const url = input instanceof Request ? input.url : String(input);
       const path = new URL(url, "http://localhost").pathname;
       switch (path) {
-        case "/litellm/.well-known/litellm-ui-config":
+        case "/ai-gateway/.well-known/ui-config":
           return Response.json({ server_root_path: "", proxy_base_url: "", admin_ui_disabled: false });
         case "/get/ui_settings":
         case "/get/ui_theme_settings":
@@ -91,7 +91,7 @@ beforeEach(() => {
           const release = { version: "", release_url: "", bug_fixes: 0, new_features: 0, other_updates: 0 };
           return Response.json(release);
         }
-        case "/public/litellm_blog_posts":
+        case "/public/gateway_updates":
           return Response.json({ posts: [] });
         default:
           throw new Error(`Unexpected request: ${url}`);

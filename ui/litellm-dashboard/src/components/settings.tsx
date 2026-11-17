@@ -750,7 +750,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
             <DialogTitle>{t("loggingAndAlerts.loggingCallbacks.addDialog.title")}</DialogTitle>
           </DialogHeader>
           <a
-            href="https://docs.litellm.ai/docs/proxy/logging"
+            href="/docs"
             className="mb-8 mt-4"
             target="_blank"
             style={{ color: "blue" }}

@@ -20,7 +20,7 @@ describe("DecisionModelsBanner", () => {
     render(<DecisionModelsBanner />);
     expect(screen.getByRole("link", { name: "How to call them" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/decisions",
+      "/docs",
     );
   });
 
@@ -28,7 +28,7 @@ describe("DecisionModelsBanner", () => {
     render(<DecisionModelsBanner />);
     expect(screen.getByRole("link", { name: "Supported providers" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/decisions#supported-providers",
+      "/docs",
     );
     expect(screen.getByRole("paragraph")).not.toHaveTextContent("Add Model");
     expect(screen.getByRole("paragraph")).toHaveTextContent("Call them at /v1/decisions or /v1/systemone");

@@ -181,7 +181,7 @@ const ChatShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               render={
-                <a href="https://github.com/BerriAI/litellm/discussions/32085" target="_blank" rel="noreferrer" />
+                <a href="/docs" target="_blank" rel="noreferrer" />
               }
             >
               <Info className="size-4" />

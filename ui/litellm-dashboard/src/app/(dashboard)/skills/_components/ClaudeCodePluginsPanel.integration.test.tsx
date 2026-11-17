@@ -217,7 +217,7 @@ beforeEach(() => {
     if (path.endsWith("/archive")) return new Response("zip-bytes", { headers: { "Content-Type": "application/zip" } });
     if (path === `/skill-hub/submissions/${pending.id}`)
       return Response.json({ submission: submissions[0], current_skill: catalog[0] });
-    if (path === "/.well-known/litellm-ui-config")
+    if (path === "/.well-known/ai-gateway-ui-config")
       return Response.json({ claude_code_marketplace_auth_required: true });
     return Response.json({ detail: "Unexpected request" }, { status: 404 });
   });

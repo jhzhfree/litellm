@@ -13,7 +13,7 @@ describe("buildCurlCommand", () => {
     const command = buildCurlCommand(input);
 
     expect(command).toContain("curl -X POST 'http://localhost:4000/v1/systemone'");
-    expect(command).toContain('-H "Authorization: Bearer $LITELLM_API_KEY"');
+    expect(command).toContain('-H "Authorization: Bearer $AI_GATEWAY_API_KEY"');
     expect(command).not.toContain("sk-");
     expect(command).toContain('  "state": "it\'\\\'\'s broken"');
     expect(JSON.parse(curlPayload(command) ?? "")).toEqual({ model: "jev-latest", state: "it's broken" });
@@ -38,7 +38,7 @@ describe("buildCurlCommand", () => {
       authHeaderName: "X-Litellm-Key",
     };
     const command = buildCurlCommand(input);
-    expect(command).toContain('-H "X-Litellm-Key: Bearer $LITELLM_API_KEY"');
+    expect(command).toContain('-H "X-Litellm-Key: Bearer $AI_GATEWAY_API_KEY"');
     expect(command).not.toContain("Authorization");
   });
 
@@ -55,7 +55,7 @@ describe("buildCurlCommand", () => {
       env: { ...process.env, LITELLM_API_KEY: "sk-test-key" },
     });
     expect(args).toContain('X-"$(touch pwned)`id`\\Key: Bearer sk-test-key\n');
-    expect(args).not.toContain("$LITELLM_API_KEY");
+    expect(args).not.toContain("$AI_GATEWAY_API_KEY");
   });
 
   it("passes a payload that is not JSON through untouched", () => {

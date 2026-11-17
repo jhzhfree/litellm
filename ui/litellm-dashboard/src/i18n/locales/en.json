@@ -987,7 +987,7 @@
         "title": "PG Vector Setup Required",
         "intro": "AI-Tokengw provides a server to connect to PG Vector. To use this provider:",
         "steps": {
-          "deploy": "Deploy the litellm-pgvector server from:",
+          "deploy": "Deploy the AI-Tokengw-pgvector server from:",
           "configure": "Configure your PostgreSQL database with pgvector extension",
           "start": "Start the server and note the API base URL and API key",
           "enter": "Enter those details in the fields below"
@@ -1068,8 +1068,8 @@
       },
       "tooltips": {
         "pgVector": {
-          "apiBase": "Enter the base URL of your deployed litellm-pgvector server (e.g., http://your-server:8000)",
-          "apiKey": "Enter the API key from your deployed litellm-pgvector server"
+          "apiBase": "Enter the base URL of your deployed AI-Tokengw-pgvector server (e.g., http://your-server:8000)",
+          "apiKey": "Enter the API key from your deployed AI-Tokengw-pgvector server"
         },
         "vertexAiSearch": {
           "project": "Google Cloud project ID that hosts the Vertex AI Search data store.",
@@ -2295,7 +2295,7 @@
         "budgetFallbacksHint": "When a model exceeds its per-model budget, requests automatically reroute to fallback models instead of failing",
         "defaultCustomerBudget": "Default Customer Budget",
         "throttleOnBudgetExceeded": "Throttle on budget exceeded",
-        "throttleOnBudgetExceededHint": "When this key exceeds its max budget, throttle its TPM/RPM to the globally configured percentage instead of blocking access entirely. Requires budget_exceeded_throttle_percentage in litellm_settings and a TPM/RPM limit on the key.",
+        "throttleOnBudgetExceededHint": "When this key exceeds its max budget, throttle its TPM/RPM to the globally configured percentage instead of blocking access entirely. Requires budget_exceeded_throttle_percentage in gateway_settings and a TPM/RPM limit on the key.",
         "enablePromptCaching": "Enable Prompt Caching",
         "enablePromptCachingHint": "Automatically add prompt caching breakpoints (cache_control markers) to requests made with this key, cutting input cost on repeated prompts. Applies to Anthropic and Bedrock Claude models; requests that already set their own cache_control markers are left untouched.",
         "maxParallelRequests": "Max Parallel Requests",
@@ -2675,7 +2675,7 @@
     },
     "throttle": {
       "label": "Throttle on budget exceeded",
-      "tooltip": "When this key exceeds its max budget, throttle its TPM/RPM to the globally configured percentage instead of blocking access entirely. Requires budget_exceeded_throttle_percentage in litellm_settings and a TPM/RPM limit on the key."
+      "tooltip": "When this key exceeds its max budget, throttle its TPM/RPM to the globally configured percentage instead of blocking access entirely. Requires budget_exceeded_throttle_percentage in gateway_settings and a TPM/RPM limit on the key."
     },
     "promptCaching": {
       "label": "Enable Prompt Caching",
@@ -2849,7 +2849,7 @@
       "addWindow": "+ Add Budget Window"
     },
     "endUserBudgetSelect": {
-      "hint": "Reusable budget applied to every new customer (end user) this key creates via `user` or x-litellm-end-user-id. Overrides the proxy-wide max_end_user_budget_id; customers that already have their own budget keep it.",
+      "hint": "Reusable budget applied to every new customer (end user) this key creates via `user` or x-ai-gateway-end-user-id. Overrides the proxy-wide max_end_user_budget_id; customers that already have their own budget keep it.",
       "resets": "resets {{duration}}",
       "ariaLabel": "Default Customer Budget",
       "placeholder": "No default budget",
@@ -3112,7 +3112,7 @@
       "pointfive": "PointFive Logging Integration",
       "zerobus": "Databricks Zerobus Ingest Logging Integration",
       "s3": "S3 Bucket (AWS) Logging Integration",
-      "signoz": "SigNoz Logging Integration. Setup: https://signoz.io/docs/litellm-observability/",
+      "signoz": "SigNoz Logging Integration. Setup: https://signoz.io/docs/AI-Tokengw-observability/",
       "sqs": "SQS Queue (AWS) Logging Integration"
     }
   },
@@ -3495,8 +3495,8 @@
       "calculator": {
         "title": "Discount Calculator",
         "body": "Enter values from your response headers to verify the discount:",
-        "responseCostLabel": "Response Cost (x-litellm-response-cost)",
-        "discountAmountLabel": "Discount Amount (x-litellm-response-cost-discount-amount)"
+        "responseCostLabel": "Response Cost (x-ai-gateway-response-cost)",
+        "discountAmountLabel": "Discount Amount (x-ai-gateway-response-cost-discount-amount)"
       },
       "results": {
         "title": "Calculated Results",
@@ -5469,7 +5469,7 @@
         "fields": {
           "name": {
             "label": "Name (identifier)",
-            "description": "Used in URLs and config. No spaces. E.g. litellm-platform-plugin"
+            "description": "Used in URLs and config. No spaces. E.g. AI-Tokengw-platform-plugin"
           },
           "displayName": {
             "label": "Display Name"
@@ -5480,7 +5480,7 @@
           },
           "pluginKey": {
             "label": "Plugin Key",
-            "description": "Optional. The plugin's own credential, injected as Authorization: Bearer <key> only when litellm reverse-proxies API calls to the plugin's backend (/plugin-proxy/<name>/*). Leave blank for plugins that use the forwarded litellm user token (e.g. iframe plugins) — that path uses the user's token, not this key.",
+            "description": "Optional. The plugin's own credential, injected as Authorization: Bearer <key> only when AI-Tokengw reverse-proxies API calls to the plugin's backend (/plugin-proxy/<name>/*). Leave blank for plugins that use the forwarded AI-Tokengw user token (e.g. iframe plugins) — that path uses the user's token, not this key.",
             "keepCurrentPlaceholder": "Leave blank to keep current key",
             "newPlaceholder": "sk-... (optional)",
             "show": "Show plugin key",
@@ -7145,7 +7145,7 @@
       "about": {
         "title": "About",
         "defaultDescription": "Proxy Server to call 100+ LLMs in the OpenAI format.",
-        "builtWith": "Built with litellm: v{{version}}"
+        "builtWith": "Built with AI-Tokengw: v{{version}}"
       },
       "usefulLinks": {
         "title": "Useful Links"
@@ -7633,7 +7633,7 @@
       "noPublished": "No explicitly published servers",
       "savingSummary_one": "Saving replaces the publication list with <strong>{{count}}</strong> MCP server. Legacy mode may still list servers with public IP access enabled",
       "savingSummary_other": "Saving replaces the publication list with <strong>{{count}}</strong> MCP servers. Legacy mode may still list servers with public IP access enabled",
-      "noMetadata": "This proxy does not provide explicit publication status for every MCP server. Update the proxy to manage visibility here, or edit litellm_settings.public_mcp_servers in its existing configuration",
+      "noMetadata": "This proxy does not provide explicit publication status for every MCP server. Update the proxy to manage visibility here, or edit gateway_settings.public_mcp_servers in its existing configuration",
       "loadingSettings": "Loading publication settings",
       "cancel": "Cancel",
       "previous": "Previous",
@@ -8572,7 +8572,7 @@
     },
     "view": {
       "title": "OpenAI Compatible Proxy: API Reference",
-      "description": "AI-Tokengw is OpenAI Compatible. This means your API Key works with the OpenAI SDK. Just replace the base_url to point to your litellm proxy. Example Below"
+      "description": "AI-Tokengw is OpenAI Compatible. This means your API Key works with the OpenAI SDK. Just replace the base_url to point to your AI-Tokengw proxy. Example Below"
     },
     "docLink": {
       "title": "Open documentation in a new tab",
@@ -9599,7 +9599,7 @@
           "openai": "OpenAI SDK",
           "azure": "Azure SDK",
           "copyLabel": "code",
-          "description": "Send this request from your own app. Replace YOUR_LITELLM_API_KEY with a virtual key"
+          "description": "Send this request from your own app. Replace YOUR_AI_GATEWAY_API_KEY with a virtual key"
         },
         "tabs": {
           "trace": "Trace",
@@ -10439,7 +10439,7 @@
         "title": "cURL request",
         "fixIssues_one": "Fix {{count}} issue on the Form tab before copying",
         "fixIssues_other": "Fix {{count}} issues on the Form tab before copying",
-        "replaceKey": "Replace $LITELLM_API_KEY with a virtual key",
+        "replaceKey": "Replace $AI_GATEWAY_API_KEY with a virtual key",
         "copy": "Copy cURL"
       },
       "decisionFormControls": {
@@ -11485,8 +11485,8 @@
         "guardrailNamePlaceholder": "e.g. pii-detection",
         "mode": "Mode",
         "apiBase": "API Base URL",
-        "extraParams": "Additional litellm_params (optional)",
-        "extraParamsHint": "JSON object merged into litellm_params. e.g. forward_api_key, headers, model, unreachable_fallback",
+        "extraParams": "Additional AI-Tokengw_params (optional)",
+        "extraParamsHint": "JSON object merged into AI-Tokengw_params. e.g. forward_api_key, headers, model, unreachable_fallback",
         "guardrailInfo": "Guardrail Info (optional)",
         "cancel": "Cancel",
         "submit": "Submit for Review"
@@ -11678,11 +11678,11 @@
         },
         "skipSystemMessages": {
           "label": "Skip system messages in guardrail",
-          "hint": "Unified guardrails only: omit role: system from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_system_message_in_guardrail."
+          "hint": "Unified guardrails only: omit role: system from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows gateway_settings.skip_system_message_in_guardrail."
         },
         "skipToolMessages": {
           "label": "Skip tool messages in guardrail",
-          "hint": "Unified guardrails only: omit role: tool from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_tool_message_in_guardrail."
+          "hint": "Unified guardrails only: omit role: tool from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows gateway_settings.skip_tool_message_in_guardrail."
         }
       },
       "endpoint": {
@@ -12015,9 +12015,9 @@
           "no": "No"
         },
         "skipSystemMessagesLabel": "Skip system messages in guardrail",
-        "skipSystemMessagesHint": "Unified guardrails: omit role: system from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_system_message_in_guardrail.",
+        "skipSystemMessagesHint": "Unified guardrails: omit role: system from guardrail input (LLM still gets full messages). Use global default follows gateway_settings.skip_system_message_in_guardrail.",
         "skipToolMessagesLabel": "Skip tool messages in guardrail",
-        "skipToolMessagesHint": "Unified guardrails: omit role: tool from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_tool_message_in_guardrail.",
+        "skipToolMessagesHint": "Unified guardrails: omit role: tool from guardrail input (LLM still gets full messages). Use global default follows gateway_settings.skip_tool_message_in_guardrail.",
         "sections": {
           "piiProtection": "PII Protection",
           "providerSettings": "Provider Settings",
@@ -12454,7 +12454,7 @@
       }
     },
     "stdioAvailability": {
-      "disabledMessage": "stdio MCP servers are disabled on this proxy. Set LITELLM_ENABLE_MCP_STDIO=true on the proxy and restart to enable them",
+      "disabledMessage": "stdio MCP servers are disabled on this proxy. Set AI_GATEWAY_ENABLE_MCP_STDIO=true on the proxy and restart to enable them",
       "banner": {
         "title": "stdio is disabled on this proxy",
         "description": "{{disabledMessage}}. Until then this server cannot start or be saved as stdio."
@@ -12994,7 +12994,7 @@
       "sessionName": {
         "label": "AWS Session Name",
         "tooltip": "Optional. Session name for the AssumeRole call — appears in CloudTrail logs. Auto-generated if omitted.",
-        "placeholder": "litellm-prod (optional, auto-generated if blank)"
+        "placeholder": "AI-Tokengw-prod (optional, auto-generated if blank)"
       }
     },
     "passthroughAuthorizeSection": {
@@ -13478,7 +13478,7 @@
       },
       "allowedClients": {
         "title": "Allowed Clients",
-        "description": "Only the MCP client applications listed here can use the gateway. Leave empty to allow every client. A client that authenticates with a JWT is identified by the claim named in litellm_jwtauth.mcp_client_id_jwt_field in your proxy config (for example azp or client_id), which your identity provider asserts and the client cannot change. Any other client is identified by the request header configured below, if you enable one.",
+        "description": "Only the MCP client applications listed here can use the gateway. Leave empty to allow every client. A client that authenticates with a JWT is identified by the claim named in AI-Tokengw_jwtauth.mcp_client_id_jwt_field in your proxy config (for example azp or client_id), which your identity provider asserts and the client cannot change. Any other client is identified by the request header configured below, if you enable one.",
         "malformedWarning": "The stored allowlist is not a list of alias and value pairs, so every client is denied. Add the clients you want and save to replace it, or save with the list empty to remove it and allow every client again.",
         "emptyWarning": "An empty allowlist is currently stored, so every client is denied. Save with the list empty to remove it and allow every client again.",
         "add": "Add client",
@@ -14878,7 +14878,7 @@
         "publicModelOrSearchToolPlaceholder": "Enter public model or search tool…"
       },
       "columns": {
-        "copyCallId": "Copy x-litellm-call-id",
+        "copyCallId": "Copy x-ai-gateway-call-id",
         "time": "Time",
         "type": "Type",
         "sessionLlmCount_one": "{{count}} LLM",
@@ -15177,7 +15177,7 @@
     },
     "modelViewToggle": {
       "publicModelName": "Public Model Name",
-      "litellmModelName": "Litellm Model Name"
+      "litellmModelName": "AI-Tokengw Model Name"
     },
     "userRecordLink": {
       "view": "View user record"
@@ -15384,7 +15384,7 @@
         "aider": "AI pair programming in the terminal",
         "openaiAgents": "OpenAI Agents SDK",
         "githubActions": "CI workflows",
-        "litellmSdk": "litellm Python SDK",
+        "litellmSdk": "AI-Tokengw Python SDK",
         "openaiSdk": "OpenAI client library",
         "anthropicSdk": "Anthropic client library",
         "curl": "Command line",
@@ -15610,7 +15610,7 @@
         "tokens": "Tokens"
       },
       "topPublicModelNames": "Top Public Model Names",
-      "topLitellmModels": "Top Litellm Models",
+      "topLitellmModels": "Top AI-Tokengw Models",
       "spendOverview": "{{entity}} Spend Overview",
       "spendPerEntity": "Spend Per {{entity}}",
       "trackCostPer": "Track cost per {{entity}}",
@@ -16033,17 +16033,17 @@
   "telemetry": {
     "destinationText": {
       "every": "every {{seconds}} s",
-      "http": "One JSON report per worker {{every}} and on shutdown, by HTTP POST to LITELLM_TELEMETRY_ENDPOINT. A failed send is retried next window",
+      "http": "One JSON report per worker {{every}} and on shutdown, by HTTP POST to AI_GATEWAY_TELEMETRY_ENDPOINT. A failed send is retried next window",
       "localTable_one": "One report per worker {{every}} and on shutdown, stored in this proxy's AI-Tokengw_TelemetryReport table for {{count}} days. Nothing leaves the proxy. Admins can export from GET /telemetry/reports",
       "localTable_other": "One report per worker {{every}} and on shutdown, stored in this proxy's AI-Tokengw_TelemetryReport table for {{count}} days. Nothing leaves the proxy. Admins can export from GET /telemetry/reports",
       "none": "No destination is chosen, so nothing is recorded"
     },
     "destination": {
       "localTable": "Local table (AI-Tokengw_TelemetryReport in this proxy's database)",
-      "http": "HTTP (POST to LITELLM_TELEMETRY_ENDPOINT)",
+      "http": "HTTP (POST to AI_GATEWAY_TELEMETRY_ENDPOINT)",
       "title": "Destination",
       "missing": "Telemetry is on but no destination is chosen, so nothing is recorded",
-      "setByEnvironment": "Set by LITELLM_TELEMETRY_DESTINATION"
+      "setByEnvironment": "Set by AI_GATEWAY_TELEMETRY_DESTINATION"
     },
     "groupList": {
       "slicesBy": "Slices by: ",
@@ -16076,7 +16076,7 @@
     "howSent": {
       "title": "How and when it is sent",
       "changesApply": "Changes apply from the next window",
-      "offByDefault": "Off by default. Each switch adds aggregated counts, never prompts, responses, keys, ids or header values. LITELLM_TELEMETRY_DISABLED=true turns everything off"
+      "offByDefault": "Off by default. Each switch adds aggregated counts, never prompts, responses, keys, ids or header values. AI_GATEWAY_TELEMETRY_DISABLED=true turns everything off"
     },
     "enterpriseDialog": {
       "premiumTitle": "Contact your enterprise representative",
@@ -16469,7 +16469,7 @@
         "disableGlobalGuardrails": "Disable all global guardrails",
         "disableGlobalGuardrailsHint": "Kill switch: bypass every global guardrail for this team, including any added in the future. For per-guardrail opt-out instead, use the Guardrails dropdown above.",
         "requireTraceId": "Require Trace ID",
-        "requireTraceIdHint": "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
+        "requireTraceIdHint": "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-ai-gateway-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
         "policies": "Policies",
         "policiesHint": "Apply policies to this team to control guardrails and other settings",
         "policiesPlaceholder": "Select or enter policies",
@@ -16963,7 +16963,7 @@
           },
           "requireTraceId": {
             "label": "Require Trace ID",
-            "hint": "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)"
+            "hint": "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-ai-gateway-trace-id header, LLM requests can also use traceparent or metadata.trace_id)"
           },
           "policies": {
             "label": "Policies",
@@ -18292,8 +18292,8 @@
     "escalationKeywords": {
       "title": "Escalation Keywords",
       "tooltip": "Case-sensitive phrases a user can include in their message to force a bump to the next-higher complexity tier when they aren't happy with results. They can force a stronger model, but not choose which one.",
-      "description": "Optional: when a user message contains one of these phrases, the request is bumped one tier higher than it would otherwise route to. Matching is case-sensitive, so \"LITELLM ESCALATE\" only fires on the exact, shouted form. Leave empty to disable.",
-      "placeholder": "e.g., LITELLM ESCALATE",
+      "description": "Optional: when a user message contains one of these phrases, the request is bumped one tier higher than it would otherwise route to. Matching is case-sensitive, so \"AI-Tokengw ESCALATE\" only fires on the exact, shouted form. Leave empty to disable.",
+      "placeholder": "e.g., AI-Tokengw ESCALATE",
       "typeToAddPhrase": "Type to add a phrase"
     },
     "modalityRoutingControls": {
@@ -18420,14 +18420,14 @@
       "kubernetesPodDiscovery": "Kubernetes pod discovery",
       "kubernetesPodDiscoveryHint": "Treat the API Base hostname as a Kubernetes headless service: resolve it to its ready pod IPs and spread requests across the pods. AI-Tokengw must run inside the same cluster.",
       "litellmParams": "AI-Tokengw Params",
-      "litellmParamsHint": "Optional litellm params used for making a litellm.completion() call.",
-      "litellmParamsDocs": "Pass JSON of litellm supported params <docs>litellm.completion() call</docs>",
+      "litellmParamsHint": "Optional gateway parameters used when sending a completion request.",
+      "litellmParamsDocs": "Pass supported gateway parameters as JSON. <docs>View the API reference</docs>",
       "modelInfo": "Model Info",
       "modelInfoHint": "Optional model info params. Returned when calling `/model/info` endpoint."
     },
     "conditionalPublicModelName": {
       "publicNameDescription": "The name you specify in your API calls to AI-Tokengw Proxy",
-      "publicNameExample": "<strong>Example:</strong> If you name your public model <publicName/>, and choose <litellmModel/> as the AI-Tokengw model",
+      "publicNameExample": "<strong>Example:</strong> If you name your public model <publicName/>, and choose <AI-TokengwModel/> as the AI-Tokengw model",
       "publicNameUsage": "<strong>Usage:</strong> You make an API call to the AI-Tokengw proxy with <request/>",
       "publicNameResult": "<strong>Result:</strong> AI-Tokengw sends <providerModel/> to the provider",
       "publicModelName": "Public Model Name",
@@ -18474,7 +18474,7 @@
     },
     "cacheControlSettings": {
       "label": "Cache Control Injection Points",
-      "tooltip": "Tell litellm where to inject cache control checkpoints. You can specify either by role (to apply to all messages of that role) or by specific message index.",
+      "tooltip": "Tell AI-Tokengw where to inject cache control checkpoints. You can specify either by role (to apply to all messages of that role) or by specific message index.",
       "locations": {
         "message": "Message"
       },
@@ -18483,9 +18483,9 @@
         "system": "System",
         "assistant": "Assistant"
       },
-      "description": "Providers like Anthropic, Bedrock API require users to specify where to inject cache control checkpoints, litellm can automatically add them for you as a cost saving feature.",
+      "description": "Providers like Anthropic, Bedrock API require users to specify where to inject cache control checkpoints, AI-Tokengw can automatically add them for you as a cost saving feature.",
       "roleHint": "AI-Tokengw will mark all messages of this role as cacheable",
-      "indexHint": "(Optional) If set litellm will mark the message at this index as cacheable",
+      "indexHint": "(Optional) If set AI-Tokengw will mark the message at this index as cacheable",
       "labelHelp": "{{label}} help",
       "type": "Type",
       "role": "Role",
@@ -19781,7 +19781,7 @@
       "modelsLoaded": "Models loaded:",
       "loadedFrom": "Loaded from:",
       "attemptedUrl": "Attempted URL:",
-      "envForced": "Local mode forced via <code>LITELLM_LOCAL_MODEL_COST_MAP</code> or <code>LITELLM_OFFLINE_MODE</code>",
+      "envForced": "Local mode forced via <code>AI_GATEWAY_LOCAL_MODEL_COST_MAP</code> or <code>AI_GATEWAY_OFFLINE_MODE</code>",
       "fallback": "Fell back to local: {{reason}}"
     },
     "schedule": {

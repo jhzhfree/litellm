@@ -207,7 +207,7 @@ describe("SystemOneUI integration", () => {
 
     expect(screen.getByRole("link", { name: "How to call /v1/decisions and /v1/systemone" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/decisions",
+      "/docs",
     );
     expect(screen.queryByRole("note")).not.toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -579,7 +579,7 @@ describe("SystemOneUI integration", () => {
 
     const command = screen.getByLabelText("cURL request");
     expect(command).toHaveTextContent("curl -X POST 'https://proxy.example/v1/systemone'");
-    expect(command).toHaveTextContent("Authorization: Bearer $LITELLM_API_KEY");
+    expect(command).toHaveTextContent("Authorization: Bearer $AI_GATEWAY_API_KEY");
     expect(command).not.toHaveTextContent("session-key");
     expect(JSON.parse(curlPayload(command.textContent ?? "") ?? "")).toMatchObject({
       questions: { has_repro_steps: { type: "noul" } },

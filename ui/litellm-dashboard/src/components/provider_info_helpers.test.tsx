@@ -21,7 +21,7 @@ const BUNDLED_MODEL_MAP: Record<string, { litellm_provider?: string }> = JSON.pa
 );
 
 describe("provider_info_helpers", () => {
-  it("should identify the upstream LiteLLM Gateway consistently with provider metadata", () => {
+  it("should identify the upstream AI-Tokengw Gateway consistently with provider metadata", () => {
     const metadata = PROVIDER_CREATE_FIELDS.find((provider) => provider.provider === "LITELLM_PROXY");
     expect(resolveLitellmProviderSlug("LITELLM_PROXY")).toBe(metadata?.litellm_provider);
     expect(Providers.LITELLM_PROXY).toBe(metadata?.provider_display_name);
@@ -29,7 +29,7 @@ describe("provider_info_helpers", () => {
       displayName: Providers.LITELLM_PROXY,
       logo: providerLogoMap[Providers.LITELLM_PROXY],
     });
-    expect(providerLogoMap[Providers.LITELLM_PROXY]).toContain("litellm_monogram");
+    expect(providerLogoMap[Providers.LITELLM_PROXY]).toContain("ai_gw_logo");
   });
 
   it("resolves Meta Model API separately from Meta Llama and isolates their bundled models", () => {
@@ -198,7 +198,7 @@ describe("provider_info_helpers", () => {
     });
 
     it("should resolve the zai (Z.AI) provider value to the Z.AI display name", () => {
-      // Regression test for https://github.com/BerriAI/litellm/issues/25482 —
+      // Regression test for /docs —
       // the backend already returns `zai` from /public/providers and the docs
       // have a dedicated page, but the UI dropdown was missing an entry, so
       // `getProviderLogoAndName("zai")` previously returned the raw value as

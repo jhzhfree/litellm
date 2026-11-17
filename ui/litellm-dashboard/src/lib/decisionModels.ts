@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const DECISIONS_DOCS_URL = "https://docs.litellm.ai/docs/decisions";
+export const DECISIONS_DOCS_URL = "/docs";
 export const DECISIONS_PROVIDERS_DOCS_URL = `${DECISIONS_DOCS_URL}#supported-providers`;
 export const DECISIONS_SELF_HOSTED_DOCS_URL = `${DECISIONS_DOCS_URL}#self-hosted-laya-and-nimble`;
 export const SYSTEM_ONE_PLAYGROUND_ROUTE = "playground?tab=system-one";

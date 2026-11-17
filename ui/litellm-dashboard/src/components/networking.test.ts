@@ -229,7 +229,7 @@ describe("UI config and public endpoints", () => {
     };
 
     const mockFetch = setupMockFetch([
-      { url: "/litellm/.well-known/litellm-ui-config", data: uiConfig },
+      { url: "/ai-gateway/.well-known/ui-config", data: uiConfig },
       { url: "/public/providers/fields", data: [] },
     ]);
 
@@ -255,7 +255,7 @@ describe("UI config and public endpoints", () => {
     };
 
     const mockFetch = setupMockFetch([
-      { url: "/litellm/.well-known/litellm-ui-config", data: uiConfig },
+      { url: "/ai-gateway/.well-known/ui-config", data: uiConfig },
       { url: "/public/model_hub/info", data: {} },
     ]);
 
@@ -278,7 +278,7 @@ describe("UI config and public endpoints", () => {
     };
 
     const mockFetch = setupMockFetch([
-      { url: "/litellm/.well-known/litellm-ui-config", data: uiConfig },
+      { url: "/ai-gateway/.well-known/ui-config", data: uiConfig },
       { url: "/public/model_hub", data: [] },
     ]);
 
@@ -301,7 +301,7 @@ describe("UI config and public endpoints", () => {
     };
 
     const mockFetch = setupMockFetch([
-      { url: "/litellm/.well-known/litellm-ui-config", data: uiConfig },
+      { url: "/ai-gateway/.well-known/ui-config", data: uiConfig },
       { url: "/public/agent_hub", data: [] },
     ]);
 
@@ -322,7 +322,7 @@ describe("UI config and public endpoints", () => {
     };
 
     const mockFetch = setupMockFetch([
-      { url: "/litellm/.well-known/litellm-ui-config", data: uiConfig },
+      { url: "/ai-gateway/.well-known/ui-config", data: uiConfig },
       { url: "/public/mcp_hub", data: [] },
     ]);
 
@@ -343,7 +343,7 @@ describe("UI config and public endpoints", () => {
     };
 
     const mockFetch = setupMockFetch([
-      { url: "/litellm/.well-known/litellm-ui-config", data: uiConfig },
+      { url: "/ai-gateway/.well-known/ui-config", data: uiConfig },
       { url: "/public/providers/fields", data: [] },
     ]);
 
@@ -365,14 +365,14 @@ describe("UI config and public endpoints", () => {
       proxy_base_url: "https://example.com",
     };
 
-    const mockFetch = setupMockFetch([{ url: "/litellm/.well-known/litellm-ui-config", data: uiConfig }]);
+    const mockFetch = setupMockFetch([{ url: "/ai-gateway/.well-known/ui-config", data: uiConfig }]);
 
     const result = await Networking.getUiConfig();
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
     expect(result).toEqual(uiConfig);
     const configCall = mockFetch.mock.calls.find((call) =>
-      (call[0] as string).includes("/litellm/.well-known/litellm-ui-config"),
+      (call[0] as string).includes("/ai-gateway/.well-known/ui-config"),
     );
     expect(configCall).toBeDefined();
   });
@@ -383,7 +383,7 @@ describe("UI config and public endpoints", () => {
       proxy_base_url: "https://example.com",
     };
 
-    setupMockFetch([{ url: "/litellm/.well-known/litellm-ui-config", data: uiConfig }]);
+    setupMockFetch([{ url: "/ai-gateway/.well-known/ui-config", data: uiConfig }]);
 
     await Networking.getUiConfig();
 
@@ -397,7 +397,7 @@ describe("UI config and public endpoints", () => {
       proxy_base_url: "https://backend.example.com",
       gateway_base_url: "https://gateway.example.com",
     };
-    const mockFetch = setupMockFetch([{ url: "/litellm/.well-known/litellm-ui-config", data: uiConfig }]);
+    const mockFetch = setupMockFetch([{ url: "/ai-gateway/.well-known/ui-config", data: uiConfig }]);
 
     await Networking.getUiConfig();
     expect(await Networking.testModelGroupConnection("token", "chat-model", "chat")).toEqual({ status: "success" });
@@ -415,7 +415,7 @@ describe("UI config and public endpoints", () => {
       server_root_path: "",
       proxy_base_url: "https://backend.example.com",
     };
-    const mockFetch = setupMockFetch([{ url: "/litellm/.well-known/litellm-ui-config", data: uiConfig }]);
+    const mockFetch = setupMockFetch([{ url: "/ai-gateway/.well-known/ui-config", data: uiConfig }]);
 
     await Networking.getUiConfig();
     expect(await Networking.testModelGroupConnection("token", "embedding-model", "embedding")).toEqual({
@@ -718,24 +718,24 @@ describe("testMCPToolsListRequest auth headers", () => {
   });
 
   it("sends the litellm key under a custom litellm_key_header_name even when an upstream OAuth token uses Authorization", async () => {
-    Networking.setGlobalLitellmHeaderName("x-litellm-key");
+    Networking.setGlobalLitellmHeaderName("x-ai-gateway-key");
     const mockFetch = captureFetch();
 
     await Networking.testMCPToolsListRequest("sk-key", {}, "upstream-oauth-token");
 
     const headers = sentHeaders(mockFetch);
-    expect(headers["x-litellm-key"]).toBe("Bearer sk-key");
+    expect(headers["x-ai-gateway-key"]).toBe("Bearer sk-key");
     expect(headers["Authorization"]).toBe("Bearer upstream-oauth-token");
   });
 
-  it("Bearer-prefixes x-litellm-api-key when it is the configured key header (raw values fail _get_bearer_token)", async () => {
-    Networking.setGlobalLitellmHeaderName("x-litellm-api-key");
+  it("Bearer-prefixes x-ai-gateway-api-key when it is the configured key header (raw values fail _get_bearer_token)", async () => {
+    Networking.setGlobalLitellmHeaderName("x-ai-gateway-api-key");
     const mockFetch = captureFetch();
 
     await Networking.testMCPToolsListRequest("sk-key", {}, "upstream-oauth-token");
 
     const headers = sentHeaders(mockFetch);
-    expect(headers["x-litellm-api-key"]).toBe("Bearer sk-key");
+    expect(headers["x-ai-gateway-api-key"]).toBe("Bearer sk-key");
     expect(headers["Authorization"]).toBe("Bearer upstream-oauth-token");
   });
 
@@ -746,7 +746,7 @@ describe("testMCPToolsListRequest auth headers", () => {
 
     const headers = sentHeaders(mockFetch);
     expect(headers["Authorization"]).toBe("Bearer upstream-oauth-token");
-    expect(headers["x-litellm-api-key"]).toBe("sk-key");
+    expect(headers["x-ai-gateway-api-key"]).toBe("sk-key");
   });
 
   it("sends the litellm key as the bearer on default deployments without an OAuth token", async () => {
@@ -1057,10 +1057,10 @@ describe("getUiConfig runtime backend discovery", () => {
     const backendBaseUrl = "https://backend.example.com";
     const mockFetch = vi.fn<typeof fetch>().mockImplementation(async (input) => {
       const url = input instanceof Request ? input.url : String(input);
-      if (url === "/ui/litellm-runtime-config.json") {
+      if (url === "/ui/ai-gateway-runtime-config.json") {
         return new Response(JSON.stringify({ backend_url: backendBaseUrl }));
       }
-      if (url === `${backendBaseUrl}/litellm/.well-known/litellm-ui-config`) {
+      if (url === `${backendBaseUrl}/ai-gateway/.well-known/ui-config`) {
         return new Response(
           JSON.stringify({
             ...discoveryConfig(),
@@ -1102,8 +1102,8 @@ describe("getUiConfig runtime backend discovery", () => {
 
     await networking.getUiConfig();
 
-    expect(mockFetch).toHaveBeenNthCalledWith(1, "/ui/litellm-runtime-config.json", { cache: "no-store" });
-    expect(mockFetch.mock.calls[1][0]).toBe("https://backend.example.com/litellm/.well-known/litellm-ui-config");
+    expect(mockFetch).toHaveBeenNthCalledWith(1, "/ui/ai-gateway-runtime-config.json", { cache: "no-store" });
+    expect(mockFetch.mock.calls[1][0]).toBe("https://backend.example.com/ai-gateway/.well-known/ui-config");
     expect(networking.getProxyBaseUrl().replace(/\/+$/, "")).toBe("https://backend.example.com");
     expect(networking.getGatewayBaseUrl()).toBe("https://gateway.example.com");
 
@@ -1134,8 +1134,8 @@ describe("getUiConfig runtime backend discovery", () => {
 
     await networking.getUiConfig();
 
-    expect(mockFetch).toHaveBeenNthCalledWith(1, "/ui/litellm-runtime-config.json", { cache: "no-store" });
-    expect(mockFetch.mock.calls[1][0]).toBe("/litellm/.well-known/litellm-ui-config");
+    expect(mockFetch).toHaveBeenNthCalledWith(1, "/ui/ai-gateway-runtime-config.json", { cache: "no-store" });
+    expect(mockFetch.mock.calls[1][0]).toBe("/ai-gateway/.well-known/ui-config");
     expect(networking.getGatewayBaseUrl()).toBe(networking.getProxyBaseUrl());
   });
 

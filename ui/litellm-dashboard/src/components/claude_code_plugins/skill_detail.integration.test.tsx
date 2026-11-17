@@ -53,7 +53,7 @@ beforeEach(() => {
   skillRequestMock.mockReset().mockRejectedValue(new Error("Unexpected skill request"));
   fetchMock.mockReset().mockImplementation((input, init) => {
     const requestUrl = input instanceof Request ? input.url : String(input);
-    if (requestUrl.includes("/.well-known/litellm-ui-config")) {
+    if (requestUrl.includes("/.well-known/ai-gateway-ui-config")) {
       return Promise.resolve(Response.json({ claude_code_marketplace_auth_required: true }));
     }
     return skillRequestMock(input, init);

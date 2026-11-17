@@ -200,7 +200,7 @@ describe("buildAgentInstructions", () => {
         "To run Claude Code through this gateway, set ANTHROPIC_BASE_URL=http://gw.test:4000 and ANTHROPIC_AUTH_TOKEN=sk-test-123.",
         "To run Codex through this gateway, set OPENAI_BASE_URL=http://gw.test:4000/v1 and OPENAI_API_KEY=sk-test-123.",
         "",
-        "Docs for everything else LiteLLM supports: https://docs.litellm.ai/docs/",
+        "Docs for everything else LiteLLM supports: /docs",
       ].join("\n"),
     );
   });

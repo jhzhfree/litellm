@@ -407,7 +407,7 @@ describe("ModelHubTable", () => {
       expect(dialog).not.toHaveTextContent("chat.completions");
       expect(screen.getByRole("link", { name: "How to call decision models" })).toHaveAttribute(
         "href",
-        "https://docs.litellm.ai/docs/decisions",
+        "/docs",
       );
       expect(screen.getByRole("link", { name: "Try it in the Playground" })).toHaveAttribute(
         "href",
@@ -531,7 +531,7 @@ describe("ModelHubTable", () => {
       expect(within(layaCard).queryByRole("link", { name: "/v1/decisions docs" })).not.toBeInTheDocument();
       expect(within(layaCard).getByRole("link", { name: "Self-hosted, own route" })).toHaveAttribute(
         "href",
-        "https://docs.litellm.ai/docs/decisions#self-hosted-laya-and-nimble",
+        "/docs",
       );
       expect(await within(garden).findAllByRole("link", { name: "Add model" })).toHaveLength(1);
       expect(within(layaCard).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();
@@ -545,7 +545,7 @@ describe("ModelHubTable", () => {
       );
       expect(within(card).getByRole("link", { name: "/v1/decisions docs" })).toHaveAttribute(
         "href",
-        "https://docs.litellm.ai/docs/decisions",
+        "/docs",
       );
       expect(await within(card).findByRole("link", { name: "Add model" })).toHaveAttribute(
         "href",
@@ -562,7 +562,7 @@ describe("ModelHubTable", () => {
       const newCard = within(garden).getByTestId("decision-model-card-newvendor/decider");
       expect(within(newCard).getByRole("link", { name: "Needs a newer LiteLLM" })).toHaveAttribute(
         "href",
-        "https://docs.litellm.ai/docs/decisions#supported-providers",
+        "/docs",
       );
       expect(await within(garden).findAllByRole("link", { name: "Add model" })).toHaveLength(1);
       expect(within(newCard).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();
@@ -605,7 +605,7 @@ describe("ModelHubTable", () => {
       const foundryCard = within(garden).getByTestId("decision-model-card-azure_ai/Microsoft-Decision-1");
       expect(within(foundryCard).getByRole("link", { name: "Deploy under your own name" })).toHaveAttribute(
         "href",
-        "https://docs.litellm.ai/docs/decisions#supported-providers",
+        "/docs",
       );
       expect(await within(garden).findAllByRole("link", { name: "Add model" })).toHaveLength(1);
       expect(within(foundryCard).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();

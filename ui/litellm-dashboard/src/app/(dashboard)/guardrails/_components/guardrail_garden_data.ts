@@ -75,7 +75,7 @@ export const gardenTagLabel = (tag: string, t: TFunction): string => {
   return key ? t(key) : tag;
 };
 
-const litellmContentFilterLogo = guardrailLogoMap["LiteLLM Content Filter"];
+const litellmContentFilterLogo = guardrailLogoMap["AI-Tokengw Content Filter"];
 
 export const LITELLM_CONTENT_FILTER_CARDS: GuardrailCardInfo[] = [
   {

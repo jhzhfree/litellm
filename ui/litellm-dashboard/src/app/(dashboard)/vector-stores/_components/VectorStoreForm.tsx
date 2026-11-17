@@ -348,8 +348,8 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                     <ol style={{ marginLeft: "16px", marginTop: "8px", listStyleType: "decimal" }}>
                       <li>
                         {t("vectorStores.form.pgVector.steps.deploy")}{" "}
-                        <a href="https://github.com/BerriAI/litellm-pgvector" target="_blank" rel="noopener noreferrer">
-                          https://github.com/BerriAI/litellm-pgvector
+                        <a href="/docs" target="_blank" rel="noopener noreferrer">
+                          /docs
                         </a>
                       </li>
                       <li>{t("vectorStores.form.pgVector.steps.configure")}</li>

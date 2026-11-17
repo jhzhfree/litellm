@@ -621,7 +621,7 @@ describe("AddModelPanel decision models", () => {
     expect(note).toHaveTextContent("/v1/decisions");
     expect(within(note).getByRole("link", { name: "How to call decision models" })).toHaveAttribute(
       "href",
-      "https://docs.litellm.ai/docs/decisions",
+      "/docs",
     );
     expect(within(note).getByRole("link", { name: "test it in the Decisions playground" })).toHaveAttribute(
       "href",

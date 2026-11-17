@@ -39,7 +39,7 @@ export const modelSnippet = (model: ModelGroupInfo): string => {
 export const curlSnippet = (model: ModelGroupInfo): string | null => {
   if (model.mode && model.mode !== "chat") return null;
   return `curl ${gatewayUrl()}/v1/chat/completions \\
-  -H "Authorization: Bearer $LITELLM_API_KEY" \\
+  -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
     "model": "${wildcardExample(model.model_group)}",
@@ -81,7 +81,7 @@ client = Client({
     "mcpServers": {
         "${server.name}": {
             "url": "${mcpEndpoint(server)}",
-            "headers": {"x-litellm-api-key": "Bearer your_api_key"},
+            "headers": {"x-ai-gateway-api-key": "Bearer your_api_key"},
         }
     }
 })

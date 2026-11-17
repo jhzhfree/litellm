@@ -317,7 +317,7 @@ describe("batch rows", () => {
 });
 
 describe("Request ID column", () => {
-  it("shows only the request id in the cell and the x-litellm-call-id in its tooltip when they differ", async () => {
+  it("shows only the request id in the cell and the x-ai-gateway-call-id in its tooltip when they differ", async () => {
     const user = userEvent.setup();
     renderRows([logEntry({ request_id: "chatcmpl-9", litellm_call_id: "call-uuid-9" })]);
 
@@ -325,10 +325,10 @@ describe("Request ID column", () => {
     expect(screen.queryByText("call-uuid-9")).not.toBeInTheDocument();
 
     await user.hover(screen.getByText("chatcmpl-9"));
-    expect(await screen.findByText("x-litellm-call-id: call-uuid-9")).toBeInTheDocument();
+    expect(await screen.findByText("x-ai-gateway-call-id: call-uuid-9")).toBeInTheDocument();
   });
 
-  it("copies the x-litellm-call-id from the tooltip without opening the row", async () => {
+  it("copies the x-ai-gateway-call-id from the tooltip without opening the row", async () => {
     const user = userEvent.setup();
     const onRowClick = vi.fn();
     render(
@@ -342,7 +342,7 @@ describe("Request ID column", () => {
     );
 
     await user.hover(screen.getByText("chatcmpl-9"));
-    fireEvent.click(await screen.findByRole("button", { name: "Copy x-litellm-call-id" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Copy x-ai-gateway-call-id" }));
 
     expect(copyToClipboardMock).toHaveBeenCalledWith("call-uuid-9");
     expect(onRowClick).not.toHaveBeenCalled();
@@ -354,7 +354,7 @@ describe("Request ID column", () => {
 
     await user.hover(screen.getByText("same-id-7"));
     await waitFor(() => expect(screen.getAllByText("same-id-7")).toHaveLength(2));
-    expect(screen.queryByText(/x-litellm-call-id/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/x-ai-gateway-call-id/)).not.toBeInTheDocument();
   });
 
   it("keeps the plain id tooltip when the row carries no call id", async () => {
@@ -363,7 +363,7 @@ describe("Request ID column", () => {
 
     await user.hover(screen.getByText("chatcmpl-no-call"));
     await waitFor(() => expect(screen.getAllByText("chatcmpl-no-call")).toHaveLength(2));
-    expect(screen.queryByText(/x-litellm-call-id/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/x-ai-gateway-call-id/)).not.toBeInTheDocument();
   });
 });
 

@@ -1230,7 +1230,7 @@ config = {
         "${selectedMcpServer.server_name}": {
             "url": "${getProxyBaseUrl()}/${selectedMcpServer.server_name}/mcp",
             "headers": {
-                "x-litellm-api-key": "Bearer <your-master-key>"
+                "x-ai-gateway-api-key": "Bearer <your-master-key>"
             }
         }
     }

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ParseKeys } from "i18next";
@@ -109,15 +110,6 @@ export function useLiteAdmin(session: LiteAdminSession) {
     if (active.current || !text.trim()) return;
     const turn: ActiveTurn = { controller: new AbortController(), outcome: "none" };
     active.current = turn;
-    const message: ChatMessage = { id: crypto.randomUUID(), role: "user", content: text.trim(), timestamp: Date.now() };
-    const history = entries.flatMap<Pick<ChatMessage, "role" | "content">>((entry) => {
-      if (entry.kind === "message") return [entry.message];
-      if (entry.kind !== "action" || entry.status === "review" || entry.status === "applying") return [];
-      const receipt = { operation: entry.action.name, status: entry.status, arguments: entry.action.arguments };
-      return [{ role: "assistant", content: `Gateway action receipt: ${JSON.stringify(receipt)}` }];
-    });
-    setEntries((current) => [...current, { kind: "message", id: message.id, message }]);
-    setPhase("thinking");
     const sameSession = () =>
       getCookie("token") === session.token &&
       checkTokenValidity(session.token) &&
@@ -127,6 +119,15 @@ export function useLiteAdmin(session: LiteAdminSession) {
       if (active.current !== turn || !sameSession()) throw new DOMException("Session changed", "AbortError");
     };
     try {
+      const message: ChatMessage = { id: uuidv4(), role: "user", content: text.trim(), timestamp: Date.now() };
+      const history = entries.flatMap<Pick<ChatMessage, "role" | "content">>((entry) => {
+        if (entry.kind === "message") return [entry.message];
+        if (entry.kind !== "action" || entry.status === "review" || entry.status === "applying") return [];
+        const receipt = { operation: entry.action.name, status: entry.status, arguments: entry.action.arguments };
+        return [{ role: "assistant", content: `Gateway action receipt: ${JSON.stringify(receipt)}` }];
+      });
+      setEntries((current) => [...current, { kind: "message", id: message.id, message }]);
+      setPhase("thinking");
       const options: Parameters<typeof runLiteAdmin>[0] = {
         ...session,
         model,
@@ -135,7 +136,7 @@ export function useLiteAdmin(session: LiteAdminSession) {
         assertCurrent,
         onMessage: (content) => {
           assertCurrent();
-          const reply: ChatMessage = { id: crypto.randomUUID(), role: "assistant", content, timestamp: Date.now() };
+          const reply: ChatMessage = { id: uuidv4(), role: "assistant", content, timestamp: Date.now() };
           const chart = turn.chart;
           turn.chart = undefined;
           setEntries((current) => [
@@ -176,7 +177,7 @@ export function useLiteAdmin(session: LiteAdminSession) {
         const context = turn.outcome === "completed" ? `${i18n.t("aria.session.completedChangesShown")} ` : "";
         setEntries((current) => [
           ...current,
-          { kind: "error", id: crypto.randomUUID(), text: context + extractProxyErrorMessage(error) },
+          { kind: "error", id: `error-${current.length}`, text: context + extractProxyErrorMessage(error) },
         ]);
       }
     } finally {

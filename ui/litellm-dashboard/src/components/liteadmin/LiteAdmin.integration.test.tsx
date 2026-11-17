@@ -13,6 +13,7 @@ import SidebarAccountMenu from "@/components/SidebarAccountMenu/SidebarAccountMe
 import UserDropdown from "@/components/Navbar/UserDropdown/UserDropdown";
 import { AriaUsageTrigger, LiteAdminFrame, LiteAdminPage, AriaSidebarLink } from "./LiteAdmin";
 import { MAX_INPUT_LENGTH } from "./agent";
+import { ARIA_AGENT_LABEL } from "./aria-brand";
 import type { ModelGroup } from "@/components/llm_calls/fetch_models";
 
 const { transport, push } = vi.hoisted(() => {
@@ -177,7 +178,7 @@ function gateway(
     if (path.endsWith("/ui/ai-gateway-runtime-config.json")) return json({});
     if (path.endsWith("/management/v1/users/me")) return json({ ...signedInUser, user_email: null });
     requests.push(recorded);
-    if (path.endsWith("/litellm-ui-config")) {
+    if (path.endsWith("/ui-config")) {
       const uiConfig = {
         proxy_base_url: MANAGEMENT,
         server_root_path: "",
@@ -191,6 +192,7 @@ function gateway(
       if (typeof settings === "function") return settings(request);
       return json({ PROXY_BASE_URL: MANAGEMENT, LITELLM_UI_API_DOC_BASE_URL: settings.target }, settings.status);
     }
+    if (path.endsWith("/get/ui_settings")) return json({ values: { enterprise_features_enabled: true } });
     if (path.endsWith("/model_group/info"))
       return json({
         data: options.models ?? [
@@ -224,7 +226,7 @@ function gateway(
 
 async function selectModel(model = "chat-model") {
   const user = userEvent.setup();
-  await user.click(await screen.findByRole("combobox", { name: "Aria Agent model" }));
+  await user.click(await screen.findByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` }));
   await user.click(await screen.findByRole("option", { name: model }));
 }
 
@@ -254,6 +256,64 @@ afterEach(() => {
 });
 
 describe("Aria Agent in the gateway", () => {
+  it("shows initialization errors and allows a later send to recover", async () => {
+    const browserCrypto = globalThis.crypto;
+    const requests = gateway([answer("Recovered reply.")]);
+    renderWidget();
+    await selectModel();
+    vi.stubGlobal("crypto", {
+      getRandomValues: () => {
+        throw new Error("Random source unavailable");
+      },
+    });
+    try {
+      act(() => send("First question"));
+      expect(await screen.findByText("Random source unavailable")).toBeVisible();
+      expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(0);
+      vi.stubGlobal("crypto", browserCrypto);
+      act(() => send("Retry question"));
+      expect(await screen.findByText("Recovered reply.")).toBeVisible();
+      expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1);
+    } finally {
+      vi.stubGlobal("crypto", browserCrypto);
+    }
+  });
+
+  it("supports approval cards without native UUID support", async () => {
+    const browserCrypto = globalThis.crypto;
+    vi.stubGlobal("crypto", { getRandomValues: browserCrypto.getRandomValues.bind(browserCrypto) });
+    try {
+      const requests = gateway([toolReply("key_create", keyArguments), answer("Key created.")]);
+      renderWidget();
+      await selectModel();
+      act(() => send("Create a key"));
+      const approve = await screen.findByRole("button", { name: "Confirm change" });
+      expect(requests.some((request) => request.url.endsWith("/key/generate"))).toBe(false);
+      fireEvent.click(approve);
+      expect(await screen.findByText("Key created.")).toBeVisible();
+      expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(1);
+    } finally {
+      vi.stubGlobal("crypto", browserCrypto);
+    }
+  });
+
+  it("sends successive messages without native UUID support", async () => {
+    const browserCrypto = globalThis.crypto;
+    vi.stubGlobal("crypto", { getRandomValues: browserCrypto.getRandomValues.bind(browserCrypto) });
+    try {
+      const requests = gateway([answer("First reply."), answer("Second reply.")]);
+      renderWidget();
+      await selectModel();
+      act(() => send("First question"));
+      expect(await screen.findByText("First reply.")).toBeVisible();
+      act(() => send("Second question"));
+      expect(await screen.findByText("Second reply.")).toBeVisible();
+      expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(2);
+    } finally {
+      vi.stubGlobal("crypto", browserCrypto);
+    }
+  });
+
   it.each([true, false])(
     "keeps the answer, draft and model when returning to Aria with premium=%s",
     async (premium) => {
@@ -262,29 +322,29 @@ describe("Aria Agent in the gateway", () => {
       const view = renderWidget();
       await selectModel();
       fireEvent.keyDown(document, { key: "j", metaKey: true });
-      expect(screen.getByPlaceholderText("Ask Aria…")).toHaveFocus();
+      expect(screen.getByPlaceholderText("Ask native agent…")).toHaveFocus();
       send("Check my usage");
       await screen.findByText("Your usage is within budget.");
-      fireEvent.change(screen.getByPlaceholderText("Ask Aria…"), { target: { value: "What changed?" } });
+      fireEvent.change(screen.getByPlaceholderText("Ask native agent…"), { target: { value: "What changed?" } });
       view.refresh(false, false, false);
-      expect(screen.queryByPlaceholderText("Ask Aria…")).not.toBeInTheDocument();
+      expect(screen.queryByPlaceholderText("Ask native agent…")).not.toBeInTheDocument();
       fireEvent.keyDown(document, { key: "j", ctrlKey: true });
       expect(push).toHaveBeenCalledWith("/ui/aria");
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       view.refresh(false, false, true);
       expect(screen.getByText("Your usage is within budget.")).toBeVisible();
-      expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("What changed?");
-      expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("chat-model");
+      expect(screen.getByPlaceholderText("Ask native agent…")).toHaveValue("What changed?");
+      expect(screen.getByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` })).toHaveValue("chat-model");
       fireEvent.keyDown(document, { key: "Escape" });
-      expect(screen.getByRole("region", { name: "Aria Agent", exact: true })).toBeVisible();
+      expect(screen.getByRole("region", { name: ARIA_AGENT_LABEL, exact: true })).toBeVisible();
     },
   );
 
   it("links Usage and the sidebar to one page without mounting a composer elsewhere", async () => {
     const requests = gateway([]);
     const { client } = renderWidget(undefined, false, true, { showPage: false });
-    expect(await screen.findByRole("link", { name: "Ask Aria" })).toHaveAttribute("href", "/ui/aria");
-    expect(screen.getByRole("link", { name: "Aria Agent" })).toHaveAttribute("href", "/ui/aria");
+    expect(await screen.findByRole("link", { name: "Ask native agent" })).toHaveAttribute("href", "/ui/aria");
+    expect(screen.getByRole("link", { name: ARIA_AGENT_LABEL })).toHaveAttribute("href", "/ui/aria");
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     await waitFor(() => expect(client.isFetching()).toBe(0));
@@ -301,8 +361,8 @@ describe("Aria Agent in the gateway", () => {
       const suggestion = await screen.findByRole("button", { name: question });
       await waitFor(() => expect(suggestion).toBeEnabled());
       act(() => fireEvent.click(suggestion));
-      expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue(question);
-      expect(screen.getByPlaceholderText("Ask Aria…")).toHaveFocus();
+      expect(screen.getByPlaceholderText("Ask native agent…")).toHaveValue(question);
+      expect(screen.getByPlaceholderText("Ask native agent…")).toHaveFocus();
       expect(requests.filter((r) => r.url.endsWith("/chat/completions"))).toHaveLength(0);
       act(() => send(question + " Show a daily breakdown."));
       expect(await screen.findByText("Here is your weekly spend.")).toBeInTheDocument();
@@ -328,7 +388,7 @@ describe("Aria Agent in the gateway", () => {
   it("should disable suggested questions when no chat model is available", async () => {
     const requests = gateway([], { models: [] });
     renderWidget();
-    const picker = await screen.findByRole("combobox", { name: "Aria Agent model" });
+    const picker = await screen.findByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` });
     expect(picker).toBeEnabled();
     expect(screen.queryByText("No chat models are available for your account.")).not.toBeInTheDocument();
     await userEvent.setup().click(picker);
@@ -350,9 +410,9 @@ describe("Aria Agent in the gateway", () => {
     const { client } = renderWidget();
     await screen.findByText("Session ready");
     await waitFor(() => expect(client.isFetching()).toBe(0));
-    expect(screen.queryByRole("link", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ARIA_AGENT_LABEL })).not.toBeInTheDocument();
     act(() => fireEvent.keyDown(document, { key: "j", ctrlKey: true }));
-    expect(requests.every((request) => request.url.endsWith("/litellm-ui-config"))).toBe(true);
+    expect(requests.every((request) => request.url.endsWith("/ui-config"))).toBe(true);
   });
 
   it.each([
@@ -374,15 +434,15 @@ describe("Aria Agent in the gateway", () => {
       const usageDescription = scope === "user" ? "Ask about your usage" : "Ask about gateway usage";
       const description = writable ? "Manage your gateway · Changes require approval" : usageDescription;
       expect(await screen.findByText(description)).toBeVisible();
-      const input = await screen.findByPlaceholderText("Ask Aria…");
+      const input = await screen.findByPlaceholderText("Ask native agent…");
       await waitFor(() => expect(input).toBeEnabled());
-      expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("chat-model");
+      expect(screen.getByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` })).toHaveValue("chat-model");
       act(() => {
         fireEvent.change(input, { target: { value: "Summarize my usage" } });
         fireEvent.keyDown(input, { key: "Enter" });
       });
       expect(await screen.findByText("Your usage totals $12.34.")).toBeInTheDocument();
-      expect(screen.getAllByRole("region", { name: "Aria Agent", exact: true })).toHaveLength(1);
+      expect(screen.getAllByRole("region", { name: ARIA_AGENT_LABEL, exact: true })).toHaveLength(1);
       const read = requests.find((request) => request.url.includes("/user/daily/activity/aggregated"));
       expect(read).toBeDefined();
       expect(new URL(read!.url).searchParams.get("user_id")).toBe(scope === "user" ? "first-admin" : null);
@@ -415,7 +475,7 @@ describe("Aria Agent in the gateway", () => {
   it("should discard an administrator approval when usage access becomes read-only", async () => {
     const requests = gateway([toolReply("key_create", keyArguments), answer("Only your own usage is available.")]);
     const view = renderWidget(undefined, false, true);
-    const input = await screen.findByPlaceholderText("Ask Aria…");
+    const input = await screen.findByPlaceholderText("Ask native agent…");
     await waitFor(() => expect(input).toBeEnabled());
     act(() => send("Create a key"));
     await screen.findByRole("button", { name: "Confirm change" });
@@ -423,7 +483,7 @@ describe("Aria Agent in the gateway", () => {
     session("internal_user", "first-admin", { premium_user: true }, "sk-readonly-session");
     view.refresh();
 
-    const usageInput = await screen.findByPlaceholderText("Ask Aria…");
+    const usageInput = await screen.findByPlaceholderText("Ask native agent…");
     await waitFor(() => expect(usageInput).toBeEnabled());
     expect(usageInput).toHaveValue("");
     expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
@@ -452,14 +512,14 @@ describe("Aria Agent in the gateway", () => {
     await selectModel("other-chat-model");
     act(() => send("Old question"));
     await screen.findByText("Old answer.");
-    act(() => fireEvent.change(screen.getByPlaceholderText("Ask Aria…"), { target: { value: "Old draft" } }));
+    act(() => fireEvent.change(screen.getByPlaceholderText("Ask native agent…"), { target: { value: "Old draft" } }));
     await userEvent.setup().click(screen.getByRole("button", { name: "Start over" }));
 
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     expect(screen.queryByText("Old question")).not.toBeInTheDocument();
     expect(screen.queryByText("Old answer.")).not.toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("");
-    expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("other-chat-model");
+    expect(screen.getByPlaceholderText("Ask native agent…")).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` })).toHaveValue("other-chat-model");
     expect(screen.queryByRole("button", { name: "Start over" })).not.toBeInTheDocument();
     act(() => send("Fresh question"));
     await screen.findByText("Fresh answer.");
@@ -533,33 +593,33 @@ describe("Aria Agent in the gateway", () => {
     gateway([]);
     const user = userEvent.setup();
     const view = renderWidget(Menu, true);
-    await screen.findByRole("link", { name: "Aria Agent" });
+    await screen.findByRole("link", { name: ARIA_AGENT_LABEL });
     await user.click(screen.getByRole("button", { name: /account menu/i }));
-    const toggle = await screen.findByRole("switch", { name: "Toggle hide Aria Agent" });
+    const toggle = await screen.findByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` });
     expect(toggle).not.toBeChecked();
     await user.click(toggle);
     expect(toggle).toBeChecked();
-    expect(screen.queryByRole("link", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ARIA_AGENT_LABEL })).not.toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Ask Aria Agent", hidden: true })).not.toBeInTheDocument();
 
     view.unmount();
     const restored = renderWidget(Menu, true);
     await screen.findByText("Session ready");
     await waitFor(() => expect(restored.client.isFetching()).toBe(0));
-    expect(screen.queryByRole("link", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ARIA_AGENT_LABEL })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /account menu/i }));
-    const savedToggle = await screen.findByRole("switch", { name: "Toggle hide Aria Agent" });
+    const savedToggle = await screen.findByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` });
     expect(savedToggle).toBeChecked();
     await user.click(savedToggle);
-    expect(await screen.findByRole("link", { name: "Aria Agent" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Aria Agent" })).toBeVisible();
-    expect(await screen.findByRole("region", { name: "Aria Agent", exact: true })).toBeVisible();
+    expect(await screen.findByRole("link", { name: ARIA_AGENT_LABEL })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: ARIA_AGENT_LABEL })).toBeVisible();
+    expect(await screen.findByRole("region", { name: ARIA_AGENT_LABEL, exact: true })).toBeVisible();
 
     for (const premiumUser of [false, null, undefined, "true"]) {
       session("proxy_admin", "first-admin", { premium_user: premiumUser });
       restored.refresh();
       expect(screen.getByRole("switch", { name: "Toggle hide all prompts" })).toBeInTheDocument();
-      expect(screen.queryByRole("switch", { name: "Toggle hide Aria Agent" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` })).not.toBeInTheDocument();
     }
   });
 
@@ -567,12 +627,14 @@ describe("Aria Agent in the gateway", () => {
     const requests = gateway([answer("Your usage remains available.")]);
     const view = renderWidget();
     await openWidget();
-    fireEvent.change(screen.getByPlaceholderText("Ask Aria…"), { target: { value: "Previous enterprise draft" } });
+    fireEvent.change(screen.getByPlaceholderText("Ask native agent…"), {
+      target: { value: "Previous enterprise draft" },
+    });
     await waitFor(() => expect(view.client.isFetching()).toBe(0));
     session("proxy_admin", "first-admin", { premium_user: false });
     view.refresh();
-    await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("");
+    await waitFor(() => expect(screen.getByPlaceholderText("Ask native agent…")).toBeEnabled());
+    expect(screen.getByPlaceholderText("Ask native agent…")).toHaveValue("");
     act(() => send("Show my usage"));
     await screen.findByText("Your usage remains available.");
     const completion = requests.find((request) => request.url.endsWith("/chat/completions"));
@@ -585,40 +647,40 @@ describe("Aria Agent in the gateway", () => {
     session();
     view.refresh();
     fireEvent.keyDown(document, { key: "j", ctrlKey: true });
-    expect(await screen.findByRole("region", { name: "Aria Agent", exact: true })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue("");
+    expect(await screen.findByRole("region", { name: ARIA_AGENT_LABEL, exact: true })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Ask native agent…")).toHaveValue("");
   });
 
   it("isolates Hide Aria Agent by admin and gateway and reacts to another tab clearing it", async () => {
     gateway([]);
     const user = userEvent.setup();
     const view = renderWidget(SidebarAccountMenu);
-    await screen.findByRole("link", { name: "Aria Agent" });
+    await screen.findByRole("link", { name: ARIA_AGENT_LABEL });
     await user.click(screen.getByRole("button", { name: /account menu/i }));
-    await user.click(await screen.findByRole("switch", { name: "Toggle hide Aria Agent" }));
+    await user.click(await screen.findByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` }));
 
     session("proxy_admin", "second-admin");
     view.refresh();
-    expect(await screen.findByRole("link", { name: "Aria Agent" })).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Toggle hide Aria Agent" })).not.toBeChecked();
+    expect(await screen.findByRole("link", { name: ARIA_AGENT_LABEL })).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` })).not.toBeChecked();
     session();
     view.refresh();
-    expect(screen.queryByRole("link", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ARIA_AGENT_LABEL })).not.toBeInTheDocument();
 
     switchToWorkerUrl("https://other-gateway.test");
     view.refresh();
-    expect(await screen.findByRole("link", { name: "Aria Agent" })).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Toggle hide Aria Agent" })).not.toBeChecked();
+    expect(await screen.findByRole("link", { name: ARIA_AGENT_LABEL })).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` })).not.toBeChecked();
     switchToWorkerUrl(MANAGEMENT);
     view.refresh();
-    expect(screen.queryByRole("link", { name: "Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: ARIA_AGENT_LABEL })).not.toBeInTheDocument();
 
     act(() => {
       localStorage.clear();
       window.dispatchEvent(new StorageEvent("storage", { key: null }));
     });
-    expect(await screen.findByRole("link", { name: "Aria Agent" })).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Toggle hide Aria Agent" })).not.toBeChecked();
+    expect(await screen.findByRole("link", { name: ARIA_AGENT_LABEL })).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` })).not.toBeChecked();
   });
 
   it.each([
@@ -632,7 +694,7 @@ describe("Aria Agent in the gateway", () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: /account menu/i }));
     expect(await screen.findByRole("switch", { name: "Toggle hide all prompts" })).toBeInTheDocument();
-    expect(screen.queryByRole("switch", { name: "Toggle hide Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("switch", { name: `Toggle hide ${ARIA_AGENT_LABEL}` })).not.toBeInTheDocument();
   });
 
   it.each(["proxy_admin_viewer", "internal_user", "internal_user_viewer", "org_admin"])(
@@ -643,9 +705,9 @@ describe("Aria Agent in the gateway", () => {
       const { client } = renderWidget(undefined, true);
       await screen.findByText("Session ready");
       await waitFor(() => expect(client.isFetching()).toBe(0));
-      expect(screen.getByRole("link", { name: "Aria Agent" })).toBeVisible();
+      expect(screen.getByRole("link", { name: ARIA_AGENT_LABEL })).toBeVisible();
       expect(screen.queryByRole("region", { name: "Ask Aria Agent", hidden: true })).not.toBeInTheDocument();
-      await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
+      await waitFor(() => expect(screen.getByPlaceholderText("Ask native agent…")).toBeEnabled());
       act(() => send("Show my usage"));
       await screen.findByText("Usage is available.");
       const names =
@@ -662,7 +724,7 @@ describe("Aria Agent in the gateway", () => {
   it("uses the chosen model and existing session header for reads", async () => {
     const requests = gateway([toolReply("team_info", { team_id: "team-1" }), answer("The team budget is $40.")]);
     renderWidget();
-    await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
+    await waitFor(() => expect(screen.getByPlaceholderText("Ask native agent…")).toBeEnabled());
     await selectModel();
     send("Check the team budget");
     expect(await screen.findByText("The team budget is $40.")).toBeInTheDocument();
@@ -683,7 +745,9 @@ describe("Aria Agent in the gateway", () => {
     send("Check team spend");
 
     expect(await screen.findByText("Team spend chart")).toBeInTheDocument();
-    expect(within(screen.getByLabelText("Aria Agent conversation")).queryByRole("img")).not.toBeInTheDocument();
+    expect(
+      within(screen.getByLabelText(`${ARIA_AGENT_LABEL} conversation`)).queryByRole("img"),
+    ).not.toBeInTheDocument();
   });
 
   it("should render a chart from the scoped usage lookup and clear it when starting over without changing models", async () => {
@@ -730,12 +794,12 @@ describe("Aria Agent in the gateway", () => {
       },
     );
     renderWidget(undefined, false, true);
-    const input = await screen.findByPlaceholderText("Ask Aria…");
+    const input = await screen.findByPlaceholderText("Ask native agent…");
     await waitFor(() => expect(input).toBeEnabled());
     await selectModel("other-chat-model");
     act(() => send("Which models cost the most?"));
 
-    const reply = await screen.findByRole("article", { name: "Aria Agent answer" });
+    const reply = await screen.findByRole("article", { name: `${ARIA_AGENT_LABEL} answer` });
     expect(reply).toHaveTextContent("The primary model accounts for most of your spend.");
     const figure = within(reply).getByRole("figure", { name: "Spend by model" });
     const values = within(figure).getByRole("table", { name: "Spend by model values" });
@@ -752,7 +816,7 @@ describe("Aria Agent in the gateway", () => {
     await userEvent.setup().click(screen.getByRole("button", { name: "Start over" }));
     expect(screen.queryByRole("figure", { name: "Spend by model" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Export answer" })).not.toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: "Aria Agent model" })).toHaveValue("other-chat-model");
+    expect(screen.getByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` })).toHaveValue("other-chat-model");
     act(() => send("Start fresh"));
     expect(await screen.findByText("This is a fresh conversation.")).toBeInTheDocument();
     expect(screen.queryByRole("figure")).not.toBeInTheDocument();
@@ -778,16 +842,16 @@ describe("Aria Agent in the gateway", () => {
     ].join("\n");
     gateway([answer(markdown), answer("The primary model accounts for $3.40 of your $4.00 spend.")]);
     renderWidget(undefined, false, true);
-    const input = await screen.findByPlaceholderText("Ask Aria…");
+    const input = await screen.findByPlaceholderText("Ask native agent…");
     await waitFor(() => expect(input).toBeEnabled());
     act(() => send("Show my usage by model as a table"));
-    const conversation = screen.getByLabelText("Aria Agent conversation");
+    const conversation = screen.getByLabelText(`${ARIA_AGENT_LABEL} conversation`);
     const table = await within(conversation).findByRole("table");
     expect(within(conversation).getByRole("heading", { name: "Usage by model", level: 2 })).toBeInTheDocument();
     expect(within(conversation).getByRole("article", { name: "Your question" })).toHaveTextContent(
       "Show my usage by model as a table",
     );
-    expect(within(conversation).getByRole("article", { name: "Aria Agent answer" })).toHaveTextContent(
+    expect(within(conversation).getByRole("article", { name: `${ARIA_AGENT_LABEL} answer` })).toHaveTextContent(
       "Spend is shown in USD.",
     );
     for (const header of ["Model", "Requests", "Spend"]) {
@@ -821,7 +885,7 @@ describe("Aria Agent in the gateway", () => {
       ],
     });
     const { client } = renderWidget();
-    await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
+    await waitFor(() => expect(screen.getByPlaceholderText("Ask native agent…")).toBeEnabled());
     send("Use the default");
     await screen.findByText("Default selected.");
     expect(requests.find((request) => request.url.endsWith("/chat/completions"))?.body.model).toBe(
@@ -849,9 +913,9 @@ describe("Aria Agent in the gateway", () => {
     const requests = gateway([answer("Your usage is available.")], options);
     const { client } = renderWidget(undefined, false, true);
     const user = userEvent.setup();
-    const input = await screen.findByPlaceholderText("Ask Aria…");
+    const input = await screen.findByPlaceholderText("Ask native agent…");
     await waitFor(() => expect(input).toBeEnabled());
-    const picker = screen.getByRole("combobox", { name: "Aria Agent model" });
+    const picker = screen.getByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` });
     expect(picker).toHaveValue("allowed-chat");
     await user.click(picker);
     expect(screen.getByRole("option", { name: "allowed-chat" })).toBeInTheDocument();
@@ -865,10 +929,10 @@ describe("Aria Agent in the gateway", () => {
     expect(discovery?.headers.get("X-Gateway-Session")).toBe("Bearer sk-session-first-admin");
     options.callableModels = [];
     await act(async () => client.invalidateQueries({ queryKey: ["liteadmin-models"] }));
-    await user.click(screen.getByRole("combobox", { name: "Aria Agent model" }));
+    await user.click(screen.getByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` }));
     expect(await screen.findByText("No available models")).toBeVisible();
     await user.keyboard("{Escape}");
-    expect(screen.getByPlaceholderText("Ask Aria…")).toBeDisabled();
+    expect(screen.getByPlaceholderText("Ask native agent…")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
     expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1);
   });
@@ -878,7 +942,7 @@ describe("Aria Agent in the gateway", () => {
     const requests = gateway([], { callableModels: async () => json({ error: { message: "Forbidden" } }, 403) });
     renderWidget(undefined, false, true);
     expect(await screen.findByText(/Could not load models/)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toBeDisabled();
+    expect(screen.getByPlaceholderText("Ask native agent…")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
     expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(0);
   });
@@ -898,8 +962,8 @@ describe("Aria Agent in the gateway", () => {
         }),
     });
     renderWidget(undefined, false, true);
-    await waitFor(() => expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled());
-    const picker = screen.getByRole("combobox", { name: "Aria Agent model" });
+    await waitFor(() => expect(screen.getByPlaceholderText("Ask native agent…")).toBeEnabled());
+    const picker = screen.getByRole("combobox", { name: `${ARIA_AGENT_LABEL} model` });
     expect(picker).toHaveValue("team-chat");
     const user = userEvent.setup();
     await user.click(picker);
@@ -946,7 +1010,7 @@ describe("Aria Agent in the gateway", () => {
     await openWidget();
     send("Create a key for the team");
     const review = await screen.findByRole("region", { name: "Create a virtual key" });
-    expect(screen.getAllByRole("region", { name: "Aria Agent", exact: true })).toHaveLength(1);
+    expect(screen.getAllByRole("region", { name: ARIA_AGENT_LABEL, exact: true })).toHaveLength(1);
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
     expect(within(review).getByText("Widget key")).toBeInTheDocument();
     view.refresh(false, false, false);
@@ -965,7 +1029,7 @@ describe("Aria Agent in the gateway", () => {
     expect(screen.getByText(NEW_KEY)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Copy generated key" })).toBeInTheDocument();
     expect(screen.getAllByRole("region", { name: "Create a virtual key" })).toHaveLength(1);
-    expect(screen.getByLabelText("Aria Agent conversation")).toHaveTextContent(
+    expect(screen.getByLabelText(`${ARIA_AGENT_LABEL} conversation`)).toHaveTextContent(
       /Here is the requested change\.[\s\S]*Completed[\s\S]*Created the key\./,
     );
     const writes = requests.filter((request) => request.url.endsWith("/key/generate"));
@@ -1066,7 +1130,7 @@ describe("Aria Agent in the gateway", () => {
       act(() => send("Old approval"));
       await screen.findByRole("button", { name: "Confirm change" });
     } else {
-      act(() => fireEvent.change(screen.getByPlaceholderText("Ask Aria…"), { target: { value: "Old draft" } }));
+      act(() => fireEvent.change(screen.getByPlaceholderText("Ask native agent…"), { target: { value: "Old draft" } }));
     }
     const original = requests.filter((request) => request.url.endsWith("/chat/completions")).at(-1);
     if (transition === "account") {
@@ -1082,18 +1146,18 @@ describe("Aria Agent in the gateway", () => {
     } else {
       session("proxy_admin_viewer", "first-admin", { premium_user: true }, "sk-session-first-admin-viewer");
       view.refresh();
-      expect(await screen.findByRole("link", { name: "Aria Agent" })).toBeVisible();
+      expect(await screen.findByRole("link", { name: ARIA_AGENT_LABEL })).toBeVisible();
       session();
       view.refresh();
     }
     if (stage === "pending") await waitFor(() => expect(original?.signal.aborted).toBe(true));
-    await screen.findByRole("region", { name: "Aria Agent", exact: true });
+    await screen.findByRole("region", { name: ARIA_AGENT_LABEL, exact: true });
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
     expect(screen.queryByText("Old question")).not.toBeInTheDocument();
     expect(screen.queryByText("Old answer.")).not.toBeInTheDocument();
     expect(screen.queryByText("Old approval")).not.toBeInTheDocument();
-    expect(await screen.findByPlaceholderText("Ask Aria…")).toHaveValue("");
+    expect(await screen.findByPlaceholderText("Ask native agent…")).toHaveValue("");
     await selectModel();
     if (stage === "pending") await act(async () => pending.resolve(toolReply("key_create", keyArguments)));
     expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
@@ -1155,7 +1219,7 @@ describe("Aria Agent in the gateway", () => {
   it("blocks inference when settings cannot be loaded", async () => {
     const requests = gateway([], { settings: { target: INFERENCE, status: 503 } });
     renderWidget(undefined, true);
-    const home = await screen.findByRole("region", { name: "Aria Agent", exact: true });
+    const home = await screen.findByRole("region", { name: ARIA_AGENT_LABEL, exact: true });
     expect(await within(home).findByText("Could not load gateway settings.")).toBeInTheDocument();
     expect(requests.some((request) => request.url.endsWith("/chat/completions"))).toBe(false);
   });
@@ -1187,7 +1251,7 @@ describe("Aria Agent in the gateway", () => {
     await settingsRequested.promise;
     expect(screen.queryByText(EXTERNAL_INFERENCE)).not.toBeInTheDocument();
     expect(await screen.findByLabelText("Loading gateway settings")).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("Ask Aria…")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Ask native agent…")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Use configured gateway" })).not.toBeInTheDocument();
     expect(screen.queryByText("Original gateway.")).not.toBeInTheDocument();
     expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1);
@@ -1219,11 +1283,11 @@ describe("Aria Agent in the gateway", () => {
     await openWidget();
     const draft = "a".repeat(MAX_INPUT_LENGTH + 1);
     send(draft);
-    expect(screen.getByPlaceholderText("Ask Aria…")).toBeEnabled();
-    expect(screen.getByPlaceholderText("Ask Aria…")).toHaveValue(draft);
+    expect(screen.getByPlaceholderText("Ask native agent…")).toBeEnabled();
+    expect(screen.getByPlaceholderText("Ask native agent…")).toHaveValue(draft);
     expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
     expect(screen.getByRole("alert")).toHaveTextContent("8,000 characters");
-    expect(screen.queryByLabelText("Aria Agent conversation")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(`${ARIA_AGENT_LABEL} conversation`)).not.toBeInTheDocument();
   });
 
   it("retains the action receipt across later model and settings failures", async () => {

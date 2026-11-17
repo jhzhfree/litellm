@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { currentMoney } from "@/lib/currency";
 import { BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -119,7 +120,7 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
 
   const statCards: Array<{ label: string; value: string; sub?: string; subVariant?: "error" }> = meta
     ? [
-        { label: t("chat.usagePanel.totalSpend"), value: `$${meta.total_spend.toFixed(2)}` },
+        { label: t("chat.usagePanel.totalSpend"), value: currentMoney(meta.total_spend, 2) },
         { label: t("chat.usagePanel.apiRequests"), value: formatNumber(meta.total_api_requests) },
         {
           label: t("chat.usagePanel.tokensUsed"),

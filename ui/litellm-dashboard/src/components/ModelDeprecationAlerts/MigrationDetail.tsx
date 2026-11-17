@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { currentMoney } from "@/lib/currency";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useQueryStates } from "nuqs";
@@ -191,7 +192,7 @@ export default function MigrationDetail({
       {
         id: "spend",
         header: t("alerts.migrationDetail.columns.spend"),
-        cell: ({ row }) => `$${row.original.metrics.spend.toFixed(2)}`,
+        cell: ({ row }) => currentMoney(row.original.metrics.spend, 2),
       },
     ],
     [teamNames, tagsByKey, tagQuery.isPending, tagQuery.isError, t],

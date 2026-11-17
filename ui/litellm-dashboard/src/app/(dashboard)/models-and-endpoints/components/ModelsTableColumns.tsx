@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { formatMoneyRate } from "@/lib/currency";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { CredentialIdentity } from "@/components/shared/CredentialIdentity";
@@ -251,10 +252,16 @@ function CostsCell({ model }: { model: ModelData }) {
       trigger={
         <div className="flex flex-col gap-0.5 whitespace-nowrap">
           {showInput && (
-            <CostRow label={t("modelsAndEndpoints.modelsTableColumns.costs.input")} value={`$${inputCost}`} />
+            <CostRow
+              label={t("modelsAndEndpoints.modelsTableColumns.costs.input")}
+              value={formatMoneyRate(Number(inputCost), 10)}
+            />
           )}
           {showOutput && (
-            <CostRow label={t("modelsAndEndpoints.modelsTableColumns.costs.output")} value={`$${outputCost}`} />
+            <CostRow
+              label={t("modelsAndEndpoints.modelsTableColumns.costs.output")}
+              value={formatMoneyRate(Number(outputCost), 10)}
+            />
           )}
           {hasPerSecond && (
             <CostRow

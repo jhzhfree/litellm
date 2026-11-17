@@ -1,4 +1,5 @@
 import type { ParseKeys } from "i18next";
+import { currentMoney } from "@/lib/currency";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -485,7 +486,7 @@ export default function UserInfoView({
           },
           {
             label: t("users.userInfo.deleteModal.totalSpend"),
-            value: userData.spend !== null && userData.spend !== undefined ? userData.spend.toFixed(2) : undefined,
+            value: userData.spend !== null && userData.spend !== undefined ? currentMoney(userData.spend, 2) : undefined,
           },
         ]}
         onCancel={cancelDelete}

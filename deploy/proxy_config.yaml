@@ -19,6 +19,7 @@ model_list:
       api_key: os.environ/DEEPSEEK_API_KEY # 从环境变量读取（deploy/.env）
 
 general_settings:
+  enterprise_features_enabled: false # 企业版功能总开关：true 显示组织/模型排行榜/Lens/Projects/遥测/社区与文档链接/Beta 标识等
   master_key: os.environ/LITELLM_MASTER_KEY # 管理密钥（deploy/.env）
   store_model_in_db: true # 允许 UI 动态添加模型
   store_prompts_in_spend_logs: true # 内容审计: 日志中记录请求与响应内容（UI「日志」页可查）

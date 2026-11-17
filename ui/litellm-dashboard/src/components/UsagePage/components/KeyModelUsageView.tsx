@@ -1,4 +1,5 @@
 import { BarChart } from "@/components/shared/charts";
+import { currentCurrencySymbol, currentMoney } from "@/lib/currency";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,7 +88,7 @@ const KeyModelUsageView: React.FC<KeyModelUsageViewProps> = ({ topModels }) => {
               index="key"
               categories={["spend"]}
               colors={["cyan"]}
-              valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
+              valueFormatter={(value) => currentMoney(value, 2)}
               layout="vertical"
               yAxisWidth={180}
               tickGap={5}

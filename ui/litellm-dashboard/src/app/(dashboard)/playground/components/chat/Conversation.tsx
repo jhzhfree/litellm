@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { currentMoney } from "@/lib/currency";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
@@ -60,7 +61,7 @@ import { ReplyBody } from "./ReplyContent";
 export const formatSeconds = (ms: number): string => `${(ms / 1000).toFixed(2)}s`;
 
 export const formatCost = (cost: number): string =>
-  `$${cost < 0.0001 && cost > 0 ? cost.toPrecision(2) : cost.toFixed(4)}`;
+  cost < 0.0001 && cost > 0 ? currentMoney(cost, 8) : currentMoney(cost, 4);
 
 const MCP_EVENT_ENDPOINTS: readonly EndpointType[] = [EndpointType.CHAT, EndpointType.RESPONSES];
 

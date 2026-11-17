@@ -1,1 +1,1 @@
-export const ARIA_AGENT_LABEL = "Aria Agent";
+export const ARIA_AGENT_LABEL = "原生agent";

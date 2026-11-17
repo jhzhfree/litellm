@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { currentMoney } from "@/lib/currency";
 import { useTranslation } from "react-i18next";
 import CodeBlock from "@/components/CodeBlock";
 import { Input } from "@/components/ui/input";
@@ -124,15 +125,15 @@ const HowItWorks: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">{t("costTracking.howItWorks.results.originalCost")}</p>
-                <code className="font-mono text-xs text-foreground">${calculatedDiscount.originalCost}</code>
+                <code className="font-mono text-xs text-foreground">{currentMoney(Number(calculatedDiscount.originalCost))}</code>
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">{t("costTracking.howItWorks.results.finalCost")}</p>
-                <code className="font-mono text-xs text-foreground">${calculatedDiscount.finalCost}</code>
+                <code className="font-mono text-xs text-foreground">{currentMoney(Number(calculatedDiscount.finalCost))}</code>
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">{t("costTracking.howItWorks.results.discountAmount")}</p>
-                <code className="font-mono text-xs text-foreground">${calculatedDiscount.discountAmount}</code>
+                <code className="font-mono text-xs text-foreground">{currentMoney(Number(calculatedDiscount.discountAmount))}</code>
               </div>
               <div className="flex items-center justify-between border-t border-border pt-2">
                 <p className="text-xs font-semibold text-foreground">

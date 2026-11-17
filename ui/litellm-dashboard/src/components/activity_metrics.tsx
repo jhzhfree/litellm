@@ -10,6 +10,7 @@ import {
   stackedUsageColor,
   ValueTooltip,
 } from "@/components/shared/charts";
+import { currentMoney } from "@/lib/currency";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { resolveTeamAliasFromTeamID } from "@/utils/teamUtils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -48,7 +49,7 @@ const CHART_CLASS = "mt-1 h-56";
 const modelAverageResponseTimeMs = (metrics: ModelActivityData): number | null =>
   averageResponseTimeMs(metrics.total_response_time_ms ?? 0, metrics.total_timed_requests ?? 0);
 
-const formatSpend = (value: number) => `$${formatNumberWithCommas(value, 2, true)}`;
+const formatSpend = (value: number) => currentMoney(value, 2);
 
 export const ResponseTimeTooltip = ({ active, payload, label }: ChartTooltipProps) => (
   <ValueTooltip
@@ -236,7 +237,7 @@ const ModelTopKeys = ({
                 )}
               </div>
               <div className="shrink-0 text-right">
-                <p className="text-sm tabular-nums text-foreground">${formatNumberWithCommas(keyData.spend, 2)}</p>
+                <p className="text-sm tabular-nums text-foreground">{currentMoney(keyData.spend, 2)}</p>
                 <p className="text-xs tabular-nums text-muted-foreground">
                   {t("activityMetrics.topKeys.usage", {
                     requests: keyData.requests.toLocaleString(),
@@ -291,7 +292,7 @@ export const ModelSection = ({
         <StatCell>
           <Stat
             label={t("activityMetrics.stats.totalSpend")}
-            value={<StatValue>${formatNumberWithCommas(metrics.total_spend, 2)}</StatValue>}
+            value={<StatValue>{currentMoney(metrics.total_spend, 2)}</StatValue>}
             hint={t("activityMetrics.stats.spendPerRequest", {
               value: formatNumberWithCommas(metrics.total_spend / metrics.total_successful_requests, 3),
             })}
@@ -594,7 +595,7 @@ export const ActivityMetrics: React.FC<ActivityMetricsProps> = ({
           <StatCell>
             <Stat
               label={t("activityMetrics.stats.totalSpend")}
-              value={<StatValue>${formatNumberWithCommas(totalSpend, 2)}</StatValue>}
+              value={<StatValue>{currentMoney(totalSpend, 2)}</StatValue>}
             />
           </StatCell>
         </StatStrip>
@@ -668,7 +669,7 @@ export const ActivityMetrics: React.FC<ActivityMetricsProps> = ({
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-5 text-sm tabular-nums text-muted-foreground">
-                      <span className="text-foreground">${formatNumberWithCommas(metrics.total_spend, 2)}</span>
+                      <span className="text-foreground">{currentMoney(metrics.total_spend, 2)}</span>
                       <span>
                         {t("activityMetrics.summary.requests", { requests: metrics.total_requests.toLocaleString() })}
                       </span>

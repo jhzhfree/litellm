@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { currentCurrencySymbol, currentDisplayAmount } from "@/lib/currency";
 import i18n from "@/i18n/i18n";
 import type { KeySpendActivityRow } from "@/components/UsagePage/dailyActivityApi";
 import { DailyData, SpendMetrics } from "@/components/UsagePage/types";
@@ -8,9 +9,10 @@ import { formatNumberWithCommas } from "@/utils/dataUtils";
 export const usd = (value: number): string => {
   // Sized and signed off the magnitude: a driver can come out negative, and a small
   // loss rendered at two decimals would read as "$-0.00"
-  const magnitude = Math.abs(value);
+  const display = currentDisplayAmount(value);
+  const magnitude = Math.abs(display);
   const decimals = magnitude > 0 && magnitude < 1 ? 4 : 2;
-  return `${value < 0 ? "-" : ""}$${formatNumberWithCommas(magnitude, decimals)}`;
+  return `${display < 0 ? "-" : ""}${currentCurrencySymbol()}${formatNumberWithCommas(magnitude, decimals)}`;
 };
 
 export const classificationRatePer1kTurns = (

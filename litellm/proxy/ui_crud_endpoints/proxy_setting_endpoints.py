@@ -382,6 +382,11 @@ class UISettings(LiteLLMBaseModel):
         description="URL of a connected Moyai deployment. When set, the Moyai entry in the UI navigation opens this deployment instead of the Moyai landing page.",
     )
 
+    enterprise_features_enabled: bool = Field(
+        default=False,
+        description="企业版功能总开关：关闭时隐藏企业功能（组织管理、模型排行榜、Lens、Projects、遥测、社区链接、文档入口、Beta 标识等）；开启后全部显示。",
+    )
+
     @field_validator("moyai_url", mode="before")
     @classmethod
     def _validate_moyai_url(cls, value: object) -> object:
@@ -433,6 +438,7 @@ ALLOWED_UI_SETTINGS_FIELDS: Final = {
     "disable_key_generate_for_org_admin",
     "enable_chat_ui",
     "moyai_url",
+    "enterprise_features_enabled",
     TEAM_ADMIN_EDITABLE_TEAM_FIELDS_SETTING,
 }
 

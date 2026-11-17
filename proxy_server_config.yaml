@@ -224,6 +224,7 @@ router_settings:
   model_group_alias: {"my-special-fake-model-alias-name": "fake-openai-endpoint-3"} 
 
 general_settings: 
+  enterprise_features_enabled: false # 企业版功能总开关：true 显示组织/模型排行榜/Lens/Projects/遥测/社区与文档链接/Beta 标识等
   master_key: os.environ/LITELLM_MASTER_KEY # [OPTIONAL] Use to enforce auth on proxy. See - https://docs.litellm.ai/docs/proxy/virtual_keys
   store_model_in_db: True
   proxy_budget_rescheduler_min_time: 60

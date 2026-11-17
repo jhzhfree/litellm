@@ -3,7 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cva.config";
-import { ENTERPRISE_FEATURES } from "@/config/enterpriseFeatures";
+import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures";
 import { Github, Slack } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -26,8 +26,9 @@ const COMMUNITY_LINKS = [
 export const CommunityEngagementButtons: React.FC = () => {
   const { t } = useTranslation();
   const disableShowPrompts = useDisableShowPrompts();
+  const enterpriseEnabled = useEnterpriseFeatures();
 
-  if (!ENTERPRISE_FEATURES.communityLinks || disableShowPrompts) {
+  if (!enterpriseEnabled || disableShowPrompts) {
     return null;
   }
 

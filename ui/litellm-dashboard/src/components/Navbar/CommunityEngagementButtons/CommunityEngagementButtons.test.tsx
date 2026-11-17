@@ -9,12 +9,8 @@ vi.mock("@/app/(dashboard)/hooks/useDisableShowPrompts", () => ({
   useDisableShowPrompts: () => mockUseDisableShowPromptsImpl(),
 }));
 
-vi.mock("@/config/enterpriseFeatures", () => ({
-  ENTERPRISE_FEATURES: {
-    get communityLinks() {
-      return mockCommunityLinksEnabled;
-    },
-  },
+vi.mock("@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures", () => ({
+  useEnterpriseFeatures: () => mockCommunityLinksEnabled,
 }));
 
 describe("CommunityEngagementButtons", () => {

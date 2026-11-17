@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import {
   currencySymbol,
@@ -93,4 +93,12 @@ export function useCurrency(): CurrencyHelpers {
     format,
     formatValue,
   };
+}
+
+/**
+ * 订阅全局货币偏好变化并触发当前组件树重渲染。
+ * 供布局层等容器调用，使通过纯函数格式化金额的子树在切换货币后立即刷新。
+ */
+export function useCurrencySync(): CurrencyCode {
+  return useSyncExternalStore(subscribeCurrency, readStoredCurrency, () => DEFAULT_CURRENCY);
 }

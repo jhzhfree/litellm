@@ -5621,17 +5621,17 @@
   },
   "aria": {
     "page": {
-      "unavailable": "Aria is not available for this session."
+      "unavailable": "Native agent is not available for this session."
     },
     "usageTrigger": {
-      "ask": "Ask Aria"
+      "ask": "Ask native agent"
     },
     "destination": {
       "loadingSettings": "Loading gateway settings",
       "settingsError": "Could not load gateway settings.",
       "retry": "Retry",
       "consentTitle": "Connect to the configured gateway",
-      "consentBody": "This gateway uses a different address. Aria will send your existing session credential to the address shown above.",
+      "consentBody": "This gateway uses a different address. The native agent will send your existing session credential to the address shown above.",
       "useConfigured": "Use configured gateway"
     },
     "inferenceTarget": {
@@ -5643,7 +5643,7 @@
     },
     "composer": {
       "tooLong": "Keep your message within {{limit}} characters.",
-      "placeholder": "Ask Aria…"
+      "placeholder": "Ask native agent…"
     },
     "modelPicker": {
       "loading": "Loading models",
@@ -16897,7 +16897,8 @@
             "requiredDescription": "required",
             "noOrganizations": "No organizations available",
             "placeholder": "Search or select an Organization",
-            "selectPrompt": "Please select an organization to create a team for. You can only create teams within organizations where you are an admin."
+            "selectPrompt": "Please select an organization to create a team for. You can only create teams within organizations where you are an admin.",
+            "defaultOrganization": "Default organization"
           },
           "models": {
             "label": "Models",

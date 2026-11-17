@@ -1,4 +1,5 @@
 import { useResetTeamMemberBudget } from "@/app/(dashboard)/hooks/teams/useResetTeamMemberBudget";
+import { currentCurrencySymbol, currentMoney } from "@/lib/currency";
 import { useResetTeamMemberSpend } from "@/app/(dashboard)/hooks/teams/useResetTeamMemberSpend";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -29,7 +30,7 @@ const BUDGET_SOURCE_LABEL_KEYS: Record<Exclude<TeamMemberBudgetSource, "none">, 
 const MemberName = ({ name }: { name: string | null | undefined }) => <strong>{name}</strong>;
 
 const formatBudget = (t: TFunction, value: number | null): string =>
-  value === null ? t("teams.memberTab.unlimited") : `$${formatNumberWithCommas(value, 2)}`;
+  value === null ? t("teams.memberTab.unlimited") : currentMoney(value, 2);
 
 const hasModelBudgets = (budget: StoredModelMaxBudget | null | undefined): budget is StoredModelMaxBudget =>
   budget != null && Object.keys(budget).length > 0;
@@ -387,7 +388,7 @@ export default function TeamMemberTab({
               }
               values={{
                 period: resetSpendPeriod,
-                amount: formatNumberWithCommas(getUserCurrentPeriodSpend(memberToResetSpend?.user_id ?? null), 4),
+                amount: currentMoney(getUserCurrentPeriodSpend(memberToResetSpend?.user_id ?? null), 4),
               }}
               components={{ strong: <strong /> }}
             />

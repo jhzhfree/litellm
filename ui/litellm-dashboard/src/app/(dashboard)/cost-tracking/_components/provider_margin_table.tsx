@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Check, SquarePen, Trash2, X } from "lucide-react";
+import { currentCurrencySymbol, currentDisplayAmount, currentMoney, currentToUsd } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SimpleTable } from "@/components/common_components/simple_table";
@@ -45,13 +46,13 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
     } else {
       // Complex format with percentage and/or fixed_amount
       setEditPercentage(currentMargin.percentage ? (currentMargin.percentage * 100).toString() : "");
-      setEditFixedAmount(currentMargin.fixed_amount ? currentMargin.fixed_amount.toString() : "");
+      setEditFixedAmount(currentMargin.fixed_amount ? currentDisplayAmount(currentMargin.fixed_amount).toString() : "");
     }
   };
 
   const handleSaveEdit = (provider: string) => {
     const percentValue = editPercentage ? parseFloat(editPercentage) : undefined;
-    const fixedValue = editFixedAmount ? parseFloat(editFixedAmount) : undefined;
+    const fixedValue = editFixedAmount ? currentToUsd(parseFloat(editFixedAmount)) : undefined;
 
     if (percentValue !== undefined && !isNaN(percentValue) && percentValue >= 0 && percentValue <= 1000) {
       if (fixedValue !== undefined && !isNaN(fixedValue) && fixedValue >= 0) {
@@ -85,7 +86,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
       parts.push(`${(margin.percentage * 100).toFixed(1)}%`);
     }
     if (margin.fixed_amount !== undefined) {
-      parts.push(`$${margin.fixed_amount.toFixed(6)}`);
+      parts.push(currentMoney(margin.fixed_amount, 6));
     }
     return parts.join(" + ") || "0%";
   };
@@ -143,7 +144,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
                       />
                       <span className="text-muted-foreground">%</span>
                       <span className="text-muted-foreground">+</span>
-                      <span className="text-muted-foreground">$</span>
+                      <span className="text-muted-foreground">{currentCurrencySymbol()}</span>
                       <Input
                         value={editFixedAmount}
                         onChange={(e) => setEditFixedAmount(e.target.value)}

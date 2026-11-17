@@ -1,6 +1,7 @@
 "use client";
 
 import type { ParseKeys, TFunction } from "i18next";
+import { currentMoney } from "@/lib/currency";
 import { Waypoints } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -342,7 +343,7 @@ export function RoutingDecisionCard({
           </Row>
         )}
         {decision.classifier_cost != null && (
-          <Row label={t("logs.detail.routing.classifierCost")}>${decision.classifier_cost.toFixed(8)}</Row>
+          <Row label={t("logs.detail.routing.classifierCost")}>{currentMoney(decision.classifier_cost, 8)}</Row>
         )}
 
         {score !== undefined && (

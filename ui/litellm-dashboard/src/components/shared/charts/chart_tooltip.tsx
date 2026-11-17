@@ -3,6 +3,7 @@
 import * as React from "react";
 import type { TooltipContentProps, TooltipValueType } from "recharts";
 
+import { useCurrency } from "@/lib/useCurrency";
 import i18n from "@/i18n/i18n";
 
 export type ChartTooltipProps = Pick<
@@ -63,13 +64,18 @@ const rawMetricValue = (row: unknown, dataKey: string): number | undefined => {
   return typeof value === "number" ? value : undefined;
 };
 
-const formatMetricValue = (rawValue: number | undefined, isSpend: boolean): string => {
+const formatMetricValue = (
+  rawValue: number | undefined,
+  isSpend: boolean,
+  formatMoney: (usd: number) => string,
+): string => {
   if (rawValue === undefined) return i18n.t("shared.charts.chartTooltip.notAvailable");
-  if (isSpend) return `$${rawValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (isSpend) return formatMoney(rawValue);
   return rawValue.toLocaleString();
 };
 
 export const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
+  const { format } = useCurrency();
   if (!active || !payload || payload.length === 0) return null;
 
   return (
@@ -79,7 +85,11 @@ export const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => 
         const dataKey = item.dataKey?.toString();
         if (!dataKey || !item.payload) return null;
 
-        const formattedValue = formatMetricValue(rawMetricValue(item.payload, dataKey), dataKey.includes("spend"));
+        const formattedValue = formatMetricValue(
+          rawMetricValue(item.payload, dataKey),
+          dataKey.includes("spend"),
+          format,
+        );
 
         return (
           <div key={dataKey} className="flex items-center justify-between space-x-4">

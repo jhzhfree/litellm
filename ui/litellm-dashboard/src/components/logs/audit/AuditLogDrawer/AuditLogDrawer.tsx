@@ -1,4 +1,5 @@
 import { copyToClipboard } from "@/utils/dataUtils";
+import { currentMoney } from "@/lib/currency";
 import { Check, Copy } from "lucide-react";
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -142,14 +143,14 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
               )}
               {value.spend !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">{t("logs.audit.drawer.spend")}</span> $
-                  {Number(value.spend).toFixed(6)}
+                  <span className="text-muted-foreground">{t("logs.audit.drawer.spend")}</span>{" "}
+                  {currentMoney(Number(value.spend), 6)}
                 </p>
               )}
               {value.max_budget !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">{t("logs.audit.drawer.maxBudget")}</span> $
-                  {Number(value.max_budget).toFixed(6)}
+                  <span className="text-muted-foreground">{t("logs.audit.drawer.maxBudget")}</span>{" "}
+                  {currentMoney(Number(value.max_budget), 6)}
                 </p>
               )}
             </div>

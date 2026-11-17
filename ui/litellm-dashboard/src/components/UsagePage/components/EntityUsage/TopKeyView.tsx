@@ -1,4 +1,5 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { currentCurrencySymbol, currentMoney } from "@/lib/currency";
 import { BarChart } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
 import { IdCell, MoneyCell } from "@/components/shared/table_cells";
@@ -171,7 +172,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                     </div>
                     <div>
                       <span className="text-muted-foreground">{t("usage.topKeys.tagTooltip.spend")}</span>{" "}
-                      {tag.usage > 0 && tag.usage < 0.01 ? "<$0.01" : `$${formatNumberWithCommas(tag.usage, 2)}`}
+                      {tag.usage > 0 && tag.usage < 0.01 ? `<${currentCurrencySymbol()}0.01` : currentMoney(tag.usage, 2)}
                     </div>
                   </div>
                 }
@@ -244,7 +245,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
             tickGap={5}
             layout="vertical"
             showLegend={false}
-            valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
+            valueFormatter={(value) => currentMoney(value, 2)}
             onValueChange={(item) => handleKeyClick(item)}
             showTooltip={true}
             customTooltip={(props) => {
@@ -263,7 +264,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                     <div>
                       <span className="text-muted-foreground">{t("usage.topKeys.chartTooltip.spend")}</span>
                       <span className="font-medium tabular-nums text-foreground">
-                        ${formatNumberWithCommas(item?.spend, 2)}
+                        {item?.spend != null ? currentMoney(item.spend, 2) : "-"}
                       </span>
                     </div>
                   </div>

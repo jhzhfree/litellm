@@ -1,3 +1,4 @@
+import { currentCurrencySymbol, currentDisplayAmount } from "@/lib/currency";
 import i18n from "@/i18n/i18n";
 import { toast } from "@/lib/toast";
 
@@ -53,17 +54,20 @@ export const getSpendString = (value: number | null | undefined, decimals: numbe
     return "-";
   }
 
+  // 展示值按当前货币偏好换算（USD 存储 → USD/CNY）
+  const displayValue = currentDisplayAmount(value);
+
   const halfSmallestUnit = Number(`5e-${decimals + 1}`);
-  if (Math.abs(value) < halfSmallestUnit) {
+  if (Math.abs(displayValue) < halfSmallestUnit) {
     const threshold = (1 / 10 ** decimals).toFixed(decimals);
-    return `< $${threshold}`;
+    return `< ${currentCurrencySymbol()}${threshold}`;
   }
 
-  return `$${formatNumberWithCommas(value, decimals, false, false)}`;
+  return `${currentCurrencySymbol()}${formatNumberWithCommas(displayValue, decimals, false, false)}`;
 };
 
 export const formatPerSecondCost = (cost: number): string =>
-  `$${cost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 6 })}/s`;
+  `${currentCurrencySymbol()}${currentDisplayAmount(cost).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 6 })}/s`;
 
 export const copyToClipboard = async (
   text: string | null | undefined,

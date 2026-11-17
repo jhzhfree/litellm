@@ -1,5 +1,6 @@
 import type { ParseKeys } from "i18next";
 import type { DailyData, SpendMetrics } from "@/components/UsagePage/types";
+import { currentCurrencySymbol, currentDisplayAmount } from "@/lib/currency";
 import i18n from "@/i18n/i18n";
 import { stackedUsageColor } from "@/components/shared/charts";
 import { EMPTY_DAILY_ACTIVITY_METADATA, type DailyActivityMetadata } from "@/components/UsagePage/dailyActivityApi";
@@ -237,13 +238,14 @@ export const dailyTotals = (results: readonly DailyData[]): SeriesDay[] =>
   }));
 
 export const formatUsd = (value: number, digits = 2): string =>
-  `$${value.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+  `${currentCurrencySymbol()}${currentDisplayAmount(value).toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
 
 export const formatCompactUsd = (value: number): string => {
-  if (value === 0) return "$0";
-  if (Math.abs(value) < 100) return `$${value.toFixed(2)}`;
-  if (Math.abs(value) < 1000) return `$${value.toFixed(0)}`;
-  return `$${Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value)}`;
+  const v = currentDisplayAmount(value);
+  if (v === 0) return `${currentCurrencySymbol()}0`;
+  if (Math.abs(v) < 100) return `${currentCurrencySymbol()}${v.toFixed(2)}`;
+  if (Math.abs(v) < 1000) return `${currentCurrencySymbol()}${v.toFixed(0)}`;
+  return `${currentCurrencySymbol()}${Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(v)}`;
 };
 
 export const formatCompact = (value: number): string =>

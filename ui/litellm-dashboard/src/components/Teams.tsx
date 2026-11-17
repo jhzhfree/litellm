@@ -1,5 +1,6 @@
 import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
+import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import AvailableTeamsPanel from "@/components/team/AvailableTeamsPanel";
 import TeamInfoView from "@/components/team/TeamInfo";
@@ -223,6 +224,7 @@ const getAdminOrganizations = (
 // @deprecated
 const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly = false, premiumUser = false }) => {
   const { t } = useTranslation();
+  const enterpriseEnabled = useEnterpriseFeatures();
   const { data: organizationsData } = useOrganizations();
   const organizations = organizationsData ?? null;
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
@@ -764,11 +766,13 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                             "/docs",
                           )}
                           description={
-                            isOrgAdmin && isSingleOrg
-                              ? t("teams.page.create.fields.organization.singleOrgDescription")
-                              : isOrgAdmin
-                                ? t("teams.page.create.fields.organization.requiredDescription")
-                                : undefined
+                            !enterpriseEnabled
+                              ? t("teams.page.create.fields.organization.defaultOrganization")
+                              : isOrgAdmin && isSingleOrg
+                                ? t("teams.page.create.fields.organization.singleOrgDescription")
+                                : isOrgAdmin
+                                  ? t("teams.page.create.fields.organization.requiredDescription")
+                                  : undefined
                           }
                         >
                           {({ id, value, onChange }) => (
@@ -780,11 +784,12 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                                 label: org.organization_alias ?? "",
                                 sublabel: org.organization_id ?? "",
                               }))}
-                              disabled={isOrgAdmin && soleOrganizationId !== null && value === soleOrganizationId}
+                              // 企业功能关闭时组织功能不可用：固定默认组织，不可修改
+                              disabled={!enterpriseEnabled || (isOrgAdmin && soleOrganizationId !== null && value === soleOrganizationId)}
                               allowClear={!isOrgAdmin}
                               placeholder={
-                                hasNoOrgs
-                                  ? t("teams.page.create.fields.organization.noOrganizations")
+                                !enterpriseEnabled || hasNoOrgs
+                                  ? t("teams.page.create.fields.organization.defaultOrganization")
                                   : t("teams.page.create.fields.organization.placeholder")
                               }
                               emptyText={t("teams.page.create.fields.organization.noOrganizations")}

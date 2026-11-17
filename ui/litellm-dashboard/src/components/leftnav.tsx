@@ -83,7 +83,8 @@ import BetaBadge from "./BetaBadge";
 import SidebarAccountMenu from "./SidebarAccountMenu/SidebarAccountMenu";
 import SidebarUsageCard from "./SidebarUsageCard";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
-import { ENTERPRISE_FEATURES } from "@/config/enterpriseFeatures";
+import { ENTERPRISE_NAV_KEYS } from "@/config/enterpriseFeatures";
+import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures";
 
 const ICON = { strokeWidth: 1.75 } as const;
 
@@ -96,6 +97,7 @@ interface SidebarProps {
   allowAgentsForTeamAdmins?: boolean;
   disableVectorStoresForInternalUsers?: boolean;
   allowVectorStoresForTeamAdmins?: boolean;
+  enterpriseEnabled?: boolean;
 }
 
 export interface MenuItem {
@@ -126,6 +128,7 @@ export interface MenuVisibilityContext {
   allowAgentsForTeamAdmins?: boolean;
   disableVectorStoresForInternalUsers?: boolean;
   allowVectorStoresForTeamAdmins?: boolean;
+  enterpriseEnabled?: boolean;
 }
 
 const adminPageVisibility = (item: MenuItem, context: MenuVisibilityContext, isAdmin: boolean): boolean | null => {
@@ -187,7 +190,7 @@ export const visibleMenuGroups = (groups: readonly MenuGroup[], context: MenuVis
   const filterItems = (items: MenuItem[]): MenuItem[] =>
     items
       .map((item) => ({ ...item, children: item.children ? filterItems(item.children) : undefined }))
-      .filter((item) => !ENTERPRISE_FEATURES.hiddenNavItems.has(item.key))
+      .filter((item) => context.enterpriseEnabled || !ENTERPRISE_NAV_KEYS.has(item.key))
       .filter((item) => menuItemIsVisible(item, context, isAdmin));
 
   return groups
@@ -576,7 +579,7 @@ export const labelText = (item: MenuItem): string =>
 // Breadcrumb ("Section" / "Page") for the top bar, derived from the same nav config.
 export const getBreadcrumb = (pathname: string): { section: string | null; title: string } => {
   const route = routeForPathname(pathname);
-  if (route === "aria") return { section: null, title: "Aria Agent" };
+  if (route === "aria") return { section: null, title: "原生agent" };
   for (const group of menuGroups) {
     for (const item of group.items) {
       const section = sectionText(group.groupLabel);
@@ -599,6 +602,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
   allowVectorStoresForTeamAdmins,
 }) => {
   const { userId, accessToken, userRole, isViewOnly } = useAuthorized();
+  const enterpriseEnabled = useEnterpriseFeatures();
   const { t } = useTranslation();
   const term = useTerminology();
   const labelOf = (item: MenuItem) => (typeof item.label === "string" ? term(labelText(item)) : item.label);
@@ -640,6 +644,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
       allowAgentsForTeamAdmins,
       disableVectorStoresForInternalUsers,
       allowVectorStoresForTeamAdmins,
+      enterpriseEnabled,
     };
     return visibleMenuGroups(menuGroups, context);
   }, [
@@ -649,6 +654,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
     disableVectorStoresForInternalUsers,
     enableProjectsUI,
     enabledPagesInternalUsers,
+    enterpriseEnabled,
     isOrgAdmin,
     isTeamAdmin,
     isViewOnly,

@@ -81,3 +81,33 @@ export const formatAmount = (value: number, decimals = 2): string =>
 /** 带符号的金额文案，如 `$12.00` / `¥86.40` */
 export const formatMoney = (usd: number, currency: CurrencyCode, rate: number, decimals = 2): string =>
   `${currencySymbol(currency)}${formatAmount(toDisplayAmount(usd, currency, rate), decimals)}`;
+
+/* ---------- 非 React 上下文的便捷函数（按当前存储的货币偏好即时换算） ---------- */
+
+/** USD → 当前展示货币数值（工具函数/导出等非组件场景用） */
+export const currentDisplayAmount = (usd: number): number =>
+  toDisplayAmount(usd, readStoredCurrency(), readStoredRate());
+
+/** 按当前货币偏好格式化带符号金额（工具函数/导出等非组件场景用） */
+export const currentMoney = (usd: number, decimals = 2): string =>
+  formatMoney(usd, readStoredCurrency(), readStoredRate(), decimals);
+
+/** 展示货币金额 → USD（非 React 上下文用，与 currentDisplayAmount 互逆） */
+export const currentToUsd = (amount: number): number =>
+  toUsdAmount(amount, readStoredCurrency(), readStoredRate());
+
+/** 当前货币符号（`$` / `¥`） */
+export const currentCurrencySymbol = (): string => currencySymbol(readStoredCurrency());
+
+/** 单价/费率类金额（如 $/1M tokens）：按当前货币偏好换算后格式化 */
+export const formatMoneyRate = (
+  usd: number,
+  maxFractionDigits: number,
+  minFractionDigits = 2,
+  useGrouping = false,
+): string =>
+  `${currentCurrencySymbol()}${currentDisplayAmount(usd).toLocaleString("en-US", {
+    minimumFractionDigits: minFractionDigits,
+    maximumFractionDigits: maxFractionDigits,
+    useGrouping,
+  })}`;

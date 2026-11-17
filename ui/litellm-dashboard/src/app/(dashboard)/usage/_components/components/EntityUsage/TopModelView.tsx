@@ -1,4 +1,5 @@
 import { BarChart } from "@/components/shared/charts";
+import { currentCurrencySymbol, currentMoney } from "@/lib/currency";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
@@ -114,7 +115,7 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
             index="key"
             categories={["spend"]}
             colors={[BAR_COLOR]}
-            valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
+            valueFormatter={(value) => currentMoney(value, 2)}
             layout="vertical"
             yAxisWidth={200}
             tickGap={5}

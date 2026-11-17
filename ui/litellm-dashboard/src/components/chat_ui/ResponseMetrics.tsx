@@ -1,4 +1,5 @@
 import React from "react";
+import { currentMoney } from "@/lib/currency";
 import { useTranslation } from "react-i18next";
 import {
   ArrowDownToLine,
@@ -165,7 +166,7 @@ const ResponseMetrics: React.FC<ResponseMetricsProps> = ({ timeToFirstToken, tot
           label={t("chatUi.responseMetrics.labels.cost")}
           tooltip={t("chatUi.responseMetrics.tooltips.cost")}
           icon={<DollarSign className="size-3" aria-hidden="true" />}
-          value={`$${usage.cost.toFixed(6)}`}
+          value={currentMoney(usage.cost, 6)}
         />
       )}
 

@@ -88,7 +88,7 @@ describe("visibleMenuGroups", () => {
   });
 
   it("hides Projects when its UI setting is disabled", () => {
-    const projectAdminContext = { ...context, userRole: "Admin", isTeamAdmin: true };
+    const projectAdminContext = { ...context, userRole: "Admin", isTeamAdmin: true, enterpriseEnabled: true };
     const visibleWithFlag = visibleMenuGroups(menuGroups, { ...projectAdminContext, enableProjectsUI: true });
     const visibleWithoutFlag = visibleMenuGroups(menuGroups, { ...projectAdminContext, enableProjectsUI: false });
 
@@ -101,6 +101,7 @@ describe("visibleMenuGroups", () => {
       ...context,
       userRole: "Admin",
       enabledPagesInternalUsers: ["api-keys"],
+      enterpriseEnabled: true,
     });
 
     expect(flattenNavItems(visible).some(({ route }) => route === "users")).toBe(true);

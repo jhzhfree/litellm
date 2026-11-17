@@ -1,4 +1,5 @@
 import { Edit, Save } from "lucide-react";
+import { currentCurrencySymbol, currentMoney } from "@/lib/currency";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -246,7 +247,7 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
               description={t("teams.ssoSettings.fields.maxBudget.description")}
               isEditing={isEditing}
               viewContent={
-                values.max_budget != null ? <span>${Number(values.max_budget).toLocaleString()}</span> : <NotSet />
+                values.max_budget != null ? <span>{currentMoney(Number(values.max_budget), 2)}</span> : <NotSet />
               }
               editContent={
                 <InputGroup className="max-w-80">

@@ -1,4 +1,5 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures";
 import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
 import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
 import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBouncingIcon";
@@ -26,7 +27,8 @@ import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { productNames } from "@/i18n/untranslated/productNames";
 
-const RELEASE_NOTES_URL = "/docs";
+// 版本徽标不再跳转文档，链接常量保留注释以便恢复
+// const RELEASE_NOTES_URL = "/docs";
 
 function hueFromString(seed: string): number {
   let h = 0;
@@ -105,6 +107,8 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
   const [open, setOpen] = React.useState(false);
   const { data: healthData } = useHealthReadinessDetails(accessToken);
   const version = healthData?.litellm_version;
+  const enterpriseEnabled = useEnterpriseFeatures();
+  // "隐藏***"四个开关属于企业版功能：总开关开启时才显示
   const disableShowPrompts = useDisableShowPrompts();
   const disableBlogPosts = useDisableBlogPosts();
   const disableBouncingIcon = useDisableBouncingIcon();
@@ -121,36 +125,44 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
     emitLocalStorageChange(key);
   };
 
-  const toggles = [
-    {
-      key: "disableShowNewBadge",
-      label: t("shell.sidebarAccountMenu.toggles.newBadge.label"),
-      ariaLabel: t("shell.sidebarAccountMenu.toggles.newBadge.ariaLabel"),
-      checked: disableShowNewBadge,
-      onCheckedChange: (checked: boolean) => setFlag("disableShowNewBadge", checked),
-    },
-    {
-      key: "disableShowPrompts",
-      label: t("shell.sidebarAccountMenu.toggles.prompts.label"),
-      ariaLabel: t("shell.sidebarAccountMenu.toggles.prompts.ariaLabel"),
-      checked: disableShowPrompts,
-      onCheckedChange: (checked: boolean) => setFlag("disableShowPrompts", checked),
-    },
-    {
-      key: "disableBlogPosts",
-      label: t("shell.sidebarAccountMenu.toggles.blogPosts.label"),
-      ariaLabel: t("shell.sidebarAccountMenu.toggles.blogPosts.ariaLabel"),
-      checked: disableBlogPosts,
-      onCheckedChange: (checked: boolean) => setFlag("disableBlogPosts", checked),
-    },
-    {
-      key: "disableBouncingIcon",
-      label: t("shell.sidebarAccountMenu.toggles.bouncingIcon.label"),
-      ariaLabel: t("shell.sidebarAccountMenu.toggles.bouncingIcon.ariaLabel"),
-      checked: disableBouncingIcon,
-      onCheckedChange: (checked: boolean) => setFlag("disableBouncingIcon", checked),
-    },
-  ];
+  const toggles: {
+    key: string;
+    label: string;
+    ariaLabel: string;
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+  }[] = enterpriseEnabled
+    ? [
+        {
+          key: "disableShowNewBadge",
+          label: t("shell.sidebarAccountMenu.toggles.newBadge.label"),
+          ariaLabel: t("shell.sidebarAccountMenu.toggles.newBadge.ariaLabel"),
+          checked: disableShowNewBadge,
+          onCheckedChange: (checked: boolean) => setFlag("disableShowNewBadge", checked),
+        },
+        {
+          key: "disableShowPrompts",
+          label: t("shell.sidebarAccountMenu.toggles.prompts.label"),
+          ariaLabel: t("shell.sidebarAccountMenu.toggles.prompts.ariaLabel"),
+          checked: disableShowPrompts,
+          onCheckedChange: (checked: boolean) => setFlag("disableShowPrompts", checked),
+        },
+        {
+          key: "disableBlogPosts",
+          label: t("shell.sidebarAccountMenu.toggles.blogPosts.label"),
+          ariaLabel: t("shell.sidebarAccountMenu.toggles.blogPosts.ariaLabel"),
+          checked: disableBlogPosts,
+          onCheckedChange: (checked: boolean) => setFlag("disableBlogPosts", checked),
+        },
+        {
+          key: "disableBouncingIcon",
+          label: t("shell.sidebarAccountMenu.toggles.bouncingIcon.label"),
+          ariaLabel: t("shell.sidebarAccountMenu.toggles.bouncingIcon.ariaLabel"),
+          checked: disableBouncingIcon,
+          onCheckedChange: (checked: boolean) => setFlag("disableBouncingIcon", checked),
+        },
+      ]
+    : [];
 
   const seed = userEmail || userId || "user";
   const initials = initialsFromIdentity(userEmail, userId);
@@ -196,7 +208,8 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
       >
         <div className="flex items-center gap-2 border-b border-border px-3 py-3">
           <span className="text-[15px] font-bold tracking-tight text-foreground">{productNames.liteLLM}</span>
-          {!disableBouncingIcon && (
+          {/* 跳动图标属于企业版功能：总开关开启时才显示 */}
+          {enterpriseEnabled && !disableBouncingIcon && (
             <span
               className="animate-bounce text-lg leading-none"
               style={{ animationDuration: "2s" }}
@@ -210,7 +223,6 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
           {version && (
             <Badge
               variant="outline"
-              render={<a href={RELEASE_NOTES_URL} target="_blank" rel="noopener noreferrer" />}
               className="px-1.5 py-0 font-mono text-[10px] font-medium text-muted-foreground"
             >
               v{version}

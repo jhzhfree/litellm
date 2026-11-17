@@ -2,9 +2,9 @@
 # scripts/build-push.sh — 增量构建 AI-Tokengw 镜像并推送到本地 registry
 #
 # 用法:
-#   scripts/build-push.sh             # 构建 + 推送 latest 和时间戳 tag
+#   scripts/build-push.sh             # 构建 + 推送固定标签 ai-gw/gateway:1
 #   scripts/build-push.sh --no-push   # 仅构建
-#   scripts/build-push.sh --tag v1.2  # 额外指定 tag（latest 和时间戳 tag 始终会打）
+#   scripts/build-push.sh --tag v1.2  # 额外指定 tag
 #
 # 依赖 /root/Dockerfile.build（含 cargo/uv/npm 缓存挂载与 thin LTO 加速）。
 # 注意: 不要执行 docker builder prune —— 会清空缓存挂载数据, 导致下次全量重编。
@@ -29,7 +29,8 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-TAGS=("$REGISTRY/$IMAGE:1" "$REGISTRY/$IMAGE:$STAMP" "${EXTRA_TAGS[@]}")
+# 只推固定标签（不打时间戳/别名标签，避免 registry 堆积旧版本）
+TAGS=("$REGISTRY/$IMAGE:1" "${EXTRA_TAGS[@]}")
 T_ARGS=()
 for t in "${TAGS[@]}"; do T_ARGS+=(-t "$t"); done
 

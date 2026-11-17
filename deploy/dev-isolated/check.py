@@ -8,15 +8,17 @@ ROOT = Path(__file__).resolve().parent
 def validate(compose, proxy, key):
     assert compose['name'] == 'ai-tagent-gateway-dev'
     assert set(compose['services']) == {'gateway', 'db'}
-    assert compose['networks'] == {'isolated': {'internal': True}}
+    assert compose['networks'] == {'isolated': {'internal': True}, 'published': {}}
     gateway, db = compose['services']['gateway'], compose['services']['db']
     assert gateway['ports'] == ['127.0.0.1:4400:4000']
     assert 'ports' not in db
     for service in (gateway, db):
-        assert service['networks'] == ['isolated']
         assert service['pull_policy'] == 'never'
         assert ':?' in service['image']
         assert not any(k in service for k in ('privileged', 'network_mode', 'env_file', 'build'))
+    # internal 网络在新版 Docker 不支持端口发布：db 仅隔离网络；gateway 额外挂非内部网络承载发布端口
+    assert db['networks'] == ['isolated']
+    assert gateway['networks'] == ['isolated', 'published']
     env = gateway['environment']
     assert set(env) == {'DATABASE_URL', 'LITELLM_MASTER_KEY', 'UI_USERNAME', 'UI_PASSWORD',
                         'LITELLM_TELEMETRY_DISABLED', 'LITELLM_OFFLINE_MODE', 'LITELLM_LOCAL_MODEL_COST_MAP'}

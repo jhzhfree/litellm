@@ -2697,7 +2697,8 @@
             "requiredDescription": "必填",
             "noOrganizations": "没有可用的组织",
             "placeholder": "搜索或选择组织",
-            "selectPrompt": "请选择要为其创建团队的组织。您只能在自己担任管理员的组织内创建团队。"
+            "selectPrompt": "请选择要为其创建团队的组织。您只能在自己担任管理员的组织内创建团队。",
+            "defaultOrganization": "默认组织"
           },
           "models": {
             "label": "模型",
@@ -8931,17 +8932,17 @@
   },
   "aria": {
     "page": {
-      "unavailable": "本会话无法使用 Aria。"
+      "unavailable": "本会话无法使用原生agent。"
     },
     "usageTrigger": {
-      "ask": "询问 Aria"
+      "ask": "询问原生agent"
     },
     "destination": {
       "loadingSettings": "正在加载网关设置",
       "settingsError": "无法加载网关设置。",
       "retry": "重试",
       "consentTitle": "连接到已配置的网关",
-      "consentBody": "该网关使用不同的地址。Aria 会将你现有的会话凭据发送到上面显示的地址。",
+      "consentBody": "该网关使用不同的地址。原生agent 会将你现有的会话凭据发送到上面显示的地址。",
       "useConfigured": "使用已配置的网关"
     },
     "inferenceTarget": {
@@ -8953,7 +8954,7 @@
     },
     "composer": {
       "tooLong": "消息长度不能超过 {{limit}} 个字符。",
-      "placeholder": "询问 Aria…"
+      "placeholder": "询问原生agent…"
     },
     "modelPicker": {
       "loading": "正在加载模型",

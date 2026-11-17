@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { formatMoneyRate } from "@/lib/currency";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { CellTooltip, IdentityCell, StatusBadge, type StatusTone } from "@/components/shared/table_cells";
@@ -88,7 +89,7 @@ const formatCapabilityName = (key: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-const formatCost = (cost: number) => `$${(cost * 1_000_000).toFixed(4)}`;
+const formatCost = (cost: number) => formatMoneyRate(cost * 1_000_000, 4);
 
 const formatTokens = (tokens: number | undefined) => {
   if (!tokens) return i18n.t("aiHub.publicModelHubColumns.notAvailable");

@@ -53,12 +53,12 @@ describe("AdvancedDatePicker", () => {
           presetShortLabel={preset}
         />,
       );
-      fireEvent.click(screen.getByRole("button", { name: "1 Jan, 00:00 - 1 Jan, 23:59" }));
+      fireEvent.click(screen.getByRole("button", { name: "2027-01-01 00:00:00 - 2027-01-01 23:59:59" }));
       expect(screen.getByRole("button", { name: new RegExp(label) })).toHaveAttribute("aria-pressed", "true");
       expect(screen.getByRole("button", { name: /Today/ })).toHaveAttribute("aria-pressed", "false");
       fireEvent.click(screen.getByRole("button", { name: /Today/ }));
       fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-      fireEvent.click(screen.getByRole("button", { name: "1 Jan, 00:00 - 1 Jan, 23:59" }));
+      fireEvent.click(screen.getByRole("button", { name: "2027-01-01 00:00:00 - 2027-01-01 23:59:59" }));
       expect(screen.getByRole("button", { name: new RegExp(label) })).toHaveAttribute("aria-pressed", "true");
     } finally {
       vi.useRealTimers();
@@ -77,7 +77,9 @@ describe("AdvancedDatePicker", () => {
 
   it("should display formatted date range", () => {
     const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
-    expect(getTrigger(container)).toHaveTextContent(/\d{1,2} \w{3}, \d{2}:\d{2} - \d{1,2} \w{3}, \d{2}:\d{2}/);
+    expect(getTrigger(container)).toHaveTextContent(
+      /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/,
+    );
   });
 
   it("should open dropdown when clicked", () => {

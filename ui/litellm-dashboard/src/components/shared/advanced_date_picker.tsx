@@ -123,7 +123,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
       if (!from || !to) return t("shared.advancedDatePicker.selectDateRange");
 
       const formatDateTime = (date: Date) => {
-        return moment(date).format("D MMM, HH:mm");
+        return moment(date).format("YYYY-MM-DD HH:mm:ss");
       };
 
       return `${formatDateTime(from)} - ${formatDateTime(to)}`;
@@ -412,11 +412,11 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                     <div className={cn("bg-info/10 p-3 rounded-md space-y-1", compact && "col-span-2")}>
                       <div className="text-xs text-info">
                         <span className="font-medium">{t("shared.advancedDatePicker.from")}</span>{" "}
-                        {moment(tempValue.from).format("MMM D, YYYY [at] HH:mm:ss")}
+                        {moment(tempValue.from).format("YYYY-MM-DD HH:mm:ss")}
                       </div>
                       <div className="text-xs text-info">
                         <span className="font-medium">{t("shared.advancedDatePicker.to")}</span>{" "}
-                        {moment(tempValue.to).format("MMM D, YYYY [at] HH:mm:ss")}
+                        {moment(tempValue.to).format("YYYY-MM-DD HH:mm:ss")}
                       </div>
                     </div>
                   )}

@@ -3,6 +3,7 @@
  */
 
 import { ChevronDown, ChevronUp, Copy, MessageSquare } from "lucide-react";
+import { currentMoney } from "@/lib/currency";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -58,7 +59,7 @@ export function SectionHeader({
 
       {cost !== undefined && (
         <span className="text-xs text-muted-foreground">
-          {t("logs.detail.sectionHeader.cost", { value: cost.toFixed(6) })}
+          {t("logs.detail.sectionHeader.cost", { value: currentMoney(cost, 6) })}
         </span>
       )}
 

@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { CURRENCY_STORAGE_KEY, RATE_STORAGE_KEY } from "@/lib/currency";
+
 import { cachedFormat } from "./formats";
 import i18n from "./i18n";
 import en from "./locales/en.json";
@@ -130,5 +132,31 @@ describe("format keys in another UI language", () => {
     expect(shown).not.toBe(
       new Intl.NumberFormat(language, { style: "currency", currency: localCurrency }).format(1234.5),
     );
+  });
+
+  it("follows the stored display currency and rate", () => {
+    const store = new Map<string, string>();
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: (key: string) => store.get(key) ?? null,
+        setItem: (key: string, value: string) => store.set(key, value),
+        removeItem: (key: string) => store.delete(key),
+      },
+    });
+    try {
+      store.set(CURRENCY_STORAGE_KEY, "CNY");
+      store.set(RATE_STORAGE_KEY, "7.5");
+      const shown = i18n.t("format.usd", { val: 2 });
+      expect(shown).toBe(
+        new Intl.NumberFormat(i18n.language.replaceAll("_", "-"), { style: "currency", currency: "CNY" }).format(15),
+      );
+      store.delete(CURRENCY_STORAGE_KEY);
+      store.delete(RATE_STORAGE_KEY);
+      expect(i18n.t("format.usd", { val: 1234.5 })).toBe(
+        new Intl.NumberFormat(i18n.language.replaceAll("_", "-"), { style: "currency", currency: "USD" }).format(1234.5),
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

@@ -12,6 +12,7 @@ import { useCurrentUser } from "@/app/(dashboard)/hooks/currentUser/useCurrentUs
 import { redirectToLogin } from "@/app/(dashboard)/hooks/redirectToLogin";
 import { clearTokenCookies } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";
+import { useCurrencySync } from "@/lib/useCurrency";
 import SidebarProvider from "@/app/(dashboard)/components/SidebarProvider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -241,6 +242,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  useCurrencySync();
   const { accessToken, token, authLoading, passwordResetRequired } = useAuth();
   const session = decodeToken(token);
   const { isLoading: currentUserLoading, isError: currentUserFailed } = useCurrentUser(
@@ -272,13 +274,15 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     redirectToLogin();
   }, [currentUserFailed, isInvitationFlow]);
 
+  const displayCurrency = useCurrencySync();
+
   if (authLoading || identityPending || isInvitationFlow) {
     return <LoadingScreen />;
   }
 
   return (
     <ThemeProvider accessToken={accessToken}>
-      <DashboardShell>{children}</DashboardShell>
+      <DashboardShell key={displayCurrency}>{children}</DashboardShell>
     </ThemeProvider>
   );
 }

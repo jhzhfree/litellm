@@ -1,4 +1,5 @@
 import { parseAsString, useQueryState } from "nuqs";
+import { currentCurrencySymbol, currentMoney } from "@/lib/currency";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -419,7 +420,7 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
               userToDelete?.user_role ||
               "-",
           },
-          { label: t("users.page.deleteModal.totalSpend"), value: userToDelete?.spend?.toFixed(2) },
+          { label: t("users.page.deleteModal.totalSpend"), value: userToDelete?.spend != null ? currentMoney(userToDelete.spend, 2) : "-" },
         ]}
         onCancel={cancelDelete}
         onOk={confirmDelete}

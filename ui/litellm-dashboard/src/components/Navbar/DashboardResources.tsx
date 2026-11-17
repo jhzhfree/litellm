@@ -11,7 +11,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cva.config";
-import { ENTERPRISE_FEATURES } from "@/config/enterpriseFeatures";
+import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures";
 
 function DiscordIcon() {
   return (
@@ -56,7 +56,8 @@ const BLOG: ResourceLink = {
 export function DashboardCommunityLinks({ className }: { className?: string }) {
   const { t } = useTranslation();
   const hidden = useDisableShowPrompts();
-  if (!ENTERPRISE_FEATURES.communityLinks || hidden) return null;
+  const enterpriseEnabled = useEnterpriseFeatures();
+  if (!enterpriseEnabled || hidden) return null;
   return (
     <nav aria-label={t("shell.dashboardCommunityLinks.label")} className={cn("items-center gap-0.5", className)}>
       <TooltipProvider>
@@ -88,10 +89,11 @@ export function DashboardResources({ children }: { children?: ReactNode }) {
   const { t } = useTranslation();
   const hideBlog = useDisableBlogPosts();
   const hideCommunity = useDisableShowPrompts();
+  const enterpriseEnabled = useEnterpriseFeatures();
   const { data, isPending, isError, refetch } = useBlogPosts();
   const links = [
     ...[...DOCS, ...(hideBlog ? [] : [BLOG])].map((link) => ({ ...link, label: t(link.label) })),
-    ...(ENTERPRISE_FEATURES.communityLinks && !hideCommunity ? COMMUNITY : []),
+    ...(enterpriseEnabled && !hideCommunity ? COMMUNITY : []),
   ];
   return (
     <>

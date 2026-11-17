@@ -28,12 +28,13 @@
         "4000"
       ],
       "networks": [
-        "isolated"
+          "isolated",
+          "published"
       ],
       "depends_on": {
-        "db": {
-          "condition": "service_healthy"
-        }
+          "db": {
+              "condition": "service_healthy"
+          }
       },
       "restart": "no"
     },
@@ -64,9 +65,11 @@
     }
   },
   "networks": {
-    "isolated": {
-      "internal": true
-    }
+      "isolated": {
+          "internal": true
+      },
+      "published": {
+      }
   },
   "volumes": {
     "dev_database": {}

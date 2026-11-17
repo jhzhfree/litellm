@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { currentMoney } from "@/lib/currency";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -33,7 +34,7 @@ interface CostBreakdownViewerProps {
 
 const formatCost = (cost: number | undefined): string => {
   if (cost === undefined || cost === null) return "-";
-  return `$${formatNumberWithCommas(cost, 8)}`;
+  return currentMoney(cost, 8);
 };
 
 const formatPercent = (percent: number | undefined): string => {

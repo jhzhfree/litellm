@@ -155,3 +155,6 @@ coverage-rust.xml
 # make lens-dev worker token, generated config and logs
 .lens-dev/
 .mypy_cache/
+
+# 运行时生成的监控凭证
+deploy/metrics-token

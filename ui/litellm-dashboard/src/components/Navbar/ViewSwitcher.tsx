@@ -17,7 +17,7 @@ import { uiHref } from "@/utils/uiHref";
 import { cn } from "@/lib/cva.config";
 import i18n from "@/i18n/i18n";
 import { productNames } from "@/i18n/untranslated/productNames";
-import { ENTERPRISE_FEATURES } from "@/config/enterpriseFeatures";
+import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures";
 
 const GATEWAY = "ai-gateway";
 const CHAT = "chat";
@@ -66,6 +66,7 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
   const normalizedPathname = (pathname ?? "").replace(/\/+$/, "");
   const isChatRoute = isWorkspaceRoute(normalizedPathname, CHAT);
   const isMoyaiRoute = isWorkspaceRoute(normalizedPathname, MOYAI);
+  const enterpriseEnabled = useEnterpriseFeatures();
   const isStandaloneRoute = isChatRoute || isMoyaiRoute;
 
   const gatewayLabel = term(t("shell.viewSwitcher.aiGateway"));
@@ -120,7 +121,7 @@ export default function ViewSwitcher({ className, contentClassName }: ViewSwitch
       onClick: () => selectMode(e.key),
     })),
     chatItem,
-    ...(ENTERPRISE_FEATURES.cloudCodingAgent
+    ...(enterpriseEnabled
       ? [
           {
             key: MOYAI,

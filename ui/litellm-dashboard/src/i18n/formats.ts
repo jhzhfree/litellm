@@ -1,5 +1,7 @@
 import type { Formatter } from "i18next";
 
+import { readStoredCurrency, readStoredRate, toDisplayAmount } from "@/lib/currency";
+
 import { DEFAULT_LANGUAGE } from "./languages";
 
 type DateInput = Date | number | string;
@@ -50,6 +52,26 @@ const NUMERIC_DATE_TIME = {
   second: "2-digit",
 } as const;
 
+const usdRenderers = new Map<string, (value: number) => string>();
+const usdFormat = (
+  value: number,
+  lng: string | undefined,
+  options: Intl.NumberFormatOptions & InterpolationOptions,
+): string => {
+  const currency = readStoredCurrency();
+  const rate = readStoredRate();
+  const language = (lng ?? DEFAULT_LANGUAGE).replaceAll("_", "-");
+  const key = `${language}|${currency}|${rate}|${JSON.stringify(options)}`;
+  let render = usdRenderers.get(key);
+  if (!render) {
+    if (usdRenderers.size > 50) usdRenderers.clear();
+    const format = new Intl.NumberFormat(language, { ...options, ...USD, currency });
+    render = (v: number) => format.format(toDisplayAmount(v, currency, rate));
+    usdRenderers.set(key, render);
+  }
+  return render(value);
+};
+
 const FORMATS = {
   number: cachedFormat((lng, options: Intl.NumberFormatOptions) => {
     const format = new Intl.NumberFormat(lng, { ...options, currency: USD.currency });
@@ -59,10 +81,7 @@ const FORMATS = {
     const format = new Intl.NumberFormat(lng, { ...options, ...COMPACT, currency: USD.currency });
     return (value: number) => format.format(value);
   }),
-  usd: cachedFormat((lng, options: Intl.NumberFormatOptions) => {
-    const format = new Intl.NumberFormat(lng, { ...options, ...USD });
-    return (value: number) => format.format(value);
-  }),
+  usd: usdFormat,
   relativetime: cachedFormat(
     (lng, options: Intl.RelativeTimeFormatOptions & { range?: Intl.RelativeTimeFormatUnit }) => {
       const format = new Intl.RelativeTimeFormat(lng, options);

@@ -1,8 +1,8 @@
 # 本地开发环境指南（AI-Tokengw）
 
-> 适用机器：`192.168.24.202`（宿主机），仓库路径 `/opt/dev/litellm`，分支 `enterprise/zh-en-i18n`。
+> 适用机器：`192.168.24.202`（宿主机），仓库路径 `/opt/dev/litellm`，开发分支 `feature/akb-octop-litellm-dev`（发布分支 `enterprise/zh-en-i18n`）。
 > 机器配置：31GB 内存 / 8 核（2026-11-12 扩容）。
-> 最后更新：2026-11-12。
+> 最后更新：2026-11-17。
 
 ## 1. 端口与环境总览
 
@@ -18,6 +18,16 @@
 本地 venv 是 **editable 安装**（`litellm.__file__` 指向仓库源码），后端改代码即生效。
 
 ## 2. 启动后端（热重载）
+
+### 2.0 一键启动（推荐）
+
+```bash
+scripts/start-dev.sh
+```
+
+自动完成：检测 UI 源码比静态快照新时先构建同步（保证 4001/ui 也是最新）→ 启动后端（等价 2.1 命令）→ 启动前端（等价第 3 节命令）→ 就绪检查。已在运行的进程跳过，幂等可重复执行。`--skip-ui` 跳过快照同步检测。日志在 `/root/litellm-backend.log` 与 `/root/litellm-frontend.log`。
+
+### 2.1 手动启动
 
 ```bash
 cd /opt/dev/litellm
@@ -93,48 +103,102 @@ rsync -a --delete ui/litellm-dashboard/out/ litellm/proxy/_experimental/out/
 验证：`curl -s http://localhost:4001/ui/login/ | grep -c AI-Tokengw`（应为 5）。
 这个目录同样是 Docker 镜像构建的输入，改完它再打镜像，容器里的 UI 才是新的。
 
-## 5. 改完代码打包 Docker 镜像（tag 不变）
+## 5. 改完代码提交镜像到 22.6（按改动范围选择命令）
+
+镜像统一命名并推送内网 registry `192.168.22.6:5000`，**只推固定标签**（`gateway:1` / `postgres:16` / `prometheus:1`），不打时间戳标签。版本以 digest 区分。
+
+### 5.1 改动范围 → 提交动作对照
+
+| 改了什么 | 需要提交的镜像 | 命令 |
+|---|---|---|
+| Python 代码（`litellm/**`）、Rust 代码（`litellm-rust/**`）、Dockerfile | `ai-gw/gateway:1` | `scripts/build-push.sh` |
+| UI 源码（`ui/litellm-dashboard/src/**`） | `ai-gw/gateway:1` | **先** `scripts/sync-ui.sh`（同步 `out/` 静态产物），**再** `scripts/build-push.sh` |
+| 默认产品配置（`deploy/proxy_config.yaml`） | `ai-gw/gateway:1`（配置烤入镜像） | `scripts/build-push.sh`；同时外置挂载侧无需重建（挂载同路径自动覆盖） |
+| 上游依赖（`pyproject.toml` / `uv.lock`） | `ai-gw/gateway:1`（全量重装依赖层，构建变慢） | `scripts/build-push.sh` |
+| 升级 PostgreSQL 版本 | `ai-gw/postgres:16` | 见 5.3 |
+| 升级 Prometheus 版本 | `ai-gw/prometheus:1` | 见 5.4 |
+| 仅改 `deploy/*.yml`、`prometheus.yml`、`.env` | 无需提交镜像 | 改挂载侧文件 + `docker restart` 对应容器 |
+
+### 5.2 核心应用 gateway（最常用）
 
 ```bash
 cd /opt/dev/litellm
 
-# 1) 重新构建（-f 用本机适配版 Dockerfile，见第 6 节）
-docker buildx build --builder default --load --target runtime \
-  -t docker.litellm.ai/berriai/litellm:main-stable \
-  --build-arg HTTP_PROXY=http://192.168.24.200:7890 \
-  --build-arg HTTPS_PROXY=http://192.168.24.200:7890 \
-  --build-arg http_proxy=http://192.168.24.200:7890 \
-  --build-arg https_proxy=http://192.168.24.200:7890 \
-  --build-arg NO_PROXY=localhost,127.0.0.1,db,.svc,.local \
-  --build-arg no_proxy=localhost,127.0.0.1,db,.svc,.local \
-  -f /root/Dockerfile.build .
+# 一键构建 + 推送（含 cargo/uv/npm 缓存挂载，只有变更部分重编译）
+scripts/build-push.sh              # 构建 + 推送 ai-gw/gateway:1
+scripts/build-push.sh --no-push    # 只构建不推送（先本地验证）
 
-# 2) 只替换网关容器（不重建 db / prometheus）
-docker compose up -d --force-recreate --no-deps litellm
+# 验证推送结果（digest 与本地一致即成功）
+docker images --format '{{.Repository}} {{.ID}}' | grep ai-gw/gateway
+curl -s -H "Accept: application/vnd.oci.image.index.v1+json" -I \
+  http://192.168.22.6:5000/v2/ai-gw/gateway/manifests/1 | grep -i docker-content-digest
+```
 
-# 3) 验证
-curl http://192.168.24.202:4000/health/liveliness   # 期望 "I'm alive!"
+**构建前置检查**：
+
+```bash
+df -h /   # 剩余空间需 ≥6G，不足先清理:
+# docker builder prune -af --keep-storage=10GB   # 保留最近 10G 缓存（勿全清，会全量重编 Rust）
+# docker rmi <多余的 ai-gw/gateway 旧镜像标签>
 ```
 
 要点：
 
-- `docker compose up -d` **不会重建镜像**，改码后必须先 build（或带 `--build`）。
-- 同 tag 重建是覆盖语义，旧镜像变 dangling；`--force-recreate --no-deps litellm` 才会让容器换新镜像。
-- 代理 `--build-arg` 不能省：构建内 npm / PyPI / apk / Prisma 下载都走它。
-- 依赖层有缓存：只改业务代码时 `uv sync` 层命中缓存，增量很快；改 `pyproject.toml` / `uv.lock` 才会全量重装。
+- 构建走脚本（内部用 `/root/Dockerfile.build` + 代理 build-arg），不要手写 buildx 命令，参数见脚本 `scripts/build-push.sh`。
+- UI 改动必须先跑 `sync-ui.sh`（第 4.1 节），否则镜像里的 UI 是旧的。
+- 同标签推送是覆盖语义，服务端 `docker compose pull && up -d` 即升级。
+- 部署编排 `deploy/docker-compose.prod.yml` 的配置全部外置挂载；镜像内烤入的 `proxy_config.yaml` 只是"裸 docker run 兜底默认值"。
+
+### 5.3 数据库 postgres（仅升级上游版本时）
+
+```bash
+docker pull postgres:16                     # 经 dockerd 代理拉官方镜像
+docker tag postgres:16 192.168.22.6:5000/ai-gw/postgres:16
+docker push 192.168.22.6:5000/ai-gw/postgres:16
+```
+
+### 5.4 监控 prometheus（仅升级上游版本时）
+
+```bash
+docker pull prom/prometheus:latest
+docker tag prom/prometheus:latest 192.168.22.6:5000/ai-gw/prometheus:1
+docker push 192.168.22.6:5000/ai-gw/prometheus:1
+```
+
+### 5.5 服务端使用提交后的镜像
+
+```bash
+# 部署包: /root/ai-tokengw-deploy/（配置与分支 enterprise/zh-en-i18n 一致）
+# 前置: 服务器 /etc/docker/daemon.json 需含 {"insecure-registries": ["192.168.22.6:5000"]}
+cd ai-tokengw-deploy
+cp env.example .env && vi .env          # 填 DEEPSEEK_API_KEY（默认口令开箱可用）
+bash prepare.sh                         # 生成 metrics-token
+docker compose -f docker-compose.prod.yml --project-directory . pull
+docker compose -f docker-compose.prod.yml --project-directory . up -d
+```
+
+### 5.6 常见问题
+
+- **构建中途磁盘满**（报 `No space left on device`）：按 5.2 前置检查清理后**直接重跑**，已编译层有缓存不会重来。
+- **时间戳标签堆积**（registry `tags/list` 里有 `2026xxxx-xxxx`）：registry 未开启删除 API（DELETE 返回 405），需在 22.6 上配置 `REGISTRY_STORAGE_DELETE_ENABLED=true` 后才能删；确认无用后可忽略。
+- **不要执行 `docker builder prune -af`（不带 keep-storage）**：会清空 cargo 缓存挂载，下次 Rust 全量重编约 15 分钟。
 
 ## 6. 本机适配版 Dockerfile（/root/Dockerfile.build）
 
-仓库原生 `Dockerfile` 在这台机器有两个问题，因此打包要用适配版（丢失时用下面命令重新生成）：
+仓库原生 `Dockerfile` 在这台机器有三个问题，因此打包要用适配版（丢失时用下面命令重新生成）：
 
 ```bash
 cd /opt/dev/litellm
 sed -e '1{/^# syntax=/d}' \
     -e 's|^RUN npm run build$|RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build|' \
     Dockerfile > /root/Dockerfile.build
+# 再补两处产品化改动（烤入默认配置 + 默认命令），重新生成后必须执行:
+sed -i 's|COPY --from=builder /app/litellm-proxy-extras /app/litellm-proxy-extras|COPY --from=builder /app/litellm-proxy-extras /app/litellm-proxy-extras\n# 默认产品配置烤入镜像（外置挂载同路径时优先），裸启动即含内容审计\nCOPY --from=builder /app/deploy/proxy_config.yaml /app/proxy_config.yaml|' /root/Dockerfile.build
+sed -i 's|CMD \["--port", "4000"\]|CMD ["--config", "/app/proxy_config.yaml", "--port", "4000"]|' /root/Dockerfile.build
+# 校验: grep -c proxy_config.yaml /root/Dockerfile.build   # 应为 2
 ```
 
-两处改动的原因：
+改动的原因：
 
 1. **去掉 `# syntax=docker/dockerfile:1.7`**：该指令会联网拉取外部 frontend 镜像，本机 buildkit 解析 `auth.docker.io` 不走代理导致 `DeadlineExceeded`。去掉后使用 buildkit 内置 frontend（支持 `RUN --mount=type=cache`）。
 2. **`NODE_OPTIONS=--max-old-space-size=4096`**：Next.js 16 全量构建超出 Node 默认 2GB 堆，会报 `JavaScript heap out of memory`。

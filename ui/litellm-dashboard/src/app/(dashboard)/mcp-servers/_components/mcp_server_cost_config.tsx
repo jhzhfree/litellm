@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { formatMoneyRate } from "@/lib/currency";
 import { useTranslation } from "react-i18next";
 import { Info, DollarSign, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -192,7 +193,7 @@ const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
                 {value.default_cost_per_query && (
                   <p className="text-sm text-muted-foreground">
                     {t("mcpServers.serverCostConfig.summary.defaultCost", {
-                      cost: value.default_cost_per_query.toFixed(4),
+                      cost: formatMoneyRate(value.default_cost_per_query, 4),
                     })}
                   </p>
                 )}
@@ -202,7 +203,7 @@ const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
                       cost !== null &&
                       cost !== undefined && (
                         <p key={toolName} className="text-sm text-muted-foreground">
-                          {t("mcpServers.serverCostConfig.summary.toolCost", { toolName, cost: cost.toFixed(4) })}
+                          {t("mcpServers.serverCostConfig.summary.toolCost", { toolName, cost: formatMoneyRate(cost, 4) })}
                         </p>
                       ),
                   )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
+import { currentMoney } from "@/lib/currency";
 import { Command as CommandPrimitive } from "cmdk";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
 import { FileText, KeyRound, LoaderCircle, Search } from "lucide-react";
@@ -160,7 +161,7 @@ function CommandPaletteContent({ setOpen }: { setOpen: (open: boolean) => void }
 
     const keyEntries: PaletteEntry[] = (isLoadingKeys ? [] : keyResults.data?.keys ?? []).map((key) => {
       const teamAlias = key.team_alias || (key.team_id ? teamAliases.get(key.team_id) : undefined);
-      const spend = typeof key.spend === "number" && Number.isFinite(key.spend) ? `$${key.spend.toFixed(2)}` : null;
+      const spend = typeof key.spend === "number" && Number.isFinite(key.spend) ? currentMoney(key.spend, 2) : null;
       const details = [teamAlias, spend].filter((detail): detail is string => Boolean(detail));
       return {
         id: `key:${key.token}`,

@@ -11,7 +11,7 @@ export const getTimeRangeDisplay = (
   t: TFunction = i18n.t.bind(i18n),
 ) => {
   if (isCustomDate) {
-    return `${moment(startTime).format("MMM D, h:mm A")} - ${moment(endTime).format("MMM D, h:mm A")}`;
+    return `${moment(startTime).format("YYYY-MM-DD HH:mm:ss")} - ${moment(endTime).format("YYYY-MM-DD HH:mm:ss")}`;
   }
 
   const now = moment();

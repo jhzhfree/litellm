@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { currentMoney } from "@/lib/currency";
 import { Loader2, RefreshCw, KeyRound, Copy, Check } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -266,9 +267,9 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                       {record.key_alias && <div className="text-xs text-muted-foreground">{record.key_alias}</div>}
                     </TableCell>
                     <TableCell className={cn("text-[13px]", NUMERIC_CELL_CLASS)}>
-                      ${record.spend?.toFixed(2) ?? "0.00"}
+                      {record.spend != null ? currentMoney(record.spend, 2) : "-"}
                       {record.max_budget != null && record.max_budget > 0 && (
-                        <span className="text-muted-foreground"> / ${record.max_budget.toFixed(2)}</span>
+                        <span className="text-muted-foreground"> / {currentMoney(record.max_budget, 2)}</span>
                       )}
                     </TableCell>
                     <TableCell>

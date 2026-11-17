@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { currentCurrencySymbol, currentMoney } from "@/lib/currency";
 import moment from "moment";
 import { AlertCircle, ScrollText } from "lucide-react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -67,9 +68,9 @@ function formatTokens(n: number): string {
 
 function formatCost(spend: number): string {
   const value = spend ?? 0;
-  if (value === 0) return "$0";
-  if (value < 0.01) return `$${value.toFixed(6)}`;
-  return `$${value.toFixed(4)}`;
+  if (value === 0) return `${currentCurrencySymbol()}0`;
+  if (value < 0.01) return currentMoney(value, 6);
+  return currentMoney(value, 4);
 }
 
 function durationMs(row: LogRow): number | null {

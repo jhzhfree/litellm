@@ -37,6 +37,7 @@ import {
   setCallbacksCall,
 } from "./networking";
 import { LoggingCallbacksTable } from "./Settings/LoggingAndAlerts/LoggingCallbacks/LoggingCallbacksTable";
+import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeatures/useEnterpriseFeatures";
 import { AlertingObject } from "./Settings/LoggingAndAlerts/LoggingCallbacks/types";
 import { parseErrorMessage } from "./shared/errorUtils";
 
@@ -328,6 +329,7 @@ const buildCallbackPayload = (formValues: Record<string, any>, callbackName: str
 const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, premiumUser }) => {
   const [activeTab, setActiveTab] = useUrlTab(SETTINGS_TABS, "logging-callbacks");
   const { t } = useTranslation();
+  const enterpriseEnabled = useEnterpriseFeatures();
   const [callbacks, setCallbacks] = useState<AlertingObject[]>([]);
   const [isLoadingCallbacks, setIsLoadingCallbacks] = useState(true);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -668,7 +670,10 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                 </TableHeader>
 
                 <TableBody>
-                  {Object.entries(alerts_to_UI_NAME).map(([key, value], index) => (
+                  {Object.entries(alerts_to_UI_NAME)
+                    // 区域中断告警属于企业版功能：总开关关闭时整行隐藏
+                    .filter(([key]) => key !== "region_outage_alerts" || enterpriseEnabled || premiumUser)
+                    .map(([key, value], index) => (
                     <TableRow key={index}>
                       <TableCell>
                         {key == "region_outage_alerts" ? (

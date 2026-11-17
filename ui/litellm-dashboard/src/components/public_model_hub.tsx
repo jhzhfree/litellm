@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { formatMoneyRate } from "@/lib/currency";
 import { ExternalLinkIcon, SearchIcon } from "@heroicons/react/outline";
 import { SortingState } from "@tanstack/react-table";
 import { Copy, Inbox, Info } from "lucide-react";
@@ -296,7 +297,7 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
   };
 
   const formatCost = (cost: number) => {
-    return `$${(cost * 1_000_000).toFixed(4)}`;
+    return formatMoneyRate(cost * 1_000_000, 4);
   };
 
   const models = usePublicModelHubList(proxyConfigured);

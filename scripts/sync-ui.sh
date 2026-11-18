@@ -52,8 +52,8 @@ else
   cp -r "$OUT_SRC" "$OUT_DST"
 fi
 
-brand=$(grep -c "AI-Tokengw" "$OUT_DST/index.html" || true)
-echo "    首页品牌标记: AI-Tokengw ×${brand}（预期 ≥1）"
+brand=$(grep -c "AI-GovernanceGw" "$OUT_DST/index.html" || true)
+echo "    首页品牌标记: AI-GovernanceGw ×${brand}（预期 ≥1）"
 
 if [ "$NO_RESTART" -eq 1 ]; then
   echo "==> 完成（--no-restart：后端未重启，下次重启后端时生效）"
@@ -93,8 +93,8 @@ if [ "$ok" -ne 1 ]; then
 fi
 echo "    后端就绪: $(curl -sS -m 5 "http://localhost:$PORT/health/liveliness")"
 
-login_brand=$(curl -sSL -m 20 "http://localhost:$PORT/ui/login/" 2>/dev/null | grep -c "AI-Tokengw" || true)
-echo "    登录页品牌标记: AI-Tokengw ×${login_brand}（预期 ≥1）"
+login_brand=$(curl -sSL -m 20 "http://localhost:$PORT/ui/login/" 2>/dev/null | grep -c "AI-GovernanceGw" || true)
+echo "    登录页品牌标记: AI-GovernanceGw ×${login_brand}（预期 ≥1）"
 
 echo ""
 echo "全部完成。访问入口:"

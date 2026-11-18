@@ -53,8 +53,8 @@ it("renders the published Lens settings and uses the gateway session, prefix, an
   const copyPrompt = analysis.getByRole("button", { name: "Set it up for me" });
   await user.click(copyPrompt);
   const prompt = await navigator.clipboard.readText();
-  expect(prompt).toContain("I opened Lens from an existing AI-Tokengw admin dashboard.");
-  expect(prompt).toContain('AI-Tokengw API base: "https://gateway.test/prefix"');
+  expect(prompt).toContain("I opened Lens from an existing AI-GovernanceGw admin dashboard.");
+  expect(prompt).toContain('AI-GovernanceGw API base: "https://gateway.test/prefix"');
   expect(prompt).toContain("Configure Lens investigations");
   expect(prompt).not.toContain("standalone Lens app");
   expect(prompt).not.toContain("gateway-session");
@@ -116,8 +116,8 @@ it("keeps manual installation on the unconfigured gateway landing and copies its
 
   await user.click(setup.getByRole("button", { name: "Set it up for me" }));
   const prompt = await navigator.clipboard.readText();
-  expect(prompt).toContain("existing AI-Tokengw admin dashboard");
-  expect(prompt).toContain('AI-Tokengw API base: "https://gateway.test/prefix"');
+  expect(prompt).toContain("existing AI-GovernanceGw admin dashboard");
+  expect(prompt).toContain('AI-GovernanceGw API base: "https://gateway.test/prefix"');
   expect(prompt).toContain("Lens connection is not configured");
   expect(prompt).toContain("Check for an existing Lens service before installing another");
   expect(prompt).not.toContain("gateway-session");

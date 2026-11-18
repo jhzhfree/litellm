@@ -1,4 +1,4 @@
-# 本地开发环境指南（AI-Tokengw）
+# 本地开发环境指南（AI-GovernanceGw）
 
 > 适用机器：`192.168.24.202`（宿主机），仓库路径 `/opt/dev/litellm`，开发分支 `feature/akb-octop-litellm-dev`（发布分支 `enterprise/zh-en-i18n`）。
 > 机器配置：31GB 内存 / 8 核（2026-11-12 扩容）。
@@ -75,7 +75,7 @@ ss -ltn | grep :3000   # 无输出即已停止
 
 - 后端：改 `litellm/proxy/**` → uvicorn 自动重启。
 - 前端：改 `ui/litellm-dashboard/src/**` → 浏览器热更新。
-- i18n：文案必须同步 `src/i18n/locales/en.json` 与 `zh.json`（key 路径完全一致），品牌名集中在 `src/i18n/untranslated/productNames.ts`（当前为 `AI-Tokengw`），改一处全站生效。
+- i18n：文案必须同步 `src/i18n/locales/en.json` 与 `zh.json`（key 路径完全一致），品牌名集中在 `src/i18n/untranslated/productNames.ts`（当前为 `AI-GovernanceGw`），改一处全站生效。
 - 前端测试：`npm run test:unit`（i18n 对齐校验在内，共 32 个）；类型检查 `npm run typecheck`。
 - 后端测试：`pytest tests/unit/...`（镜像路径同名对应）。
 
@@ -100,7 +100,7 @@ rsync -a --delete ui/litellm-dashboard/out/ litellm/proxy/_experimental/out/
 # 然后重启本地后端（4001）
 ```
 
-验证：`curl -s http://localhost:4001/ui/login/ | grep -c AI-Tokengw`（应为 5）。
+验证：`curl -s http://localhost:4001/ui/login/ | grep -c AI-GovernanceGw`（应为 5）。
 这个目录同样是 Docker 镜像构建的输入，改完它再打镜像，容器里的 UI 才是新的。
 
 ## 5. 改完代码提交镜像到 22.6（按改动范围选择命令）

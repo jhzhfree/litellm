@@ -34,7 +34,7 @@ def error_payload(value: JsonValue) -> JsonValue:
     if not isinstance(value, dict):
         return value
     return {
-        key: "AI-Tokengw could not complete this request. Contact your administrator with the request ID."
+        key: "AI-GovernanceGw could not complete this request. Contact your administrator with the request ID."
         if key in {"message", "detail"} and isinstance(item, str) and "litellm" in item.lower()
         else [FIELD_NAMES.get(part, part) if isinstance(part, str) else part for part in item]
         if key == "loc" and isinstance(item, list)

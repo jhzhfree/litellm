@@ -1298,9 +1298,9 @@ custom_swagger_message: Final = (
 )
 
 ### CUSTOM BRANDING [ENTERPRISE FEATURE] ###
-title: Final = os.getenv("DOCS_TITLE", "AI-Tokengw API")
+title: Final = os.getenv("DOCS_TITLE", "AI-GovernanceGw API")
 _title: Final = title
-_description: Final = os.getenv("DOCS_DESCRIPTION", "AI词元治理网关，提供模型接入、路由、密钥与用量管理接口。")
+_description: Final = os.getenv("DOCS_DESCRIPTION", "AI治理网关，提供模型接入、路由、密钥与用量管理接口。")
 
 
 def cleanup_router_config_variables():

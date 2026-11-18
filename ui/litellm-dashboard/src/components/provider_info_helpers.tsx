@@ -142,7 +142,7 @@ export enum Providers {
   LAMBDA_AI = "Lambda Ai",
   Laya = "Laya",
   LEMONADE = "Lemonade",
-  LITELLM_PROXY = "AI-Tokengw Gateway",
+  LITELLM_PROXY = "AI-GovernanceGw Gateway",
   LLAMAFILE = "Llamafile",
   LM_STUDIO = "Lm Studio",
   LLAMA = "Meta Llama",

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/build-push.sh — 增量构建 AI-Tokengw 镜像并推送到本地 registry
+# scripts/build-push.sh — 增量构建 AI-GovernanceGw 镜像并推送到本地 registry
 #
 # 用法:
 #   scripts/build-push.sh             # 构建 + 推送固定标签 ai-gw/gateway:1

@@ -1,4 +1,4 @@
-# AI-Tokengw 产品部署编排（参考仓库根目录 docker-compose.yml 拆分）
+# AI-GovernanceGw 产品部署编排（参考仓库根目录 docker-compose.yml 拆分）
 #
 # 三个服务、三类镜像，全部来自内网 registry 192.168.22.6:5000，目标服务器无需外网：
 #   核心应用  ai-gw/gateway:1     (LiteLLM Proxy + UI + Rust 网关)
@@ -33,7 +33,7 @@ services:
       # 默认管理员口令（开箱即用）；生产环境请在 deploy/.env 中覆盖
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-ai-gw-default}
       UI_USERNAME: ${UI_USERNAME:-admin}
-      UI_PASSWORD: ${UI_PASSWORD:-AI-Tokengw@2026}
+      UI_PASSWORD: ${UI_PASSWORD:-AI-GovernanceGw@2026}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-} # 默认模型 deepseek-chat 的密钥（deploy/.env）
     volumes:
       - ./proxy_config.yaml:/app/proxy_config.yaml:ro # 主配置外置，改完 docker restart ai-tokengw-core

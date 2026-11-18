@@ -51,7 +51,7 @@ vi.mock("../networking", async () => {
     getProviderCreateMetadata: vi.fn().mockResolvedValue([
       {
         provider: "LITELLM_PROXY",
-        provider_display_name: "AI-Tokengw Gateway",
+        provider_display_name: "AI-GovernanceGw Gateway",
         litellm_provider: "litellm_proxy",
         credential_fields: [
           { key: "api_base", label: "API Base", field_type: "text" },
@@ -115,7 +115,7 @@ vi.mock("@/app/(dashboard)/hooks/providers/useProviderFields", () => ({
     data: [
       {
         provider: "LITELLM_PROXY",
-        provider_display_name: "AI-Tokengw Gateway",
+        provider_display_name: "AI-GovernanceGw Gateway",
         litellm_provider: "litellm_proxy",
         credential_fields: [
           { key: "api_base", label: "API Base", field_type: "text" },
@@ -319,7 +319,7 @@ describe("AddModelForm", () => {
     expect(await screen.findByRole("heading", { name: "Add Model" })).toBeInTheDocument();
   });
 
-  it("should add a AI-Tokengw Gateway wildcard with its upstream URL and key when no catalog models are known", async () => {
+  it("should add a AI-GovernanceGw Gateway wildcard with its upstream URL and key when no catalog models are known", async () => {
     const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
     mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", true));
     vi.mocked(modelCreateCall).mockClear();
@@ -331,8 +331,8 @@ describe("AddModelForm", () => {
     });
     renderWithProviders(<AddModelForm {...props} />);
 
-    await pickProvider(user, /AI-Tokengw Gateway/);
-    await pickModel(user, "All AI-Tokengw Gateway Models (Wildcard)");
+    await pickProvider(user, /AI-GovernanceGw Gateway/);
+    await pickModel(user, "All AI-GovernanceGw Gateway Models (Wildcard)");
     act(() => {
       fireEvent.change(screen.getByLabelText("API Base"), { target: { value: "https://gateway.example.test/v1" } });
       fireEvent.change(screen.getByLabelText("API Key"), { target: { value: "upstream-test-key" } });
@@ -982,7 +982,7 @@ describe("AddModelForm", () => {
     it("runs the connection test for an Azure deployment name", async () => {
       const { user, clickTestConnect } = await renderForm(Providers.Azure);
       await pickProvider(user, /Azure/);
-      fireEvent.change(screen.getByLabelText(/AI-Tokengw Model Name/), { target: { value: "my-deployment" } });
+      fireEvent.change(screen.getByLabelText(/AI-GovernanceGw Model Name/), { target: { value: "my-deployment" } });
 
       await clickTestConnect();
       await expectBlockedWith("Required");

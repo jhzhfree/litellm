@@ -52,7 +52,7 @@ const APIReferenceView: React.FC<ApiRefProps> = ({ proxySettings }) => {
               code={`import openai
 client = openai.OpenAI(
     api_key="your_api_key",
-    base_url="${base_url}" # AI-Tokengw is OpenAI compatible, Read More: /docs
+    base_url="${base_url}" # AI-GovernanceGw is OpenAI compatible, Read More: /docs
 )
 
 response = client.chat.completions.create(
@@ -79,10 +79,10 @@ from llama_index.embeddings import AzureOpenAIEmbedding
 from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
 
 llm = AzureOpenAI(
-    engine="azure-gpt-3.5",               # model_name on AI-Tokengw
+    engine="azure-gpt-3.5",               # model_name on AI-GovernanceGw
     temperature=0.0,
-    azure_endpoint="${base_url}", # AI-Tokengw endpoint
-    api_key="<your-virtual-key>",          # AI-Tokengw API Key
+    azure_endpoint="${base_url}", # AI-GovernanceGw endpoint
+    api_key="<your-virtual-key>",          # AI-GovernanceGw API Key
     api_version="2023-07-01-preview",
 )
 
@@ -125,7 +125,7 @@ messages = [
         content="You are a helpful assistant that im using to make a test request to."
     ),
     HumanMessage(
-        content="test from AI-Tokengw. tell me why it's amazing in 1 sentence"
+        content="test from AI-GovernanceGw. tell me why it's amazing in 1 sentence"
     ),
 ]
 response = chat(messages)

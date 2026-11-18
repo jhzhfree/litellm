@@ -5,7 +5,7 @@ from typing import Final
 
 from pydantic import JsonValue
 
-PRODUCT_NAME: Final = "AI-Tokengw"
+PRODUCT_NAME: Final = "AI-GovernanceGw"
 FIELD_NAMES: Final[Mapping[str, str]] = MappingProxyType(
     {
         "litellm_params": "gateway_params",

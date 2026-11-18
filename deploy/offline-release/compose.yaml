@@ -1,0 +1,105 @@
+services:
+  core:
+    image: ${PYTHON_IMAGE:?Set PYTHON_IMAGE to the split Python image}
+    pull_policy: never
+    environment:
+      DATABASE_URL: postgresql://gateway:${DB_PASSWORD:?Run init-env.py}@db:5432/gateway
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?Run init-env.py}
+      UI_USERNAME: ${UI_USERNAME:?Run init-env.py}
+      UI_PASSWORD: ${UI_PASSWORD:?Run init-env.py}
+      LITELLM_TELEMETRY_DISABLED: 'true'
+      LITELLM_OFFLINE_MODE: 'true'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'true'
+    volumes:
+    - ./proxy_config.json:/app/offline_config.json:ro
+    command:
+    - --config
+    - /app/offline_config.json
+    - --host
+    - 0.0.0.0
+    - --port
+    - '4000'
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+    - isolated
+    restart: unless-stopped
+    healthcheck:
+      test:
+      - CMD
+      - python3
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:4000/health/liveliness',
+        timeout=5)
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    expose:
+    - '4000'
+    entrypoint:
+    - /app/.venv/bin/litellm
+  db:
+    image: ai-gw/postgres:16-dd2bf3ce2dc8
+    pull_policy: never
+    environment:
+      POSTGRES_DB: gateway
+      POSTGRES_USER: gateway
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Run init-env.py}
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    networks:
+    - isolated
+    restart: unless-stopped
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U gateway -d gateway
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  monitor:
+    image: ai-gw/prometheus:3.16.0
+    pull_policy: never
+    ports:
+    - ${BIND_ADDRESS:-127.0.0.1}:${MONITOR_PORT:-9090}:9090
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    - prometheus_data:/prometheus
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --storage.tsdb.retention.time=15d
+    networks:
+    - isolated
+    restart: unless-stopped
+  ui:
+    image: ${UI_IMAGE:?Set UI_IMAGE to the split frontend image}
+    ports:
+    - ${BIND_ADDRESS:-127.0.0.1}:${CORE_PORT:-4400}:3000
+    volumes:
+    - ./nginx.split.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      core:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - -q
+      - --spider
+      - http://127.0.0.1:3000/healthz
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    pull_policy: never
+    networks:
+    - isolated
+networks:
+  isolated:
+    internal: true
+volumes:
+  postgres_data: {}
+  prometheus_data: {}

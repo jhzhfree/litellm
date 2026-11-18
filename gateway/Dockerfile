@@ -1,3 +1,4 @@
+ARG NATIVE_IMAGE=rust-native
 ARG LITELLM_BUILD_IMAGE=cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7
 ARG LITELLM_RUNTIME_IMAGE=cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7
 ARG UV_IMAGE=ghcr.io/astral-sh/uv:0.11.7@sha256:240fb85ab0f263ef12f492d8476aa3a2e4e1e333f7d67fbdd923d00a506a516a
@@ -51,6 +52,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     cd packaging/litellm-proxy && \
     uvx --python python3.13 --from maturin==1.15.0 --with puccinialin==0.1.14 \
         python -c "import maturin; maturin.build_wheel('/wheels')"
+
+FROM ${NATIVE_IMAGE} AS native-artifacts
 
 # ---------- Builder ----------
 FROM $LITELLM_BUILD_IMAGE AS builder
@@ -112,7 +115,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
         --extra bedrock-realtime \
         --python python3.13
 
-RUN --mount=type=bind,from=rust-native,source=/wheels,target=/wheels \
+RUN --mount=type=bind,from=native-artifacts,source=/wheels,target=/wheels \
     uv pip install --python /app/.venv/bin/python --no-deps /wheels/litellm-*.whl /wheels/litellm_proxy-*.whl
 
 # PYTHONPATH=/app makes the source tree shadow the installed package, so the

@@ -77,14 +77,6 @@ const AboutPoliciesAlert = () => {
         <li>{t("policies.panel.aboutPolicies.benefits.group")}</li>
         <li>{t("policies.panel.aboutPolicies.benefits.inherit")}</li>
       </ul>
-      <a
-        href="/docs"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-1 inline-block text-primary underline underline-offset-4"
-      >
-        {t("policies.panel.aboutPolicies.learnMore")}
-      </a>
     </DismissibleAlert>
   );
 };
@@ -568,14 +560,6 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({ accessToken, userRole }) 
                 />
               </li>
             </ul>
-            <a
-              href="/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 inline-block text-primary underline underline-offset-4"
-            >
-              {t("policies.panel.aboutAttachments.learnMore")}
-            </a>
           </DismissibleAlert>
 
           <DismissibleAlert title={t("policies.panel.enterpriseNotice.title")} icon={<TriangleAlert />}>

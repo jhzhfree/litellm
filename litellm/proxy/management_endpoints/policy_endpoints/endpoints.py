@@ -13,7 +13,7 @@ import copy
 import json
 import os
 from collections.abc import AsyncGenerator, AsyncIterator, Mapping
-from typing import TYPE_CHECKING, Final, Literal, cast
+from typing import TYPE_CHECKING, Final, Literal, Optional, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response, StreamingResponse
@@ -624,6 +624,23 @@ async def test_policy_matching(
 
 
 POLICY_TEMPLATES_GITHUB_URL: Final = "https://raw.githubusercontent.com/BerriAI/litellm/main/policy_templates.json"
+POLICY_TEMPLATES_PATH_ENV: Final = "LITELLM_POLICY_TEMPLATES_PATH"
+
+
+def _get_policy_templates_file_path() -> Optional[str]:
+    """
+    External local JSON file path from ``LITELLM_POLICY_TEMPLATES_PATH``.
+
+    When set, policy templates are loaded from this mounted file — no network
+    access — mirroring ``LITELLM_MODEL_COST_MAP_PATH`` for the model cost map.
+    """
+    path = os.getenv(POLICY_TEMPLATES_PATH_ENV, "").strip()
+    return path or None
+
+
+def _load_policy_templates_from_file(path: str) -> list:
+    with open(path, "r") as f:
+        return json.load(f)
 
 
 def _load_policy_templates_from_local_backup() -> list:
@@ -655,9 +672,23 @@ async def get_policy_templates(
     """
     Get policy templates for the UI (pre-configured guardrail combinations).
 
-    Fetches from GitHub with automatic fallback to local backup on failure.
-    Set LITELLM_LOCAL_POLICY_TEMPLATES=true to skip GitHub and use local backup only.
+    Resolution order:
+    1. Local file (``LITELLM_POLICY_TEMPLATES_PATH``) — no network access;
+       falls back to the bundled backup if the file is missing/invalid.
+    2. GitHub fetch (skipped when offline mode or ``LITELLM_LOCAL_POLICY_TEMPLATES=true``).
+    3. Local bundled backup.
     """
+    templates_file_path: Final = _get_policy_templates_file_path()
+    if templates_file_path is not None:
+        try:
+            return _load_policy_templates_from_file(templates_file_path)
+        except (OSError, ValueError) as e:
+            verbose_proxy_logger.warning(
+                "Failed to load policy templates from local file %s: %s. Falling back to bundled backup.",
+                templates_file_path,
+                e,
+            )
+
     use_local: Final = is_offline_mode() or os.getenv("LITELLM_LOCAL_POLICY_TEMPLATES", "").strip().lower() in (
         "true",
         "1",

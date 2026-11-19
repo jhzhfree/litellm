@@ -159,7 +159,7 @@ Key 可归属到 team 与 user，预算与用量可按 team 或 user 维度统�
 
 ### 5.3 SSO 与 JWT
 
-企业部署可启用 SSO 登录与 JWT 鉴权，自定义 SSO handler 需企业 license。开源版本使用 Virtual Key 与 master key 即可满足基本鉴权需求。
+企业部署可启用 SSO 登录与 JWT 鉴权，自定义 SSO handler 属于企业能力（本产品已内置启用，premium 门控已解除）。开源版本使用 Virtual Key 与 master key 即可满足基本鉴权需求。
 
 ## 6 预算与限流
 
@@ -222,4 +222,4 @@ LENS_DEV_PROXY_URL=http://127.0.0.1:4000 npm run dev -- -H 0.0.0.0 -p 3000
 
 问，流式调用是否支持成本统计。支持。成本在流结束时聚合确定并回填，行为与非流式一致。
 
-问，企业功能没有 license 会怎样。相关路由为空，开源功能不受影响，服务可正常启动。
+问，企业功能如何启用。后端企业能力已内置启用（premium 门控解除），无需 license；管理界面的企业功能入口由 proxy_config.yaml 的 `general_settings.enterprise_features_enabled` 开关控制（默认 false 隐藏，设为 true 并重启网关后展示）。详见 RELEASE_FEATURES.md 第 4.12 节。

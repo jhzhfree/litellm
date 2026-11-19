@@ -39,7 +39,6 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
 
   const litellmCards = filteredCards.filter((c) => c.category === "litellm");
   const decisionModelCards = filteredCards.filter((c) => c.category === "decision_model");
-  const partnerCards = filteredCards.filter((c) => c.category === "partner");
 
   if (selectedCard) {
     return (
@@ -106,17 +105,7 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
         </div>
       </section>
 
-      <section className="mb-10" aria-labelledby="guardrail-garden-partner">
-        <h2 id="guardrail-garden-partner" className="mt-0 mb-1 text-xl font-semibold text-foreground">
-          {t("guardrails.garden.partnerHeading")}
-        </h2>
-        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">{term(t("guardrails.garden.partnerDescription"))}</p>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
-          {partnerCards.map((card) => (
-            <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />
-          ))}
-        </div>
-      </section>
+      {/* 合作伙伴护栏分区已按需求隐藏（数据保留在 guardrail_garden_data.ts，需要时恢复此分区） */}
     </div>
   );
 };

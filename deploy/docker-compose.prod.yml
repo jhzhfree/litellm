@@ -10,8 +10,17 @@ services:
       UI_USERNAME: ${UI_USERNAME:-admin}
       UI_PASSWORD: ${UI_PASSWORD:-AI-GovernanceGw@2026}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      # 定价数据来源：本地挂载 JSON（不访问外网），外部修改后经
+      # POST /reload/model_cost_map 热重载
+      LITELLM_MODEL_COST_MAP_PATH: ${LITELLM_MODEL_COST_MAP_PATH:-/app/model_prices_and_context_window.json}
+      # 策略模板来源：本地挂载 JSON（不访问外网），替代 GitHub 拉取
+      LITELLM_POLICY_TEMPLATES_PATH: ${LITELLM_POLICY_TEMPLATES_PATH:-/app/policy_templates.json}
+      # 护栏拦截提示语语言：en（默认，保持原英文消息）/ zh（面向终端用户中文）
+      LITELLM_GUARDRAIL_VIOLATION_MESSAGE_LOCALE: ${LITELLM_GUARDRAIL_VIOLATION_MESSAGE_LOCALE:-en}
     volumes:
     - ./proxy_config.yaml:/app/proxy_config.yaml:ro
+    - ./model_prices_and_context_window.json:/app/model_prices_and_context_window.json
+    - ./policy_templates.json:/app/policy_templates.json
     command:
     - --config
     - /app/proxy_config.yaml

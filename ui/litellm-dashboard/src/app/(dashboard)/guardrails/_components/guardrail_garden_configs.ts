@@ -18,6 +18,13 @@ export const GUARDRAIL_PRESETS: Record<string, GuardrailPreset> = {
     mode: "pre_call",
     defaultOn: false,
   },
+  cf_denied_financial_zh: {
+    provider: "LitellmContentFilter",
+    categoryName: "denied_financial_advice_zh",
+    guardrailNameSuggestion: "拒绝财务/投资建议（中文）",
+    mode: "pre_call",
+    defaultOn: false,
+  },
   cf_denied_legal: {
     provider: "LitellmContentFilter",
     categoryName: "denied_legal_advice",

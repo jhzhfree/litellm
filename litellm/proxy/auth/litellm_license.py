@@ -98,7 +98,18 @@ class LicenseCheck:
             return False
 
     def is_premium(self) -> bool:
+        """私有化部署策略：无条件启用企业能力。
+
+        本产品（AI治理网关）为内网私有化分发，企业能力已随镜像内置，
+        不再依赖 LITELLM_LICENSE 校验。原 license 校验逻辑保留在
+        `_is_premium_by_license()` 中，如需恢复按 license 门控，
+        将本方法改回调用该方法即可。
         """
+        return True
+
+    def _is_premium_by_license(self) -> bool:
+        """原 license 校验逻辑（保留备用，正常情况下不再被调用）。
+
         1. verify_license_without_api_request: checks if license was generate using private / public key pair
         2. _verify: checks if license is valid calling litellm API. This is the old way we were generating/validating license
         """

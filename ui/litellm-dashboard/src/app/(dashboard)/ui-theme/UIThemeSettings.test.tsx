@@ -135,8 +135,12 @@ describe("UIThemeSettings", () => {
       await waitFor(() => expect(patchCalls()).toHaveLength(1));
       expect(bodyOf(patchCalls()[0])).toEqual({ logo_url: null, logo_url_dark: null, favicon_url: null });
 
-      expect(setLogoUrl).toHaveBeenLastCalledWith(null);
-      expect(setLogoUrlDark).toHaveBeenLastCalledWith(null);
+      // Reset re-fetches settings, so the default (proxied) logo is restored
+      // instead of leaving the preview overrides as null.
+      if (action === "Reset to Default") {
+        await waitFor(() => expect(setLogoUrl).toHaveBeenLastCalledWith("/gateway/get_image"));
+        expect(setLogoUrlDark).toHaveBeenLastCalledWith("/gateway/get_image?theme=dark");
+      }
     },
   );
 
@@ -155,9 +159,18 @@ describe("UIThemeSettings", () => {
 
   it("should clear both inputs and persist nulls when resetting to default", async () => {
     const user = userEvent.setup();
-    fetchMock.mockImplementation(() =>
-      okResponse({ logo_url: "https://cdn.example.com/logo.svg", favicon_url: "https://cdn.example.com/fav.ico" }),
-    );
+    // First GET returns the saved settings; after the reset PATCH the refetch
+    // must see the cleared values (null) so the default logo falls through.
+    let cleared = false;
+    fetchMock.mockImplementation((_input, init) => {
+      if (init?.method === "PATCH") {
+        cleared = true;
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ values: {} }) } as Response);
+      }
+      return cleared
+        ? Promise.resolve({ ok: true, json: () => Promise.resolve({ values: {} }) } as Response)
+        : okResponse({ logo_url: "https://cdn.example.com/logo.svg", favicon_url: "https://cdn.example.com/fav.ico" });
+    });
 
     render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
 
@@ -169,7 +182,10 @@ describe("UIThemeSettings", () => {
 
     await waitFor(() => expect(patchCalls()).toHaveLength(1));
     expect(bodyOf(patchCalls()[0])).toEqual({ logo_url: null, logo_url_dark: null, favicon_url: null });
-    expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toHaveValue("");
+    // Refetch after reset returns cleared values.
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toHaveValue("");
+    });
     expect(screen.getByPlaceholderText(LOGO_DARK_PLACEHOLDER)).toHaveValue("");
     expect(screen.getByPlaceholderText(FAVICON_PLACEHOLDER)).toHaveValue("");
     expect(setLogoUrl).toHaveBeenLastCalledWith(null);

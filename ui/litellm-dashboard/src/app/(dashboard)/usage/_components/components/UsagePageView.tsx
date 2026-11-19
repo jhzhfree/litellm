@@ -485,6 +485,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
               value={dateValue}
               onValueChange={handleDateChange}
               presetShortLabel={presetShortLabel}
+              triggerClassName="w-[420px]"
             />
             <Button
               variant="outline"

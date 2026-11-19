@@ -20,6 +20,10 @@ from litellm.integrations.custom_guardrail import (
     log_guardrail_information,  # pyright: ignore[reportUnknownVariableType]  # decorator is untyped upstream
 )
 from litellm.litellm_core_utils.llm_judge import attached_auth, caller_team_for, default_router_provider, judge_target
+from litellm.proxy.guardrails.violation_messages import (
+    decision_model_failed_to_respond,
+    decision_model_policy_violated,
+)
 from litellm.types.decisions import MAX_DECISION_QUESTIONS, OpenAIDecisionResponse, OpenAIPredicateAnswer
 from litellm.types.guardrails import GuardrailEventHooks, Mode
 from litellm.types.llms.openai import ChatCompletionAssistantToolCall, ChatCompletionToolCallChunk
@@ -272,7 +276,7 @@ class DecisionModelGuardrail(CustomGuardrail):
         )
         raise HTTPException(
             status_code=502,
-            detail={"error": "Decision model guardrail failed to respond"},
+            detail={"error": decision_model_failed_to_respond()},
         )
 
     def _log(
@@ -351,7 +355,7 @@ class DecisionModelGuardrail(CustomGuardrail):
             raise HTTPException(
                 status_code=400,
                 detail={
-                    "error": "Violated decision model guardrail policy",
+                    "error": decision_model_policy_violated(),
                     "guardrail_name": self.guardrail_name,
                     "flagged_checks": [v["name"] for v in flagged if v["action"] == "block"],
                 },

@@ -131,7 +131,7 @@ const UsageTab: React.FC<UsageTabProps> = ({ accessToken, activity }) => {
     <div className="w-full space-y-6">
       <div className="flex flex-wrap items-center justify-end gap-4">
         <span className="text-sm text-muted-foreground">{t("costOptimization.usage.bucketedByUtcDay")}</span>
-        <AdvancedDatePicker value={dateValue} onValueChange={onDateChange} />
+        <AdvancedDatePicker value={dateValue} onValueChange={onDateChange} triggerClassName="w-[420px]" />
       </div>
 
       <SavingsTiles results={results} isLoading={loading} />

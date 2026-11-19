@@ -220,29 +220,26 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
             </span>
           )}
           <span className="flex-1" />
-          {version && (
-            <Badge
-              variant="outline"
-              className="px-1.5 py-0 font-mono text-[10px] font-medium text-muted-foreground"
-            >
-              v{version}
-            </Badge>
-          )}
         </div>
 
         <div className="flex flex-col px-3 py-2">
-          <InfoRow icon={<Crown className="size-[17px]" />} label={t("shell.sidebarAccountMenu.tier")}>
-            {premiumUser ? (
-              <Badge variant="outline" className="gap-1 border-warning/30 bg-warning/10 text-warning">
-                <Crown />
-                {t("shell.sidebarAccountMenu.premium")}
-              </Badge>
-            ) : (
-              <Badge variant="secondary" className="gap-1" title={t("shell.sidebarAccountMenu.upgradeHint")}>
-                <Crown />
-                {t("shell.sidebarAccountMenu.standard")}
-              </Badge>
-            )}
+          <InfoRow icon={<Crown className="size-[17px]" />} label={t("shell.sidebarAccountMenu.version")}>
+            <span className="flex items-center gap-1.5">
+              {premiumUser ? (
+                <Badge variant="outline" className="gap-1 border-warning/30 bg-warning/10 text-warning">
+                  <Crown />
+                  {t("shell.sidebarAccountMenu.premium")}
+                </Badge>
+              ) : (
+                <Badge variant="secondary" className="gap-1" title={t("shell.sidebarAccountMenu.upgradeHint")}>
+                  <Crown />
+                  {t("shell.sidebarAccountMenu.standard")}
+                </Badge>
+              )}
+              {version && (
+                <span className="font-mono text-xs text-muted-foreground">v{version}</span>
+              )}
+            </span>
           </InfoRow>
           <InfoRow icon={<ShieldCheck className="size-[17px]" />} label={t("shell.sidebarAccountMenu.role")}>
             <Badge variant="secondary">{userRole}</Badge>

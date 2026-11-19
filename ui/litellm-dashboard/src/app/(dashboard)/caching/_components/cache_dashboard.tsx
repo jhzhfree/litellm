@@ -210,22 +210,8 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
               <Trans
                 i18nKey="caching.dashboard.description"
                 components={{
-                  cacheDocs: (
-                    <a
-                      href="/docs"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline"
-                    />
-                  ),
-                  promptDocs: (
-                    <a
-                      href="/docs"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline"
-                    />
-                  ),
+                  cacheDocs: <span />,
+                  promptDocs: <span />,
                 }}
               />
             </p>
@@ -296,6 +282,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                 onValueChange={(value) => {
                   setDateValue(value);
                 }}
+                triggerClassName="w-[420px]"
               />
             </div>
 

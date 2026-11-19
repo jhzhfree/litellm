@@ -108,14 +108,11 @@ describe("CacheDashboard cache analytics charts", () => {
     renderDashboard();
 
     expect(await screen.findByText(/is not shown here/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "response cache" })).toHaveAttribute(
-      "href",
-      "/docs",
-    );
-    expect(screen.getByRole("link", { name: "prompt caching" })).toHaveAttribute(
-      "href",
-      "/docs",
-    );
+    // Doc links were removed: the terms stay as plain text only.
+    expect(screen.queryByRole("link", { name: "response cache" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "prompt caching" })).not.toBeInTheDocument();
+    expect(screen.getByText("response cache")).toBeInTheDocument();
+    expect(screen.getByText("prompt caching")).toBeInTheDocument();
     expect(screen.queryByText("Cached Tokens")).not.toBeInTheDocument();
     expect(screen.getAllByText("Cached Completion Tokens").length).toBeGreaterThan(0);
   });

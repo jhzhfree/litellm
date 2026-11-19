@@ -89,12 +89,6 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
   };
 
   const handleReset = async () => {
-    setLogoUrlInput("");
-    setLogoUrlDarkInput("");
-    setFaviconUrlInput("");
-    setLogoUrl(null);
-    setLogoUrlDark(null);
-    setFaviconUrl(null);
     setLoading(true);
     try {
       const proxyBaseUrl = getProxyBaseUrl();
@@ -108,6 +102,12 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
         body: JSON.stringify({ logo_url: null, logo_url_dark: null, favicon_url: null }),
       });
       if (response.ok) {
+        setLogoUrlInput("");
+        setLogoUrlDarkInput("");
+        setFaviconUrlInput("");
+        // Re-fetch so the context falls back to the current default logo
+        // (bundled or proxied) instead of a hardcoded null.
+        await fetchThemeSettings();
         toast.success(t("uiTheme.settings.toasts.reset"));
       } else {
         throw new Error("Failed to reset");

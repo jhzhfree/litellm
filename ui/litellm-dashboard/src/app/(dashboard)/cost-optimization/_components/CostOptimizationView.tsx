@@ -60,29 +60,6 @@ const CostOptimizationView: React.FC<CostOptimizationViewProps> = ({ accessToken
           </PageHeaderControls>
         </PageHeader>
 
-        <div
-          role="alert"
-          className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border border-border bg-muted/50 px-4 py-4"
-        >
-          <Info className="mt-0.5 size-5 text-primary" aria-hidden="true" />
-          <p className="font-medium text-foreground">{t("costOptimization.view.experimental.title")}</p>
-          <p className="col-start-2 text-sm text-muted-foreground">
-            <Trans
-              i18nKey="costOptimization.view.experimental.feedback"
-              components={{
-                discussion: (
-                  <a
-                    href="/docs"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline underline-offset-2"
-                  />
-                ),
-              }}
-            />
-          </p>
-        </div>
-
         {activity.failed && (
           <Alert variant="error">
             <AlertDescription className="text-inherit">{t("costOptimization.view.fetchFailed")}</AlertDescription>

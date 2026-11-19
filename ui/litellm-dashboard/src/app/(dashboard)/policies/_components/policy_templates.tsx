@@ -1,5 +1,6 @@
 import { useTerminology } from "@/contexts/TerminologyContext";
 import React, { useState, useEffect, useMemo } from "react";
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { ShieldCheck, ShieldAlert, FlaskConical, CircleDollarSign, CheckCircle2 
 import { getPolicyTemplates } from "@/components/networking";
 
 interface PolicyTemplateCardProps {
+  id: string;
   title: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -23,7 +25,19 @@ interface PolicyTemplateCardProps {
   onUseTemplate: () => void;
 }
 
+// Localize template title/description/tags by id; fall back to the raw
+// backend values (e.g. templates that have no translation entry yet).
+const templateName = (t: TFunction, id: string, fallback: string): string =>
+  t(`policies.templateCatalog.templates.${id}.name`, { defaultValue: fallback });
+
+const templateDescription = (t: TFunction, id: string, fallback: string): string =>
+  t(`policies.templateCatalog.templates.${id}.description`, { defaultValue: fallback });
+
+const templateTag = (t: TFunction, tag: string): string =>
+  t(`policies.templateCatalog.tags.${tag}`, { defaultValue: tag });
+
 const PolicyTemplateCard: React.FC<PolicyTemplateCardProps> = ({
+  id,
   title,
   description,
   icon: Icon,
@@ -46,14 +60,14 @@ const PolicyTemplateCard: React.FC<PolicyTemplateCardProps> = ({
           <Badge variant="outline">{t("policies.templates.complexity", { level: complexity })}</Badge>
         </div>
 
-        <h3 className="mb-2 text-base font-semibold">{title}</h3>
-        <p className="mb-4 grow text-sm text-muted-foreground">{description}</p>
+        <h3 className="mb-2 text-base font-semibold">{templateName(t, id, title)}</h3>
+        <p className="mb-4 grow text-sm text-muted-foreground">{templateDescription(t, id, description)}</p>
 
         {tags.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-1.5">
             {tags.map((tag) => (
               <Badge key={tag} variant="secondary">
-                {tag}
+                {templateTag(t, tag)}
               </Badge>
             ))}
           </div>
@@ -242,6 +256,7 @@ const PolicyTemplates: React.FC<PolicyTemplatesProps> = ({
             {filteredTemplates.map((template, index) => (
               <PolicyTemplateCard
                 key={template.id || index}
+                id={template.id || String(index)}
                 title={template.title}
                 description={template.description}
                 icon={iconMap[template.icon] || ShieldCheck}

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { PlayCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import AgentBuilderView from "@/app/(dashboard)/playground/components/chat_ui/AgentBuilderView";
 import { PlaygroundChat, type ProxySettings } from "@/app/(dashboard)/playground/components/chat/PlaygroundChat";
 import CompareUI from "@/app/(dashboard)/playground/components/compareUI/CompareUI";
 import ComplianceUI from "@/app/(dashboard)/playground/components/complianceUI/ComplianceUI";
@@ -15,13 +14,13 @@ import { useUrlTab } from "@/hooks/useUrlTab";
 import { Page, PageTabs, PageTabsContent, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
 import { PageHeader, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
 
-const PLAYGROUND_TABS = ["chat", "compare", "compliance", "system-one", "agent-builder"] as const;
+const PLAYGROUND_TABS = ["chat", "compare", "compliance", "system-one"] as const;
 
 const TAB_TRIGGER = "h-full group-data-horizontal/tabs:after:-bottom-0.5";
 
 export default function PlaygroundPage() {
   const { t } = useTranslation();
-  const { accessToken, userRole, userId, disabledPersonalKeyCreation, token, isViewOnly } = useAuthorized();
+  const { accessToken, disabledPersonalKeyCreation, isViewOnly } = useAuthorized();
   const [proxySettings, setProxySettings] = useState<ProxySettings | undefined>(undefined);
   const [activeTab, setActiveTab] = useUrlTab(PLAYGROUND_TABS, "chat");
 
@@ -73,9 +72,6 @@ export default function PlaygroundPage() {
           <PageTabsTrigger value="system-one" className={TAB_TRIGGER}>
             <BetaBadge>{t("playground.page.tabs.decisions")}</BetaBadge>
           </PageTabsTrigger>
-          <PageTabsTrigger value="agent-builder" className={TAB_TRIGGER}>
-            {t("playground.page.tabs.agentBuilder")}
-          </PageTabsTrigger>
         </PageTabsList>
         <PageTabsContent value="chat" className="overflow-hidden data-hidden:hidden" keepMounted>
           <PlaygroundChat
@@ -92,17 +88,6 @@ export default function PlaygroundPage() {
         </PageTabsContent>
         <PageTabsContent value="system-one" className="overflow-y-auto pt-4 data-hidden:hidden" keepMounted>
           <SystemOneUI accessToken={accessToken} disabledPersonalKeyCreation={disabledPersonalKeyCreation} />
-        </PageTabsContent>
-        <PageTabsContent value="agent-builder" className="overflow-y-auto pt-4 data-hidden:hidden" keepMounted>
-          <AgentBuilderView
-            accessToken={accessToken}
-            token={token}
-            userID={userId}
-            userRole={userRole}
-            disabledPersonalKeyCreation={disabledPersonalKeyCreation}
-            proxySettings={proxySettings}
-            customProxyBaseUrl={proxySettings?.LITELLM_UI_API_DOC_BASE_URL ?? proxySettings?.PROXY_BASE_URL}
-          />
         </PageTabsContent>
       </PageTabs>
     </Page>

@@ -2,14 +2,14 @@
 
 ## 1 说明
 
-本清单盘点了代码快照 v1.110.0 中已落地的功能，面向产品、销售与使用方，回答"这个版本有哪些能力"。功能状态基于代码中是否存在实现判断，而非发布计划。企业功能的状态以其是否位于 `enterprise/` 包并受 premium 门控为准。
+本清单盘点了代码快照 v1.110.0 中已落地的功能，面向产品、销售与使用方，回答"这个版本有哪些能力"。功能状态基于代码中是否存在实现判断，而非发布计划。企业功能的状态以其是否位于 `enterprise/` 包为准。
 
 功能状态定义如下。
 
 | 状态 | 含义 |
 |---|---|
 | GA | 主干已实现，开源部署可直接用 |
-| Enterprise | 位于企业包，需 premium license |
+| Enterprise | 位于企业包。**本产品已内置启用**：premium 门控已解除（`is_premium()` 无条件 True），后端能力全部可用；管理界面入口由配置开关 `enterprise_features_enabled`（proxy_config.yaml，默认 false）控制 |
 | Beta | 主干已实现但接口或行为可能仍在演进 |
 
 ## 2 版本信息
@@ -87,11 +87,20 @@ Next.js 管理后台 `ui/litellm-dashboard/`，通过同源转发调用网关，
 
 ### 4.12 企业能力
 
-位于 `enterprise/` 包并通过 try import 可选挂载，缺失时降级为空路由（`proxy_server.py:1186` 到 `:1207`）。能力包括自定义 SSO、审计导出、禁用指定 LLM 或管理路由、secret detection、邮件与 PagerDuty 通知、managed files 与 vector stores 等。均由 premium license 门控，状态 Enterprise。
+位于 `enterprise/` 包并通过 try import 可选挂载，缺失时降级为空路由（`proxy_server.py:1186` 到 `:1207`）。能力包括自定义 SSO、审计导出、禁用指定 LLM 或管理路由、secret detection、邮件与 PagerDuty 通知、managed files 与 vector stores 等。状态 Enterprise。
+
+**本产品的企业能力启用方式**（两层门控，均已落地）：
+
+| 门控层 | 控制范围 | 启用方式 |
+|---|---|---|
+| 后端 premium 门控 | 企业包端点、premium API 行为、管理界面 48 处 premiumUser 分支 | 已默认启用：`litellm/proxy/auth/litellm_license.py` 的 `is_premium()` 无条件返回 True（原 license 校验保留在 `_is_premium_by_license()` 备用） |
+| UI 入口开关 | 管理界面的企业功能入口（组织管理、模型排行榜、Lens、Projects、遥测页、社区与文档链接、Beta 标识、区域中断告警等） | proxy_config.yaml `general_settings.enterprise_features_enabled: true`（默认 false），改后重启网关 |
+
+即：**后端企业能力默认全部可用；管理界面是否展示企业功能入口由 `enterprise_features_enabled` 配置开关决定**。
 
 ## 5 状态说明
 
-GA 能力在开源主干中可直接启用，无需额外授权。Enterprise 能力需部署 `litellm-enterprise` 包并配置有效 license，缺失时相关路由为空，不影响开源功能。Beta 能力主干已实现，但接口或行为可能随版本演进，集成时应关注版本变化。
+GA 能力在开源主干中可直接启用，无需额外授权。Enterprise 能力在本产品中已内置启用（premium 门控解除），后端能力开箱即用；管理界面入口由配置开关 `enterprise_features_enabled` 控制，默认隐藏，需要展示时在 proxy_config.yaml 中设为 true 并重启网关。Beta 能力主干已实现，但接口或行为可能随版本演进，集成时应关注版本变化。
 
 ## 6 Provider 支持清单
 
@@ -117,6 +126,6 @@ OpenAI 兼容 provider 多数可通过 JSON 定义接入，无需新增代码。
 
 第三，provider 专属 usage 字段必须以 extras 搭载。在流式聚合或端点桥接处重建 usage 时若未复制 extras，会导致部分 provider 成本算错，这是 ADR 001 明确约束的行为。
 
-第四，企业能力在无 license 时不可用，相关管理端点为空路由。需要 SSO、审计导出、secret 检测等能力时必须部署企业包。
+第四，企业能力已内置启用（premium 门控解除），无需 license。管理界面默认不展示企业功能入口，需要在 proxy_config.yaml 的 `general_settings` 中设置 `enterprise_features_enabled: true` 并重启网关。
 
 第五，数据库迁移只改 schema，任何数据回填需单独流程并显式标注，不在网关启动迁移中完成。

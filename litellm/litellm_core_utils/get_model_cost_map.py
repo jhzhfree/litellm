@@ -7,6 +7,13 @@ The ``lite`` and ``litellm-proxy`` CLI entry points also use the bundled map wit
 ```
 export LITELLM_LOCAL_MODEL_COST_MAP=True
 ```
+
+A self-hosted, externally mounted pricing file is preferred for air-gapped
+deployments: set ``LITELLM_MODEL_COST_MAP_PATH`` to a local JSON file path
+(e.g. a mounted volume). When set, the map is loaded from that file at startup
+— no network access — and re-read from disk on every reload
+(``POST /reload/model_cost_map``), so the file can be edited externally and
+hot-reloaded.
 """
 
 import asyncio
@@ -25,7 +32,7 @@ from importlib.resources import files
 from itertools import chain
 from pathlib import Path
 from types import MappingProxyType
-from typing import Final, Protocol, cast  # noqa: TID251  # adapts boto3 and botocore's dynamic client responses
+from typing import Final, Optional, Protocol, cast  # noqa: TID251  # adapts boto3 and botocore's dynamic client responses
 
 import httpx
 from pydantic import ConfigDict, TypeAdapter
@@ -95,6 +102,25 @@ class GetModelCostMap:
     def load_local_model_cost_map() -> dict:
         """Load the local backup model cost map bundled with the package."""
         return GetModelCostMap.load_local_model_cost_map_with_revision().model_cost_map
+
+    @staticmethod
+    def _get_cost_map_file_path() -> Optional[str]:
+        """
+        External local JSON file path from ``LITELLM_MODEL_COST_MAP_PATH``.
+
+        When set, pricing data is loaded from this mounted file instead of the
+        bundled backup or the remote URL — no network access. The file can be
+        edited externally and re-read at runtime via the reload endpoint.
+        """
+        path = os.getenv("LITELLM_MODEL_COST_MAP_PATH", "").strip()
+        return path or None
+
+    @staticmethod
+    def load_model_cost_map_from_file_path(path: str) -> "ModelCostMapReloaded":
+        """Load a model cost map JSON from an explicit local file path."""
+        body: Final = Path(path).read_bytes()
+        content: Final = _BUNDLED_CATALOG_ADAPTER.validate_python(json.loads(body))
+        return ModelCostMapReloaded(model_cost_map=content, revision=git_blob_id(body))
 
     _loaded_catalog: Mapping[str, Mapping[str, object]] = MappingProxyType({})
     _loaded_catalog_fields: frozenset[str] = frozenset()
@@ -457,6 +483,30 @@ async def refetch_model_cost_map(
     on failure it returns ``ModelCostMapReloadUnavailable`` so callers keep the
     map they already have.
     """
+    # Priority 1: re-read the external local JSON file (LITELLM_MODEL_COST_MAP_PATH)
+    # so externally edited pricing data can be hot-reloaded via the reload endpoint.
+    # NOTE: must run before the LITELLM_LOCAL_MODEL_COST_MAP branch — that env var
+    # may be auto-set (e.g. after a failed startup fetch) and would otherwise
+    # shadow the configured local file.
+    reload_file_path: Final = GetModelCostMap._get_cost_map_file_path()
+    if reload_file_path is not None:
+        _cost_map_source_info.loaded_at = datetime.now(timezone.utc)
+        try:
+            _cost_map_source_info.source = "local"
+            _cost_map_source_info.url = reload_file_path
+            _cost_map_source_info.is_env_forced = True
+            _cost_map_source_info.fallback_reason = None
+            return _finalize_loaded_model_cost_map(
+                GetModelCostMap.load_model_cost_map_from_file_path(reload_file_path)
+            )
+        except (OSError, ValueError) as e:
+            verbose_logger.warning(
+                "LiteLLM: model cost map reload from local file %s failed: %s. Keeping the currently loaded map.",
+                reload_file_path,
+                e,
+            )
+            return ModelCostMapReloadUnavailable(reason=f"local cost map file load failed: {e}")
+
     if is_offline_mode() or os.getenv("LITELLM_LOCAL_MODEL_COST_MAP", "").lower() == "true":
         _cost_map_source_info.loaded_at = datetime.now(timezone.utc)
         _cost_map_source_info.source = "local"
@@ -762,6 +812,26 @@ def get_model_cost_map(
     _cost_map_source_info.loaded_at = datetime.now(timezone.utc)
     # Note: can't use get_secret_bool here — this runs during litellm.__init__
     # before litellm._key_management_settings is set.
+    # Priority 1: external local JSON file (LITELLM_MODEL_COST_MAP_PATH) — no network.
+    cost_map_file_path: Final = GetModelCostMap._get_cost_map_file_path()
+    if cost_map_file_path is not None:
+        try:
+            _cost_map_source_info.source = "local"
+            _cost_map_source_info.url = cost_map_file_path
+            _cost_map_source_info.is_env_forced = True
+            _cost_map_source_info.fallback_reason = None
+            return _finalize_loaded_model_cost_map(
+                GetModelCostMap.load_model_cost_map_from_file_path(cost_map_file_path)
+            ).model_cost_map
+        except (OSError, ValueError) as e:
+            verbose_logger.error(
+                "LiteLLM: failed to load local model cost map file %s: %s. Falling back to bundled backup.",
+                cost_map_file_path,
+                e,
+            )
+            _cost_map_source_info.url = None
+            _cost_map_source_info.is_env_forced = False
+            _cost_map_source_info.fallback_reason = f"Local cost map file load failed: {e}"
     if is_offline_mode() or os.getenv("LITELLM_LOCAL_MODEL_COST_MAP", "").lower() == "true" or _is_cli_process():
         _cost_map_source_info.source = "local"
         _cost_map_source_info.url = None

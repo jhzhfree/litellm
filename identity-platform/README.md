@@ -14,6 +14,8 @@ docker compose up -d
 管理入口为 `http://127.0.0.1:18080/admin/`，业务 realm 为 `company`。
 OIDC discovery 为 `http://127.0.0.1:18080/realms/company/.well-known/openid-configuration`。
 
+中英文切换：`company` realm 已在 `realm.json` 启用国际化（`en` / `zh-CN`，默认英文），登录页右上角下拉框可即时切换并记住选择（Keycloak locale cookie）。管理控制台登录页同样可切换；进入管理台后在用户菜单 → Manage account → Personal info → Select a locale 选择中文并保存。`master` realm 的国际化已通过管理 API 开启（配置存在身份数据库卷中）；若重建身份数据库卷，需重新对 `master` realm 设置 `internationalizationEnabled=true`、`supportedLocales=["en","zh-CN"]`。
+
 Keycloak 原生管理 API 使用 `/admin/realms/company/users` 和 `/admin/realms/company/clients` 管理用户与应用。调用需要具备相应 realm 管理权限的访问令牌。不要将引导管理员凭据用于产品集成。
 
 `gateway-console` 为授权码登录客户端，启用 PKCE S256。启动后在管理台设置或轮换其客户端密钥，将密钥通过环境配置交给网关。没有预置用户密码或客户端密钥。

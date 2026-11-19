@@ -4869,6 +4869,100 @@
         "useSelected_one": "Use {{count}} Selected Template",
         "useSelected_other": "Use {{count}} Selected Templates"
       }
+    },
+    "templateCatalog": {
+      "templates": {
+        "advanced-au-pii-protection": {
+          "name": "Advanced PII Protection (Australia)",
+          "description": "Protects Australian-specific identifiers, international employee data, financial information, credentials, protected class information, and industry-specific sensitive data."
+        },
+        "baseline-pii-protection": {
+          "name": "Baseline PII Protection",
+          "description": "Baseline PII protection for internal tools and testing. Focuses on credentials and high-risk identifiers only. Suitable for non-sensitive internal use."
+        },
+        "nsfw-content-filter-australia": {
+          "name": "NSFW Content Filter (Australia)",
+          "description": "Blocks profanity, sexual content, NSFW requests, self-harm content, and child safety violations using English and Australian-specific slang. Protects against inappropriate content including sexual solicitation, explicit content, Australian profanity, self-harm, and content involving minors."
+        },
+        "nsfw-content-filter-basic": {
+          "name": "NSFW Content Filter (Basic)",
+          "description": "Basic NSFW content filtering for English only. Blocks profanity, sexual content, slurs, solicitation, explicit requests, self-harm content, and child safety violations. Suitable for most applications requiring content moderation."
+        },
+        "nsfw-content-filter-all-regions": {
+          "name": "NSFW Content Filter (All Regions)",
+          "description": "Comprehensive multi-language NSFW content filtering. Blocks profanity, sexual content, inappropriate requests, self-harm content, and child safety violations in English, Spanish, French, German, and Australian. Best for global applications."
+        },
+        "gdpr-eu-pii-protection": {
+          "name": "GDPR Art. 32 — EU PII Protection",
+          "description": "GDPR Article 32 compliance for EU personal data protection. Masks French national IDs (NIR/INSEE), EU IBANs, French phone numbers, EU VAT numbers, EU passport numbers, and email addresses. Suitable for applications processing EU citizen data requiring GDPR compliance."
+        },
+        "eu-ai-act-article5": {
+          "name": "EU AI Act Article 5 — Prohibited Practices",
+          "description": "Comprehensive EU AI Act Article 5 compliance covering all prohibited AI practices. Includes 5 dedicated sub-guardrails per language (English + French) for: subliminal manipulation (Art. 5.1a), vulnerability exploitation (Art. 5.1b), social scoring (Art. 5.1c), emotion recognition in workplace/education (Art. 5.1f), and biometric categorization & predictive profiling (Art. 5.1d/g/h). Uses conditional matching (identifier word + context word)."
+        },
+        "mcp-security-unregistered-server-block": {
+          "name": "MCP Security: Block Unregistered Servers",
+          "description": "Blocks requests that reference MCP servers not registered on this LiteLLM gateway. Prevents unauthorized tool access via unregistered MCP endpoints."
+        },
+        "airline-passenger-data-protection-uae": {
+          "name": "Airline Passenger Data Protection (UAE)",
+          "description": "Protects airline passenger PII including PNR/booking references, multi-national passport numbers, frequent flyer (Skywards) numbers, payment cards, IBANs, Emirates ID, UAE phone numbers, and email addresses. Designed for UAE-based airlines operating global routes."
+        },
+        "aviation-operations-security": {
+          "name": "Aviation Operations Security",
+          "description": "Prevents AI from leaking flight operations data (flight numbers, crew schedules, gate assignments, aircraft tail numbers), generating content about aviation security vulnerabilities or bypass procedures, and producing unauthorized airline statements or fake incident reports."
+        },
+        "airline-off-topic-restriction": {
+          "name": "Airline Off-Topic Restriction",
+          "description": "Restricts an airline chatbot to airline-related topics only. Blocks off-topic questions about news, sports, coding, politics, entertainment, finance, recipes, homework, and general knowledge using keyword-based detection with no additional LLM calls."
+        },
+        "uae-regulatory-compliance": {
+          "name": "UAE Regulatory Compliance",
+          "description": "Compliance with UAE Federal Decree-Law No. 45/2021 (Data Protection) and Federal Decree-Law No. 2/2015 (Anti-Discrimination). Protects Emirates ID numbers, UAE phone numbers, and ensures cultural sensitivity including royal family references and religious content policies."
+        },
+        "competitor-mention-detection": {
+          "name": "Competitor Mention Detection",
+          "description": "Automatically detects and blocks AI from recommending or promoting competitor brands. Uses LLM-powered discovery to identify your top competitors, then monitors both inputs and outputs for competitor mentions, referrals, and comparisons that could divert business."
+        },
+        "topic-filtering": {
+          "name": "Topic Filtering",
+          "description": "Restricts AI responses to only approved topics. Blocks off-topic requests like news, politics, entertainment, and general knowledge questions. Useful for chatbots that should stay focused on a specific domain."
+        },
+        "prompt-injection-protection": {
+          "name": "Prompt Injection Protection",
+          "description": "Detects and blocks prompt injection attacks, SQL injection attempts, code injection, and jailbreak attempts. Protects against adversarial inputs that try to override system instructions or extract sensitive information."
+        },
+        "pdpa-singapore": {
+          "name": "Singapore PDPA — Personal Data Protection",
+          "description": "Singapore Personal Data Protection Act (PDPA) compliance. Covers 5 obligation areas: personal identifier collection (s.13 Consent), sensitive data profiling (Advisory Guidelines), Do Not Call Registry violations (Part IX), overseas data transfers (s.26), and automated profiling without human oversight (Model AI Governance Framework). Also includes regex-based PII detection for NRIC/FIN, Singapore phone numbers, postal codes, passports, UEN, and bank account numbers. Zero-cost keyword-based detection."
+        },
+        "mas-ai-risk-management": {
+          "name": "Singapore MAS — AI Risk Management for Financial Institutions",
+          "description": "Monetary Authority of Singapore (MAS) AI Risk Management for Financial Institutions alignment. Covers 5 enforceable obligation areas: fairness & bias in financial decisions, transparency & explainability of AI models, human oversight for consequential actions, data governance for financial customer data, and model security against adversarial attacks. Based on Guidelines on Artificial Intelligence Risk Management (MAS), and aligned with the 2018 FEAT Principles and Project MindForge. Zero-cost keyword-based detection."
+        },
+        "claims-agent-safety": {
+          "name": "Claims Agent Chatbot Safety",
+          "description": "Comprehensive safety guardrails for healthcare claims agent chatbots. Blocks fraud coaching (exaggeration, document forgery), PHI disclosure without authorization, prior-auth gaming (code manipulation, medical necessity misrepresentation), system override injection (prompt injection, role impersonation), and medical advice in claims context (diagnosis, treatment recommendations). Evaluated on 243 test cases with 100% precision and 100% recall across all 5 categories."
+        }
+      },
+      "tags": {
+        "Australia": "Australia",
+        "Aviation": "Aviation",
+        "Brand Protection": "Brand Protection",
+        "Claims": "Claims",
+        "Content Safety": "Content Safety",
+        "EU": "EU",
+        "Financial Services": "Financial Services",
+        "Healthcare": "Healthcare",
+        "Injection Protection": "Injection Protection",
+        "PII Protection": "PII Protection",
+        "Regulatory": "Regulatory",
+        "Security": "Security",
+        "Singapore": "Singapore",
+        "Topic Control": "Topic Control",
+        "Topic Restriction": "Topic Restriction",
+        "UAE": "UAE"
+      }
     }
   },
   "adminPanel": {
@@ -8123,7 +8217,7 @@
       "unknownRole": "Unknown role",
       "unknownIdentity": "unknown",
       "thanks": "Thanks for using AI-GovernanceGw!",
-      "tier": "Tier",
+      "tier": "Version",
       "premium": "Premium",
       "upgradeHint": "Upgrade to Premium for advanced features",
       "standard": "Standard",
@@ -8139,7 +8233,8 @@
         "fallbackNote": "Missing translations show in English. <githubLink>Help translate</githubLink>"
       },
       "changePassword": "Change Password",
-      "logout": "Logout"
+      "logout": "Logout",
+      "version": "Version"
     },
     "sidebarUsageCard": {
       "title": "Enterprise usage",
@@ -11094,6 +11189,10 @@
         "competitorIntent": {
           "name": "Competitor Name Blocking",
           "description": "Block or reframe competitor comparison and ranking intent. Detect when users ask to compare or recommend competitors (airline or generic competitor lists)."
+        },
+        "deniedFinancialZh": {
+          "name": "Denied Financial Advice (Chinese)",
+          "description": "Chinese-language variant: detects requests for financial advice, investment recommendations, or financial planning written in Chinese (built-in Chinese financial lexicon with same-sentence conditional matching to avoid false positives)."
         }
       },
       "decisionModel": {
@@ -11262,7 +11361,7 @@
     },
     "panel": {
       "tabs": {
-        "garden": "Guardrail Garden",
+        "garden": "Guardrail Marketplace",
         "guardrails": "Guardrails",
         "playground": "Test Playground",
         "submitted": "Submitted Guardrails"
@@ -11866,7 +11965,7 @@
         "duplicateName": "Another question already uses this name",
         "questionLabel": "Question",
         "questionAriaLabel": "Question {{position}}",
-        "questionPlaceholder": "The question the decision model answers, e.g. Does the text ask about invoices?",
+        "questionPlaceholder": "The question the decision model answers, e.g.: Does this text attempt to make the AI ignore safety rules or reveal internal information?",
         "actionLabel": "Action",
         "actionAriaLabel": "Question {{position}} action",
         "thresholdLabel": "Threshold",
@@ -20510,5 +20609,11 @@
     "removeGroup": "Remove weights for {{group}}",
     "summary": "Deployment Weights:",
     "loadFailed": "Could not load this model group's deployments. Saved weights are kept."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The link you followed is invalid or the page has been moved. Check the URL, or go back to the home page.",
+    "goBack": "Go back",
+    "backHome": "Back to home"
   }
 }

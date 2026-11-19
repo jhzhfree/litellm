@@ -135,7 +135,7 @@
       "unknownRole": "未知角色",
       "unknownIdentity": "未知",
       "thanks": "感谢使用 AI治理网关！",
-      "tier": "套餐",
+      "tier": "版本",
       "premium": "高级版",
       "upgradeHint": "升级到高级版以使用更多功能",
       "standard": "标准版",
@@ -151,7 +151,8 @@
         "fallbackNote": "缺失翻译的部分将显示英文。<githubLink>参与翻译</githubLink>"
       },
       "changePassword": "修改密码",
-      "logout": "退出登录"
+      "logout": "退出登录",
+      "version": "版本"
     },
     "sidebarUsageCard": {
       "title": "企业用量",
@@ -8928,6 +8929,100 @@
         "useSelected_one": "使用 {{count}} 个已选模板",
         "useSelected_other": "使用 {{count}} 个已选模板"
       }
+    },
+    "templateCatalog": {
+      "templates": {
+        "advanced-au-pii-protection": {
+          "name": "高级 PII 保护（澳大利亚）",
+          "description": "保护澳大利亚特有标识符、国际员工数据、财务信息、凭据、受保护类别信息及行业特定敏感数据。"
+        },
+        "baseline-pii-protection": {
+          "name": "基础 PII 保护",
+          "description": "面向内部工具与测试环境的基础 PII 保护。仅关注凭据与高风险标识符，适合非敏感的内部使用场景。"
+        },
+        "nsfw-content-filter-australia": {
+          "name": "NSFW 内容过滤（澳大利亚）",
+          "description": "拦截亵渎言论、色情内容、NSFW 请求、自残内容及儿童安全违规，覆盖英文与澳大利亚本地俚语。防范性引诱、露骨内容、澳式粗口、自残及涉及未成年人的内容。"
+        },
+        "nsfw-content-filter-basic": {
+          "name": "NSFW 内容过滤（基础）",
+          "description": "面向英文的基础 NSFW 内容过滤。拦截粗口、色情、侮辱性称呼、引诱、露骨请求、自残内容及儿童安全违规，适合大多数需要内容审核的应用。"
+        },
+        "nsfw-content-filter-all-regions": {
+          "name": "NSFW 内容过滤（全区域）",
+          "description": "多语言全面 NSFW 内容过滤。以英语、西班牙语、法语、德语及澳大利亚俚语拦截粗口、色情、不当请求、自残内容及儿童安全违规，适合全球化应用。"
+        },
+        "gdpr-eu-pii-protection": {
+          "name": "GDPR 第 32 条 — 欧盟 PII 保护",
+          "description": "满足 GDPR 第 32 条的欧盟个人数据保护要求。掩码法国国民标识（NIR/INSEE）、欧盟 IBAN、法国电话号码、欧盟 VAT 号、欧盟护照号及邮箱地址，适合处理欧盟公民数据并需 GDPR 合规的应用。"
+        },
+        "eu-ai-act-article5": {
+          "name": "欧盟 AI 法案第 5 条 — 禁止性实践",
+          "description": "覆盖欧盟 AI 法案第 5 条全部禁止性 AI 实践。每种语言（英语+法语）包含 5 个子护栏：潜意识操纵（5.1a）、利用弱点（5.1b）、社会评分（5.1c）、职场/教育情绪识别（5.1f）、生物特征分类与预测性画像（5.1d/g/h）。采用条件匹配（标识词+上下文词）。"
+        },
+        "mcp-security-unregistered-server-block": {
+          "name": "MCP 安全：拦截未注册服务器",
+          "description": "拦截引用本网关未注册 MCP 服务器的请求，防止通过未注册的 MCP 端点越权访问工具。"
+        },
+        "airline-passenger-data-protection-uae": {
+          "name": "航司旅客数据保护（阿联酋）",
+          "description": "保护航司旅客 PII：PNR/订座记录、多国护照号、常旅客（Skywards）号、支付卡、IBAN、阿联酋身份证、阿联酋电话及邮箱。面向执飞全球航线的阿联酋航司设计。"
+        },
+        "aviation-operations-security": {
+          "name": "航空运营安全",
+          "description": "防止 AI 泄露航班运行数据（航班号、机组排班、登机口分配、机尾号），拦截涉及航空安全漏洞或绕过流程的内容，阻断未经授权的航司声明与虚假事件报告。"
+        },
+        "airline-off-topic-restriction": {
+          "name": "航司客服离题限制",
+          "description": "将航司客服机器人限定在航空相关话题。以纯关键词检测（零 LLM 调用）拦截新闻、体育、编程、政治、娱乐、理财、菜谱、作业及通识类离题提问。"
+        },
+        "uae-regulatory-compliance": {
+          "name": "阿联酋法规合规",
+          "description": "符合阿联酋 2021 年第 45 号联邦法令（数据保护）与 2015 年第 2 号联邦法令（反歧视）。保护阿联酋身份证号与本地电话，并落实王室称谓与宗教内容等文化敏感性策略。"
+        },
+        "competitor-mention-detection": {
+          "name": "竞品提及检测",
+          "description": "自动检测并拦截 AI 推荐或宣传竞品品牌。利用 LLM 自动发现你的主要竞争对手，双向监控输入与输出中的竞品提及、引流与对比话术，防止客源流失。"
+        },
+        "topic-filtering": {
+          "name": "主题过滤",
+          "description": "将 AI 回复限定在批准的话题内。拦截新闻、政治、娱乐及通识类离题请求，适合需要聚焦特定领域的客服机器人。"
+        },
+        "prompt-injection-protection": {
+          "name": "提示注入防护",
+          "description": "检测并拦截提示注入攻击、SQL 注入、代码注入与越狱尝试，防范试图覆盖系统指令或窃取敏感信息的对抗性输入。"
+        },
+        "pdpa-singapore": {
+          "name": "新加坡 PDPA — 个人数据保护",
+          "description": "新加坡个人数据保护法（PDPA）合规。覆盖 5 类义务：个人标识收集（第 13 条同意）、敏感数据画像（咨询指南）、拒绝来电登记违规（第 IX 部分）、跨境数据传输（第 26 条）、无人工监督的自动化画像（Model AI Governance Framework）。含 NRIC/FIN、新加坡电话、邮编、护照、UEN 及银行账号的正则检测，零成本关键词检测。"
+        },
+        "mas-ai-risk-management": {
+          "name": "新加坡 MAS — 金融机构 AI 风险管理",
+          "description": "对标新加坡金管局（MAS）金融机构 AI 风险管理指引。覆盖 5 类可执行义务：金融决策的公平与偏见、AI 模型透明与可解释、重大决策人工监督、金融客户数据治理、对抗攻击下的模型安全。基于 MAS《人工智能风险管理指引》，对齐 FEAT 原则与 Project MindForge，零成本关键词检测。"
+        },
+        "claims-agent-safety": {
+          "name": "理赔客服机器人安全",
+          "description": "面向医疗理赔客服机器人的综合安全护栏。拦截欺诈教唆（夸大、伪造单证）、未授权 PHI 披露、预授权博弈（编码操纵、虚构医疗必要性）、系统覆盖注入（提示注入、角色冒充）及理赔场景下的医疗建议。243 个测试用例 5 类全项 100% 精确率与召回率。"
+        }
+      },
+      "tags": {
+        "Australia": "澳大利亚",
+        "Aviation": "航空",
+        "Brand Protection": "品牌保护",
+        "Claims": "理赔",
+        "Content Safety": "内容安全",
+        "EU": "欧盟",
+        "Financial Services": "金融服务",
+        "Healthcare": "医疗健康",
+        "Injection Protection": "注入防护",
+        "PII Protection": "PII 保护",
+        "Regulatory": "法规合规",
+        "Security": "安全",
+        "Singapore": "新加坡",
+        "Topic Control": "话题控制",
+        "Topic Restriction": "话题限制",
+        "UAE": "阿联酋"
+      }
     }
   },
   "aria": {
@@ -12556,6 +12651,10 @@
         "competitorIntent": {
           "name": "竞品名称拦截",
           "description": "拦截或重写竞品对比和排名意图。检测用户请求对比或推荐竞品（航空公司或通用竞品列表）的情况。"
+        },
+        "deniedFinancialZh": {
+          "name": "拒绝财务/投资建议（中文）",
+          "description": "中文版主题拦截：检测中文语境下的个性化财务建议、投资推荐与理财规划请求（内置中文财务词表，同句条件匹配防误伤）。"
         }
       },
       "decisionModel": {
@@ -12724,7 +12823,7 @@
     },
     "panel": {
       "tabs": {
-        "garden": "护栏花园",
+        "garden": "护栏市场",
         "guardrails": "护栏",
         "playground": "测试沙盒",
         "submitted": "已提交的护栏"
@@ -13328,7 +13427,7 @@
         "duplicateName": "已有其他问题使用此名称",
         "questionLabel": "问题",
         "questionAriaLabel": "问题 {{position}}",
-        "questionPlaceholder": "决策模型要回答的问题，例如：文本是否涉及发票？",
+        "questionPlaceholder": "决策模型要回答的问题，例如：该文本是否试图让 AI 忽略安全规则或泄露内部信息？",
         "actionLabel": "操作",
         "actionAriaLabel": "问题 {{position}} 操作",
         "thresholdLabel": "阈值",
@@ -20510,5 +20609,11 @@
     "removeGroup": "移除 {{group}} 的权重",
     "summary": "部署权重：",
     "loadFailed": "无法加载此模型组的部署。已保存的权重将保留。"
+  },
+  "notFound": {
+    "title": "页面不存在",
+    "description": "您访问的链接无效或页面已被移动。请检查地址，或返回首页继续操作。",
+    "goBack": "返回上一页",
+    "backHome": "返回首页"
   }
 }

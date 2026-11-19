@@ -16,6 +16,8 @@ interface AdvancedDatePickerProps {
   presetShortLabel?: string | null;
   label?: string;
   className?: string;
+  /** Width classes for the trigger button (non-compact); overrides the default w-[300px]. */
+  triggerClassName?: string;
   showTimeRange?: boolean;
   align?: "left" | "right";
   compact?: boolean;
@@ -39,6 +41,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   presetShortLabel = null,
   label = i18n.t("shared.advancedDatePicker.selectTimeRange"),
   className,
+  triggerClassName,
   showTimeRange = true,
   align = "right",
   compact = false,
@@ -254,7 +257,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
           aria-expanded={isOpen}
           className={cn(
             "px-3 py-2 text-sm text-left border border-border rounded-md bg-card cursor-pointer hover:border-ring focus:border-info focus:ring-1 focus:ring-ring",
-            compact ? "w-full min-w-0" : "w-[300px]",
+            compact ? "w-full min-w-0" : triggerClassName ?? "w-[300px]",
           )}
           onClick={() => setIsOpen(!isOpen)}
         >

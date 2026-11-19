@@ -223,6 +223,18 @@ router_settings:
   enable_pre_call_checks: true
   model_group_alias: {"my-special-fake-model-alias-name": "fake-openai-endpoint-3"} 
 
+guardrails:
+  - guardrail_name: "financial-data-guard"
+    litellm_params:
+      # 自定义护栏：拦截含财务数据的请求，保证财务数据不发送给外部模型
+      guardrail: enterprise.financial_guardrail.FinancialDataGuardrail
+      mode: "pre_call"          # 请求发往外部模型前拦截
+      default_on: true          # 默认对所有模型请求生效
+      action: block             # block=拦截(400) / monitor=仅记录放行
+      detect_bank_cards: true                 # 银行卡号（Luhn 校验）
+      detect_financial_amounts: true          # 金额模式（¥/$/元/万元/亿）
+      detect_financial_keywords_with_numbers: true  # 财务关键词+数字组合
+
 general_settings: 
   enterprise_features_enabled: false # 企业版功能总开关：true 显示组织/模型排行榜/Lens/Projects/遥测/社区与文档链接/Beta 标识等
   master_key: os.environ/LITELLM_MASTER_KEY # [OPTIONAL] Use to enforce auth on proxy. See - https://docs.litellm.ai/docs/proxy/virtual_keys

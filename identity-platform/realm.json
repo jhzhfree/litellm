@@ -5,6 +5,10 @@
   "resetPasswordAllowed": false,
   "sslRequired": "external",
   "accessTokenLifespan": 300,
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en", "zh-CN"],
+  "defaultLocale": "en",
+  "loginTheme": "keycloak.v2",
   "clients": [
     {
       "clientId": "gateway-console",

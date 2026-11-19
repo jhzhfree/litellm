@@ -421,7 +421,7 @@ export const AutoRouterUsageView: React.FC<AutoRouterBenchmarksTabProps> = ({
           )}
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-          <AdvancedDatePicker value={dateValue} onValueChange={onDateChange} />
+          <AdvancedDatePicker value={dateValue} onValueChange={onDateChange} triggerClassName="w-[420px]" />
           <div className="w-full sm:w-64">
             <Select value={selectedKey} onValueChange={(value: string | null) => setSelectedKey(value ?? ALL_ROUTERS)}>
               <SelectTrigger className="w-full">

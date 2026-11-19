@@ -98,6 +98,18 @@ export const LITELLM_CONTENT_FILTER_CARDS: GuardrailCardInfo[] = [
     },
   },
   {
+    id: "cf_denied_financial_zh",
+    name: "Denied Financial Advice (Chinese)",
+    nameKey: "guardrails.gardenCatalog.contentFilter.deniedFinancialZh.name",
+    description:
+      "Chinese-language variant: detects requests for financial advice, investment recommendations, or financial planning written in Chinese.",
+    descriptionKey: "guardrails.gardenCatalog.contentFilter.deniedFinancialZh.description",
+    category: "litellm",
+    subcategoryKey: "guardrails.gardenCatalog.subcategories.contentCategory",
+    logo: litellmContentFilterLogo,
+    tags: ["Content Category", "Topic Blocker"],
+  },
+  {
     id: "cf_denied_insults",
     name: "Insults & Personal Attacks",
     nameKey: "guardrails.gardenCatalog.contentFilter.deniedInsults.name",

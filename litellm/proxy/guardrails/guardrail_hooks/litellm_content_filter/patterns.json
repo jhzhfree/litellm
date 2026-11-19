@@ -646,6 +646,34 @@
       "description": "Detects University of Toronto TCard campus ID card numbers (16-digit). Context keywords are critical to distinguish from payment card numbers.",
       "keyword_pattern": "\\b(?:tcard\\s*number|t-card\\s*number|tcard|t-card|campus\\s*card|campus\\s*id|university\\s*card)\\b",
       "allow_word_numbers": false
+    },
+    {
+      "name": "cn_id_card",
+      "display_name": "ID Card (China Resident)",
+      "pattern": "(?<![0-9Xx])\\d{6}(?:19|20)\\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\\d|3[01])\\d{3}[\\dXx](?![0-9Xx])",
+      "category": "China PII Patterns",
+      "description": "Detects 18-digit Chinese resident identity card numbers (region + birthdate + sequence + checksum char); adjacent CJK text handled via lookarounds instead of word boundaries"
+    },
+    {
+      "name": "cn_mobile_phone",
+      "display_name": "Mobile Phone (China)",
+      "pattern": "(?<![0-9])1[3-9]\\d{9}(?![0-9])",
+      "category": "China PII Patterns",
+      "description": "Detects Chinese mainland mobile phone numbers (1[3-9] prefix, 11 digits)"
+    },
+    {
+      "name": "cn_bank_card_unionpay",
+      "display_name": "Bank Card (UnionPay)",
+      "pattern": "(?<![0-9])62\\d{14,17}(?![0-9])",
+      "category": "China PII Patterns",
+      "description": "Detects UnionPay bank card numbers (62 BIN prefix, 16-19 digits); use the content filter card/Luhn-based custom guardrail for full validation"
+    },
+    {
+      "name": "rmb_amount",
+      "display_name": "Amount (RMB)",
+      "pattern": "(?:[¥￥]\\s*[\\d,]+(?:\\.\\d{1,2})?)|(?:\\d[\\d,]*(?:\\.\\d+)?\\s*(?:万元|亿元|万?元|块钱|美元|亿美元|人民币)|(?:万|亿)(?=元))",
+      "category": "China PII Patterns",
+      "description": "Detects RMB/USD amounts in Chinese formats (¥1,234.56, 3.2 万元, 1.2 亿元, 500 块钱)"
     }
   ]
 }

@@ -33,7 +33,7 @@ describe("GuardrailGarden", () => {
 
   const renderGarden = () => render(<GuardrailGarden accessToken="test-token" onGuardrailCreated={vi.fn()} />);
 
-  it("should render both sections with their descriptions", () => {
+  it("should render both sections with their descriptions and hide the partner section", () => {
     renderGarden();
 
     expect(screen.getByText("AI-GovernanceGw Content Filter")).toBeInTheDocument();
@@ -42,10 +42,7 @@ describe("GuardrailGarden", () => {
         "Built-in guardrails powered by AI-GovernanceGw. Zero latency, no external dependencies, no additional cost.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Partner Guardrails")).toBeInTheDocument();
-    expect(
-      screen.getByText("Third-party guardrail integrations from leading AI security providers."),
-    ).toBeInTheDocument();
+    expect(screen.queryByText("Partner Guardrails")).not.toBeInTheDocument();
   });
 
   it("should show a capped set of litellm cards behind a show all toggle", async () => {
@@ -76,7 +73,6 @@ describe("GuardrailGarden", () => {
     expect(DECISION_MODEL_CARDS.map((card) => card.name)).toEqual(names);
     for (const name of names) {
       expect(within(sectionOf("Decision Model")).getByText(name)).toBeInTheDocument();
-      expect(within(sectionOf("Partner Guardrails")).queryByText(name)).not.toBeInTheDocument();
     }
   });
 
@@ -100,11 +96,11 @@ describe("GuardrailGarden", () => {
     expect(screen.getByText("Detail for Perplexity Decision")).toBeInTheDocument();
   });
 
-  it("should always render every partner card", () => {
+  it("should not render any partner cards", () => {
     renderGarden();
 
     PARTNER_CARDS.forEach((card) => {
-      expect(screen.getByText(card.name)).toBeInTheDocument();
+      expect(screen.queryByText(card.name)).not.toBeInTheDocument();
     });
   });
 
@@ -112,22 +108,22 @@ describe("GuardrailGarden", () => {
     const user = userEvent.setup();
     renderGarden();
 
-    const target = PARTNER_CARDS[0];
+    const target = DECISION_MODEL_CARDS[0];
     await user.type(screen.getByPlaceholderText("Search guardrails"), target.name);
 
     expect(await screen.findByText(target.name)).toBeInTheDocument();
-    const otherPartner = PARTNER_CARDS.find((c) => c.name !== target.name);
-    if (otherPartner) {
-      expect(screen.queryByText(otherPartner.name)).not.toBeInTheDocument();
+    const other = DECISION_MODEL_CARDS.find((c) => c.name !== target.name);
+    if (other) {
+      expect(screen.queryByText(other.name)).not.toBeInTheDocument();
     }
   });
 
   it.each([
     [true, "SI"],
     [false, "AI"],
-  ])("should match the wording a card shows when SI terminology is %s", (useSi, shownTerm) => {
+  ])("should keep litellm cards searchable when SI terminology is %s", (useSi) => {
     uiConfig.data = { use_si_terminology: useSi };
-    const card = ALL_CARDS.find((c) => c.description.startsWith("AI security platform protecting"));
+    const card = ALL_CARDS.find((c) => c.description.startsWith("Detects requests for personalized financial advice"));
     expect(card).toBeDefined();
     render(
       <TerminologyProvider>
@@ -136,7 +132,7 @@ describe("GuardrailGarden", () => {
     );
 
     fireEvent.change(screen.getByPlaceholderText("Search guardrails"), {
-      target: { value: `${shownTerm} security platform protecting` },
+      target: { value: "personalized financial advice" },
     });
 
     expect(screen.getByText(card!.name)).toBeInTheDocument();
@@ -158,7 +154,7 @@ describe("GuardrailGarden", () => {
     const user = userEvent.setup();
     renderGarden();
 
-    const target = PARTNER_CARDS[0];
+    const target = DECISION_MODEL_CARDS[0];
     await user.click(screen.getByText(target.name));
 
     expect(await screen.findByText(`Detail for ${target.name}`)).toBeInTheDocument();

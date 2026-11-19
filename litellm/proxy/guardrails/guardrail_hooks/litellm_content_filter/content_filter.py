@@ -35,6 +35,16 @@ from litellm.integrations.custom_guardrail import CustomGuardrail
 from litellm.litellm_core_utils.core_helpers import attribute_or_none
 from litellm.proxy._types import UserAPIKeyAuth
 from litellm.proxy.common_utils.path_utils import is_within, try_safe_join
+from litellm.proxy.guardrails.violation_messages import (
+    content_filter_category_keyword_blocked,
+    content_filter_competitor_blocked,
+    content_filter_conditional_blocked,
+    content_filter_image_blocked,
+    content_filter_keyword_blocked,
+    content_filter_masking_rule_blocked,
+    content_filter_nesting_depth_blocked,
+    content_filter_pattern_blocked,
+)
 from litellm.proxy.guardrails.content_filter_data import (
     CATEGORIES_DIR,
     DATA_DIR,
@@ -88,7 +98,7 @@ _DECODED_ARGUMENTS: Final = TypeAdapter(object)
 _StreamItemT: Final = TypeVar("_StreamItemT")
 _JSON_ENTRIES: Final = TypeAdapter(list[object])
 GAP_WORD_TOKENIZER: Final = re.compile(r"\b\w+\b")
-SENTENCE_TERMINATORS: Final = re.compile(r"[.!?]+")
+SENTENCE_TERMINATORS: Final = re.compile(r"[.!?。！？；;]+")
 
 
 WORD_NUMBER_MAP: Final = {
@@ -318,9 +328,13 @@ class CategoryConfig:
         inherit_from: str | None = None,
         additional_block_words: Sequence[str] | None = None,
         phrase_patterns: Sequence[str] | None = None,
+        display_name: str | None = None,
+        display_name_zh: str | None = None,
     ):
         self.category_name = category_name
         self.description = description
+        self.display_name = display_name or ""
+        self.display_name_zh = display_name_zh or ""
         self.default_action = default_action
         self.keywords = keywords
         self.exceptions = [e.lower() for e in exceptions]
@@ -788,6 +802,13 @@ class ContentFilterGuardrail(CustomGuardrail):
         except Exception as e:
             verbose_proxy_logger.error("Error loading conditional category for %s: %s", category_name, e)
 
+    def _category_display_name_zh(self, category_name: str) -> str | None:
+        """Chinese display name of a loaded category (for zh violation messages)."""
+        config = self.loaded_categories.get(category_name)
+        if config is not None and getattr(config, "display_name_zh", ""):
+            return config.display_name_zh
+        return None
+
     def _load_category_file(self, file_path: str) -> CategoryConfig:
         """
         Load a category definition from a YAML or JSON file.
@@ -819,6 +840,8 @@ class ContentFilterGuardrail(CustomGuardrail):
             inherit_from=data.get("inherit_from"),
             additional_block_words=data.get("additional_block_words"),
             phrase_patterns=data.get("phrase_patterns"),
+            display_name=data.get("display_name"),
+            display_name_zh=data.get("display_name_zh"),
         )
 
     @staticmethod
@@ -1152,14 +1175,16 @@ class ContentFilterGuardrail(CustomGuardrail):
                 # Check if sentence also contains ANY block word
                 block_word_found = None
                 for block_word in block_words:
-                    # Use word boundary for single words to avoid false positives
-                    if " " in block_word:
-                        # Multi-word phrase
+                    # Use word boundary for ASCII single words to avoid false positives.
+                    # Non-ASCII (CJK) words cannot use \b — Python's \w includes CJK
+                    # ideographs, so no boundary exists between CJK chars; fall back
+                    # to substring matching for those.
+                    if " " in block_word or not block_word.isascii():
                         if block_word in sentence_lower:
                             block_word_found = block_word
                             break
                     else:
-                        # Single word - use word boundary
+                        # Single ASCII word - use word boundary
                         pattern = r"\b" + re.escape(block_word) + r"\b"
                         if re.search(pattern, sentence_lower):
                             block_word_found = block_word
@@ -1369,8 +1394,11 @@ class ContentFilterGuardrail(CustomGuardrail):
             detections.append(category_detection)
 
         if self._enforces_block(action):
-            error_msg: Final = (
-                f"Content blocked: {category_name} conditional match '{matched_phrase}' detected (severity: {severity})"
+            error_msg: Final = content_filter_conditional_blocked(
+                category_name,
+                self._category_display_name_zh(category_name),
+                matched_phrase,
+                severity,
             )
             verbose_proxy_logger.warning(error_msg)
             raise HTTPException(
@@ -1410,7 +1438,12 @@ class ContentFilterGuardrail(CustomGuardrail):
             detections.append(category_detection)
 
         if self._enforces_block(action):
-            error_msg = f"Content blocked: {category_name} category keyword '{keyword}' detected (severity: {severity})"
+            error_msg = content_filter_category_keyword_blocked(
+                category_name,
+                self._category_display_name_zh(category_name),
+                keyword,
+                severity,
+            )
             verbose_proxy_logger.warning(error_msg)
             raise HTTPException(
                 status_code=400,
@@ -1451,7 +1484,7 @@ class ContentFilterGuardrail(CustomGuardrail):
             detections.append(pattern_detection)
 
         if self._enforces_block(action):
-            error_msg: Final = f"Content blocked: {pattern_name} pattern detected"
+            error_msg: Final = content_filter_pattern_blocked(pattern_name)
             verbose_proxy_logger.warning(error_msg)
             raise HTTPException(
                 status_code=400,
@@ -1523,7 +1556,7 @@ class ContentFilterGuardrail(CustomGuardrail):
             detections.append(blocked_word_detection)
 
         if self._enforces_block(action):
-            error_msg = f"Content blocked: keyword '{keyword}' detected"
+            error_msg = content_filter_keyword_blocked(keyword)
             if description:
                 error_msg += f" ({description})"
             verbose_proxy_logger.warning(error_msg)
@@ -1690,7 +1723,7 @@ class ContentFilterGuardrail(CustomGuardrail):
                 elif isinstance(e.detail, str):
                     e.detail = e.detail + " (Image description): " + description
                 else:
-                    e.detail = "Content blocked: Image description detected" + description
+                    e.detail = content_filter_image_blocked() + description
                 raise e
 
     @staticmethod
@@ -1845,7 +1878,7 @@ class ContentFilterGuardrail(CustomGuardrail):
         if self._is_logging_only_scan():
             return
         if action_hint_val == "refuse":
-            msg = "Content blocked: competitor comparison or ranking intent detected."
+            msg = content_filter_competitor_blocked()
             if self._competitor_intent_checker and getattr(
                 self._competitor_intent_checker, "refuse_message_template", None
             ):
@@ -1953,7 +1986,7 @@ class ContentFilterGuardrail(CustomGuardrail):
         self, text: str, detections: list[ContentFilterDetection], context_label: str
     ) -> None:
         if self._filter_single_text(text, detections=detections) != text:
-            self._reject(f"Content blocked: {context_label} argument matched a masking rule on a non-rewritable field")
+            self._reject(content_filter_masking_rule_blocked(context_label))
 
     def _filter_argument_value(
         self,
@@ -1963,7 +1996,7 @@ class ContentFilterGuardrail(CustomGuardrail):
         depth: int = 0,
     ) -> object:
         if depth > DEFAULT_MAX_RECURSE_DEPTH:
-            self._reject(f"Content blocked: {context_label} arguments exceed the maximum nesting depth")
+            self._reject(content_filter_nesting_depth_blocked(context_label))
             return value
         if isinstance(value, str):
             return self._filter_single_text(value, detections=detections)

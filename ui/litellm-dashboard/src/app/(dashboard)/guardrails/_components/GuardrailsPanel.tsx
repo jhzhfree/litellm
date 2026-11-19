@@ -17,10 +17,10 @@ import GuardrailTable from "./guardrail_table";
 import { isAdminRole } from "@/utils/roles";
 import GuardrailInfoView from "./guardrail_info";
 import GuardrailTestPlayground from "./GuardrailTestPlayground";
+import GuardrailGarden from "./guardrail_garden";
 import { Guardrail } from "@/components/guardrails/types";
 import { GuardrailDeleteModal } from "./GuardrailDeleteModal";
 import { CustomCodeModal } from "./custom_code";
-import GuardrailGarden from "./guardrail_garden";
 import { TeamGuardrailsTab } from "./TeamGuardrailsTab";
 
 interface GuardrailsPanelProps {

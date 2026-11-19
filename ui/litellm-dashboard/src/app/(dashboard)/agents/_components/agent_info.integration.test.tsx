@@ -157,63 +157,69 @@ describe("AgentInfoView update payload", () => {
   });
 
   it.each([
-    { card: "complete", editCard: false },
+    { card: "complete", editCard: false, external: false },
+    { card: "complete", editCard: false, external: true },
     { card: "empty", editCard: false },
     { card: "empty", editCard: true },
-  ])("preserves identity and runtime intent with a $card card (card edits: $editCard)", async ({ card, editCard }) => {
-    const user = setup();
-    const identity = {
-      provider: "microsoft_entra",
-      tenant_id: "11111111-1111-4111-8111-111111111111",
-      client_id: "22222222-2222-4222-8222-222222222222",
-      service_principal_id: "33333333-3333-4333-8333-333333333333",
-    };
-    const params = { ...A2A_AGENT.litellm_params, require_trace_id_on_calls_by_agent: true };
-    vi.mocked(networking.getAgentInfo).mockResolvedValue({
-      ...A2A_AGENT,
-      agent_card_params: card === "empty" ? {} : A2A_AGENT.agent_card_params,
-      litellm_params: params,
-      identity: { ...identity, agent_id: "agent-1", issuer: "https://issuer.example", revision: "rev", active: true },
-      identity_managed: true,
-      execution_mode: "autonomous",
-      enabled: true,
-      access_group_ids: ["ag-entra"],
-    } as never);
-    vi.mocked(networking.apiClient.get).mockImplementation(async (path) =>
-      path.endsWith("/providers")
-        ? [`https://login.microsoftonline.com/${identity.tenant_id}/v2.0`]
-        : { last_authenticated_at: null },
-    );
-    renderView();
-    expect(await screen.findByText("Configured, awaiting an authenticated request")).toBeInTheDocument();
-    await openEditor(user);
-    expect(screen.getByLabelText("Application (Client) ID")).toHaveValue(identity.client_id);
-    expect(screen.getByRole("combobox", { name: "Identity Provider" })).toHaveTextContent("Microsoft Entra ID");
-    expect(screen.getByRole("combobox", { name: "Execution Mode" })).toHaveTextContent("Autonomous");
-    expect(screen.getByRole("combobox", { name: /^Execution$/ })).toHaveTextContent("Enabled");
-    fireEvent.change(screen.getByLabelText("Agent Name"), { target: { value: "Renamed agent" } });
-    if (editCard) {
-      fireEvent.change(screen.getByLabelText("Display Name"), { target: { value: "Configured runtime" } });
-      fireEvent.change(screen.getByLabelText("URL"), { target: { value: "https://runtime.example/a2a" } });
-    }
-    await save(user);
-    expect(patchedPayload().agent_name).toBe("Renamed agent");
-    expect(patchedPayload()).not.toHaveProperty("litellm_params");
-    expect(patchedPayload().agent_card_params === undefined).toBe(card === "empty" && !editCard);
-    if (editCard) {
-      expect(patchedPayload().agent_card_params).toMatchObject({
-        name: "Configured runtime",
-        url: "https://runtime.example/a2a",
-      });
-    }
-    expect(patchedPayload().identity).toMatchObject(identity);
-    expect(patchedPayload().access_group_ids).toEqual(["ag-entra"]);
-    expect(networking.patchAgentCall).toHaveBeenCalledWith(
-      "tok",
-      "agent-1",
-      expect.objectContaining({ agent_name: "Renamed agent" }),
-    );
-  });
+  ])(
+    "preserves identity and runtime intent with a $card card (card edits: $editCard)",
+    async ({ card, editCard, external }) => {
+      const user = setup();
+      const identity = {
+        provider: external ? "external_oidc" : "microsoft_entra",
+        tenant_id: external ? "https://identity.example/realms/Company" : "11111111-1111-4111-8111-111111111111",
+        client_id: external ? "AgentClient" : "22222222-2222-4222-8222-222222222222",
+        service_principal_id: external ? "SubjectABC" : "33333333-3333-4333-8333-333333333333",
+      };
+      const params = { ...A2A_AGENT.litellm_params, require_trace_id_on_calls_by_agent: true };
+      vi.mocked(networking.getAgentInfo).mockResolvedValue({
+        ...A2A_AGENT,
+        agent_card_params: card === "empty" ? {} : A2A_AGENT.agent_card_params,
+        litellm_params: params,
+        identity: { ...identity, agent_id: "agent-1", issuer: "https://issuer.example", revision: "rev", active: true },
+        identity_managed: true,
+        execution_mode: "autonomous",
+        enabled: true,
+        access_group_ids: ["ag-entra"],
+      } as never);
+      vi.mocked(networking.apiClient.get).mockImplementation(async (path) =>
+        path.endsWith("/providers")
+          ? [external ? identity.tenant_id : `https://login.microsoftonline.com/${identity.tenant_id}/v2.0`]
+          : { last_authenticated_at: null },
+      );
+      renderView();
+      expect(await screen.findByText("Configured, awaiting an authenticated request")).toBeInTheDocument();
+      await openEditor(user);
+      expect(screen.getByLabelText("Application (Client) ID")).toHaveValue(identity.client_id);
+      expect(screen.getByRole("combobox", { name: "Identity Provider" })).toHaveTextContent(
+        external ? "External OIDC platform" : "Microsoft Entra ID",
+      );
+      expect(screen.getByRole("combobox", { name: "Execution Mode" })).toHaveTextContent("Autonomous");
+      expect(screen.getByRole("combobox", { name: /^Execution$/ })).toHaveTextContent("Enabled");
+      fireEvent.change(screen.getByLabelText("Agent Name"), { target: { value: "Renamed agent" } });
+      if (editCard) {
+        fireEvent.change(screen.getByLabelText("Display Name"), { target: { value: "Configured runtime" } });
+        fireEvent.change(screen.getByLabelText("URL"), { target: { value: "https://runtime.example/a2a" } });
+      }
+      await save(user);
+      expect(patchedPayload().agent_name).toBe("Renamed agent");
+      expect(patchedPayload()).not.toHaveProperty("litellm_params");
+      expect(patchedPayload().agent_card_params === undefined).toBe(card === "empty" && !editCard);
+      if (editCard) {
+        expect(patchedPayload().agent_card_params).toMatchObject({
+          name: "Configured runtime",
+          url: "https://runtime.example/a2a",
+        });
+      }
+      expect(patchedPayload().identity).toMatchObject(identity);
+      expect(patchedPayload().access_group_ids).toEqual(["ag-entra"]);
+      expect(networking.patchAgentCall).toHaveBeenCalledWith(
+        "tok",
+        "agent-1",
+        expect.objectContaining({ agent_name: "Renamed agent" }),
+      );
+    },
+  );
 
   it("sends only the fields whose panel has been opened, dropping the rest", async () => {
     const user = setup();
@@ -253,7 +259,7 @@ describe("AgentInfoView update payload", () => {
     await user.click(screen.getByRole("button", { name: /Capabilities/ }));
     await user.click(screen.getByRole("button", { name: /Optional Settings/ }));
     await user.click(screen.getByRole("button", { name: /Cost Configuration/ }));
-    await user.click(screen.getByRole("button", { name: /LiteLLM Parameters/ }));
+    await user.click(screen.getByRole("button", { name: /AI-GovernanceGw Parameters/ }));
     await user.click(screen.getByRole("button", { name: /Authentication Headers/ }));
     await screen.findByLabelText("Forward Client Headers");
 

@@ -5758,7 +5758,8 @@
     "identityFields": {
       "providers": {
         "none": "无显式身份绑定",
-        "microsoftEntra": "Microsoft Entra ID"
+        "microsoftEntra": "Microsoft Entra ID",
+        "externalOidc": "外部 OIDC 身份平台"
       },
       "executionModes": {
         "autonomous": "自主模式",
@@ -5805,7 +5806,20 @@
         "note": "用户必须先通过该网关的 Microsoft SSO 登录。后续的委派调用需同时满足用户权限与 Agent 权限。"
       },
       "executionLabel": "执行",
-      "verificationNote": "AI治理网关 在匹配此身份之前会校验 Agent 的 Entra 令牌。保存这些字段即完成绑定配置；经过验证的请求则提供实际验证。运行时身份验证请求头另行配置。"
+      "verificationNote": "AI治理网关 在匹配此身份之前会校验 Agent 的 Entra 令牌。保存这些字段即完成绑定配置；经过验证的请求则提供实际验证。运行时身份验证请求头另行配置。",
+      "external": {
+        "issuer": "受信任的签发者（issuer）",
+        "issuerRequired": "请选择受信任的签发者",
+        "noIssuers": "暂无外部签发者。请先在网关配置 JWT issuer 和 audience 校验。",
+        "clientRequired": "请输入应用客户端 ID",
+        "subject": "工作负载主体（sub）",
+        "subjectRequired": "请输入服务账号主体",
+        "scopes": "所需权限范围（scope）",
+        "scopesRequired": "请输入所需权限范围",
+        "scopeNote": "输入应用访问令牌必须具有的 scope，以逗号分隔。外部 Agent 当前仅支持自主执行。",
+        "verificationNote": "网关先校验令牌签名、issuer 和 audience，再匹配客户端、主体和 scope。保存绑定不代表认证已通过。",
+        "claimNote": "请复制身份平台中区分大小写的准确值。此绑定不保存客户端密钥。"
+      }
     },
     "formKit": {
       "noMatchingOptions": "没有匹配的选项"
@@ -6293,14 +6307,17 @@
         },
         "skip": {
           "entra": "使用 Entra JWT 身份验证",
-          "later": "暂时跳过，稍后再分配密钥"
-        }
+          "later": "暂时跳过，稍后再分配密钥",
+          "external": "使用外部 OIDC 身份认证"
+        },
+        "externalNotice": "此 Agent 使用外部 OIDC 身份认证，可以跳过虚拟密钥创建。"
       },
       "ready": {
         "title": "Agent 已创建！",
         "keyAssigned": "密钥 <alias/> 已分配给该 Agent。",
         "entraConfigured": "Microsoft Entra ID 已配置。请发送一个经过验证的 Agent 请求以验证连接。",
-        "noKey": "尚未分配密钥。你可以在虚拟密钥页面创建一个。"
+        "noKey": "尚未分配密钥。你可以在虚拟密钥页面创建一个。",
+        "externalConfigured": "外部 OIDC 身份已配置。请发送经过认证的 Agent 请求来验证连接。"
       },
       "dialog": {
         "logoLabel": "Agent",

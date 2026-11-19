@@ -30,7 +30,7 @@
 }
 ```
 
-外部绑定的 tenant_id 是精确 issuer 命名空间，service_principal_id 是服务账号 sub，不是 Microsoft 对象 ID。required_roles 不支持，必须使用 scope；注册前网关必须已经信任该 issuer 且启用 audience 验证。管理页面尚未增加外部提供商表单，当前使用管理 API。
+外部绑定的 tenant_id 是精确 issuer 命名空间，service_principal_id 是服务账号 sub，不是 Microsoft 对象 ID。required_roles 不支持，必须使用 scope；注册前网关必须已经信任该 issuer 且启用 audience 验证。管理页面的身份提供商可选择“外部 OIDC 身份平台”，从网关已信任的 issuer 列表选择签发者，再填写客户端 ID、服务账号 sub 和 scope。外部身份仅展示自主执行模式；创建时可跳过虚拟密钥，编辑和详情页保留同一绑定。也可以直接调用管理 API。
 
 Keycloak 应用使用 confidential service account，禁用密码授权和不需要的浏览器流程。通过管理员控制的 mapper 将 identity_kind=workload 加入 Access Token，azp 标识客户端，sub 标识服务账号。为该客户端授予 gateway.invoke scope，并通过 audience mapper 加入 ai-governance-gateway。用户可编辑属性不能作为 workload 身份证明。
 
@@ -45,3 +45,12 @@ PYTHONPATH=. .venv/bin/python identity-platform/smoke.py --gateway-jwt
 该脚本创建临时应用，签发真实令牌，使用网关 JWTHandler 从实时 JWKS 验签，再验证 Agent 绑定主体匹配与错误主体拒绝。错误 audience 必须失败。烟测创建独立的临时调用 scope，验证已授予 scope 成功、未授予 scope 拒绝；生产客户端仍需单独授予 gateway.invoke。临时应用禁用后获取新令牌失败。禁用不会自动撤销已经签发且尚未到期的 JWT，需要配合网关禁用绑定及短令牌有效期。
 
 旧 Agent 分类与授权执行单元回归。新增身份存储启停和提供商选择回归已通过，存储测试共 42 项通过；另 4 项需要 Prisma 生成模型，受官方域名 403 阻挡而失败。尚未完成真实数据库绑定加完整 HTTP 推理调用、浏览器回调、统一管理和同步端到端验收。
+
+
+## 管理页面验证边界
+
+创建、编辑和身份详情使用现有 Agent 页面，不新增第二套管理页。前端按 provider 区分 Entra UUID 与外部区分大小写的标识，切换提供商时清空旧提供商字段，避免误提交旧租户与主体。保存绑定不会显示“已认证”，只有实际认证记录才显示匹配证据。
+
+本轮页面验证使用组件集成测试替代网络边界，验证创建和编辑请求；尚未连接真实数据库执行浏览器端到端操作。这些页面用于管理网关侧绑定，不等于在独立身份平台创建用户或应用。统一身份管理 API 与跨系统同步仍待实现。
+
+接口模型更新后需先执行 `.venv/bin/python -m litellm.proxy._lazy_openapi_snapshot`，再在 `ui/litellm-dashboard` 执行 `LITELLM_PYTHON=/workspace/litellm/.venv/bin/python npm run gen:api`。否则懒加载接口快照会让生成的前端类型遗漏外部身份类型。解释器路径应替换为当前部署路径。

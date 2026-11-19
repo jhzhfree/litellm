@@ -50,14 +50,23 @@ export const AgentIdentityDetails = ({
     >
       <h3 className="font-medium">{t("agents.identityDetails.title")}</h3>
       <p className="text-sm">
-        {t("agents.identityDetails.tenant")} <span className="font-mono">{identity.tenant_id}</span>
+        {t(
+          identity.provider === "external_oidc"
+            ? "agents.identityFields.external.issuer"
+            : "agents.identityDetails.tenant",
+        )}{" "}
+        <span className="font-mono">{identity.tenant_id}</span>
       </p>
       <>
         <p className="text-sm">
           {t("agents.identityDetails.clientId")} <span className="font-mono">{identity.client_id}</span>
         </p>
         <p className="text-sm">
-          {t("agents.identityDetails.servicePrincipal")}{" "}
+          {t(
+            identity.provider === "external_oidc"
+              ? "agents.identityFields.external.subject"
+              : "agents.identityDetails.servicePrincipal",
+          )}{" "}
           {identity.service_principal_id || t("agents.identityDetails.notConfigured")}
         </p>
       </>

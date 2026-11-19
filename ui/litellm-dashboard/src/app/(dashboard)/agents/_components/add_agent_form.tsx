@@ -1,5 +1,5 @@
 import { AgentIdentityFields } from "./AgentIdentityFields";
-import { withAgentIdentity } from "./agent_identity";
+import { isManagedIdentityProvider, withAgentIdentity } from "./agent_identity";
 import React, { useState, useEffect } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { toast } from "@/lib/toast";
@@ -299,7 +299,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
 
   const buildAgentData = (values: AgentFormValues): AgentRequestPayload | null => {
     if (agentType === CUSTOM_AGENT_TYPE) {
-      if (values.identity_provider === "microsoft_entra") return { agent_name: values.agent_name };
+      if (isManagedIdentityProvider(values.identity_provider)) return { agent_name: values.agent_name };
       return {
         agent_name: values.agent_name,
         agent_card_params: {
@@ -981,8 +981,14 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
 
         <Separator className="my-4" />
 
-        {form.getValues("identity_provider") === "microsoft_entra" && (
-          <p className="mb-4 text-sm text-muted-foreground">{t("agents.addForm.assignKey.entraNotice")}</p>
+        {isManagedIdentityProvider(form.getValues("identity_provider")) && (
+          <p className="mb-4 text-sm text-muted-foreground">
+            {t(
+              form.getValues("identity_provider") === "external_oidc"
+                ? "agents.addForm.assignKey.externalNotice"
+                : "agents.addForm.assignKey.entraNotice",
+            )}
+          </p>
         )}
         <RadioGroup
           value={keyAssignOption}
@@ -1078,8 +1084,12 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
             className="text-sm text-muted-foreground underline hover:text-foreground"
             onClick={() => setKeyAssignOption("skip")}
           >
-            {form.getValues("identity_provider") === "microsoft_entra"
-              ? t("agents.addForm.assignKey.skip.entra")
+            {isManagedIdentityProvider(form.getValues("identity_provider"))
+              ? t(
+                  form.getValues("identity_provider") === "external_oidc"
+                    ? "agents.addForm.assignKey.skip.external"
+                    : "agents.addForm.assignKey.skip.entra",
+                )
               : t("agents.addForm.assignKey.skip.later")}
           </button>
         </div>
@@ -1112,8 +1122,12 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
       )}
       {!createdKeyValue && !assignedKeyAlias && keyAssignOption === "skip" && (
         <p className="mt-2 text-sm text-muted-foreground">
-          {form.getValues("identity_provider") === "microsoft_entra"
-            ? t("agents.addForm.ready.entraConfigured")
+          {isManagedIdentityProvider(form.getValues("identity_provider"))
+            ? t(
+                form.getValues("identity_provider") === "external_oidc"
+                  ? "agents.addForm.ready.externalConfigured"
+                  : "agents.addForm.ready.entraConfigured",
+              )
             : t("agents.addForm.ready.noKey")}
         </p>
       )}

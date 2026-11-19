@@ -2775,9 +2775,13 @@
                   "$ref": "#/components/schemas/EntraIdentityConfig"
                 },
                 {
+                  "$ref": "#/components/schemas/ExternalOIDCIdentityConfig"
+                },
+                {
                   "type": "null"
                 }
-              ]
+              ],
+              "title": "Identity"
             },
             "kill_switch": {
               "anyOf": [
@@ -2939,7 +2943,10 @@
               "title": "Last Authenticated At"
             },
             "provider": {
-              "const": "microsoft_entra",
+              "enum": [
+                "microsoft_entra",
+                "external_oidc"
+              ],
               "title": "Provider",
               "type": "string"
             },
@@ -4087,6 +4094,59 @@
           "title": "ExportType",
           "type": "string"
         },
+        "ExternalOIDCIdentityConfig": {
+          "additionalProperties": false,
+          "properties": {
+            "client_id": {
+              "minLength": 1,
+              "title": "Client Id",
+              "type": "string"
+            },
+            "provider": {
+              "const": "external_oidc",
+              "title": "Provider",
+              "type": "string"
+            },
+            "required_roles": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Required Roles",
+              "type": "array"
+            },
+            "required_scopes": {
+              "default": [
+                "gateway.invoke"
+              ],
+              "items": {
+                "type": "string"
+              },
+              "title": "Required Scopes",
+              "type": "array"
+            },
+            "service_principal_id": {
+              "description": "Registered workload sub",
+              "minLength": 1,
+              "title": "Service Principal Id",
+              "type": "string"
+            },
+            "tenant_id": {
+              "description": "Exact trusted OIDC issuer, used as the binding namespace",
+              "minLength": 1,
+              "title": "Tenant Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "provider",
+            "tenant_id",
+            "client_id",
+            "service_principal_id"
+          ],
+          "title": "ExternalOIDCIdentityConfig",
+          "type": "object"
+        },
         "GuardrailKeyMetric": {
           "properties": {
             "metadata": {
@@ -4712,9 +4772,13 @@
                   "$ref": "#/components/schemas/EntraIdentityConfig"
                 },
                 {
+                  "$ref": "#/components/schemas/ExternalOIDCIdentityConfig"
+                },
+                {
                   "type": "null"
                 }
-              ]
+              ],
+              "title": "Identity"
             },
             "kill_switch": {
               "anyOf": [
@@ -51093,7 +51157,7 @@
       },
       "/policy/templates": {
         "get": {
-          "description": "Get policy templates for the UI (pre-configured guardrail combinations).\n\nFetches from GitHub with automatic fallback to local backup on failure.\nSet LITELLM_LOCAL_POLICY_TEMPLATES=true to skip GitHub and use local backup only.",
+          "description": "Get policy templates for the UI (pre-configured guardrail combinations).\n\nResolution order:\n1. Local file (``LITELLM_POLICY_TEMPLATES_PATH``) \u2014 no network access;\n   falls back to the bundled backup if the file is missing/invalid.\n2. GitHub fetch (skipped when offline mode or ``LITELLM_LOCAL_POLICY_TEMPLATES=true``).\n3. Local bundled backup.",
           "operationId": "get_policy_templates_policy_templates_get",
           "responses": {
             "200": {

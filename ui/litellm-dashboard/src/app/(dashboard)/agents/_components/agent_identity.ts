@@ -3,6 +3,10 @@ import type { components } from "@/lib/http/schema";
 import type { AgentFormValues, AgentRequestPayload } from "./AgentFormKit";
 
 export type EntraAgentIdentity = components["schemas"]["EntraIdentityConfig"];
+export type AgentIdentity = EntraAgentIdentity | components["schemas"]["ExternalOIDCIdentityConfig"];
+
+export const isManagedIdentityProvider = (value: unknown): boolean =>
+  value === "microsoft_entra" || value === "external_oidc";
 type AgentIdentityState = Pick<
   components["schemas"]["AgentResponse"],
   "identity" | "enabled" | "execution_mode" | "agent_card_params"
@@ -26,14 +30,24 @@ const identityShape = {
   required_roles: stringGrants([]),
   required_scopes: stringGrants(["user_impersonation"]),
 };
-const identitySchema = z.object(identityShape);
+const identitySchema = z.discriminatedUnion("provider", [
+  z.object(identityShape),
+  z.object({
+    provider: z.literal("external_oidc"),
+    tenant_id: z.string().url(),
+    client_id: z.string().min(1),
+    service_principal_id: z.string().min(1),
+    required_roles: z.array(z.string()).max(0).default([]),
+    required_scopes: stringGrants(["gateway.invoke"]),
+  }),
+]);
 
-export const readAgentIdentity = (value: unknown): EntraAgentIdentity | null => {
+export const readAgentIdentity = (value: unknown): AgentIdentity | null => {
   const parsed = identitySchema.safeParse(value);
   return parsed.success ? parsed.data : null;
 };
 
-const identityFormFields = (identity: EntraAgentIdentity | null): AgentFormValues => ({
+const identityFormFields = (identity: AgentIdentity | null): AgentFormValues => ({
   identity_provider: identity?.provider ?? "none",
   identity_tenant_id: identity?.tenant_id ?? "",
   identity_client_id: identity?.client_id ?? "",
@@ -62,10 +76,25 @@ const splitGrants = (value: unknown, fallback: string[]): string[] =>
 export const buildIdentityParams = (
   values: AgentFormValues,
   existingIdentity?: unknown,
-): { identity?: EntraAgentIdentity | null } => {
+): { identity?: AgentIdentity | null } => {
   if (values.identity_provider === undefined) return {};
-  if (values.identity_provider !== "microsoft_entra")
-    return readAgentIdentity(existingIdentity) ? { identity: null } : {};
+  if (values.identity_provider === "none") return readAgentIdentity(existingIdentity) ? { identity: null } : {};
+  if (values.identity_provider === "external_oidc") {
+    if (values.execution_mode && values.execution_mode !== "autonomous")
+      throw new Error("External OIDC agents support autonomous execution only");
+    const identity = readAgentIdentity({
+      provider: "external_oidc",
+      tenant_id: typeof values.identity_tenant_id === "string" ? values.identity_tenant_id.trim() : "",
+      client_id: typeof values.identity_client_id === "string" ? values.identity_client_id.trim() : "",
+      service_principal_id:
+        typeof values.identity_service_principal_id === "string" ? values.identity_service_principal_id.trim() : "",
+      required_roles: [],
+      required_scopes: splitGrants(values.identity_required_scopes, ["gateway.invoke"]),
+    });
+    if (!identity) throw new Error("Enter a valid issuer, client ID and workload subject");
+    return { identity };
+  }
+  if (values.identity_provider !== "microsoft_entra") throw new Error("Unsupported identity provider");
   const candidate: EntraAgentIdentity = {
     provider: "microsoft_entra",
     tenant_id: typeof values.identity_tenant_id === "string" ? values.identity_tenant_id.trim().toLowerCase() : "",
@@ -98,7 +127,7 @@ export const withAgentIdentity = (
   const { agent_card_params, ...settings } = payload;
   const hasCard = !existing || cardEdited || Object.keys(existing.agent_card_params ?? {}).length > 0;
   const identityFields = buildIdentityParams(values, existing?.identity);
-  const managed = values.identity_provider === "microsoft_entra" || Boolean(readAgentIdentity(existing?.identity));
+  const managed = isManagedIdentityProvider(values.identity_provider) || Boolean(readAgentIdentity(existing?.identity));
   return {
     ...settings,
     ...(hasCard && agent_card_params ? { agent_card_params } : {}),

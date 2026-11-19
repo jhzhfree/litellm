@@ -12866,8 +12866,11 @@ export interface paths {
          * Get Policy Templates
          * @description Get policy templates for the UI (pre-configured guardrail combinations).
          *
-         *     Fetches from GitHub with automatic fallback to local backup on failure.
-         *     Set LITELLM_LOCAL_POLICY_TEMPLATES=true to skip GitHub and use local backup only.
+         *     Resolution order:
+         *     1. Local file (``LITELLM_POLICY_TEMPLATES_PATH``) — no network access;
+         *        falls back to the bundled backup if the file is missing/invalid.
+         *     2. GitHub fetch (skipped when offline mode or ``LITELLM_LOCAL_POLICY_TEMPLATES=true``).
+         *     3. Local bundled backup.
          */
         get: operations["get_policy_templates_policy_templates_get"];
         put?: never;
@@ -26617,7 +26620,8 @@ export interface components {
             execution_mode?: "autonomous" | "delegated" | "both";
             /** Extra Headers */
             extra_headers?: string[] | null;
-            identity?: components["schemas"]["EntraIdentityConfig"] | null;
+            /** Identity */
+            identity?: components["schemas"]["EntraIdentityConfig"] | components["schemas"]["ExternalOIDCIdentityConfig"] | null;
             kill_switch?: components["schemas"]["AgentKillSwitchConfig"] | null;
             /** Litellm Params */
             litellm_params?: {
@@ -26721,9 +26725,9 @@ export interface components {
             last_authenticated_at?: string | null;
             /**
              * Provider
-             * @constant
+             * @enum {string}
              */
-            provider: "microsoft_entra";
+            provider: "microsoft_entra" | "external_oidc";
             /**
              * Required Roles
              * @default []
@@ -33412,6 +33416,38 @@ export interface components {
          * @enum {string}
          */
         ExportType: "daily" | "daily_with_keys" | "daily_with_models" | "daily_with_users";
+        /** ExternalOIDCIdentityConfig */
+        ExternalOIDCIdentityConfig: {
+            /** Client Id */
+            client_id: string;
+            /**
+             * Provider
+             * @constant
+             */
+            provider: "external_oidc";
+            /**
+             * Required Roles
+             * @default []
+             */
+            required_roles: string[];
+            /**
+             * Required Scopes
+             * @default [
+             *       "gateway.invoke"
+             *     ]
+             */
+            required_scopes: string[];
+            /**
+             * Service Principal Id
+             * @description Registered workload sub
+             */
+            service_principal_id: string;
+            /**
+             * Tenant Id
+             * @description Exact trusted OIDC issuer, used as the binding namespace
+             */
+            tenant_id: string;
+        };
         /** ExtractionAnswer */
         ExtractionAnswer: {
             /** Confidence */
@@ -41794,7 +41830,8 @@ export interface components {
             execution_mode?: "autonomous" | "delegated" | "both";
             /** Extra Headers */
             extra_headers?: string[] | null;
-            identity?: components["schemas"]["EntraIdentityConfig"] | null;
+            /** Identity */
+            identity?: components["schemas"]["EntraIdentityConfig"] | components["schemas"]["ExternalOIDCIdentityConfig"] | null;
             kill_switch?: components["schemas"]["AgentKillSwitchConfig"] | null;
             /** Litellm Params */
             litellm_params?: {

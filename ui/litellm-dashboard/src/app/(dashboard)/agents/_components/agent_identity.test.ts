@@ -81,3 +81,40 @@ describe("agent identity configuration", () => {
     expect(entraTenantFromIssuer("https://login.microsoftonline.com/common/v2.0")).toBeNull();
   });
 });
+
+describe("external OIDC agent identity", () => {
+  const external = {
+    provider: "external_oidc" as const,
+    tenant_id: "https://identity.example/realms/Company",
+    client_id: "AgentClient",
+    service_principal_id: "SubjectABC",
+    required_roles: [],
+    required_scopes: ["gateway.invoke"],
+  };
+  it("round trips case-sensitive external bindings without clearing them", () => {
+    const values = parseIdentityForForm({
+      identity: { ...external, agent_id: "agent", issuer: external.tenant_id, revision: "one" },
+    });
+    expect(buildIdentityParams(values)).toEqual({ identity: external });
+    expect(withAgentIdentity({}, { ...values, enabled: false }).enabled).toBe(false);
+    expect(buildIdentityParams({ identity_provider: "none" }, external)).toEqual({ identity: null });
+  });
+  it.each(["delegated", "both"])("rejects unsupported execution mode %s", (mode) => {
+    expect(() => buildIdentityParams({ identity_provider: "external_oidc", execution_mode: mode })).toThrow(
+      "autonomous",
+    );
+  });
+  it("does not silently unbind an unknown provider", () => {
+    expect(() => buildIdentityParams({ identity_provider: "typo" }, external)).toThrow("Unsupported identity provider");
+  });
+  it("rejects an empty workload subject", () => {
+    expect(() =>
+      buildIdentityParams({
+        identity_provider: "external_oidc",
+        identity_tenant_id: external.tenant_id,
+        identity_client_id: external.client_id,
+        identity_service_principal_id: "",
+      }),
+    ).toThrow("workload subject");
+  });
+});

@@ -108,7 +108,8 @@
     "identityFields": {
       "providers": {
         "none": "No explicit identity binding",
-        "microsoftEntra": "Microsoft Entra ID"
+        "microsoftEntra": "Microsoft Entra ID",
+        "externalOidc": "External OIDC platform"
       },
       "executionModes": {
         "autonomous": "Autonomous",
@@ -155,7 +156,20 @@
         "note": "Users must first sign in through this gateway's Microsoft SSO. Subsequent delegated calls must satisfy both user and agent permissions."
       },
       "executionLabel": "Execution",
-      "verificationNote": "AI-GovernanceGw verifies the agent's Entra token before matching this identity. Saving these fields configures the binding; an authenticated request provides verification. Runtime authentication headers are configured separately."
+      "verificationNote": "AI-GovernanceGw verifies the agent's Entra token before matching this identity. Saving these fields configures the binding; an authenticated request provides verification. Runtime authentication headers are configured separately.",
+      "external": {
+        "issuer": "Trusted issuer",
+        "issuerRequired": "Select a trusted issuer",
+        "noIssuers": "No external issuer is available. Configure JWT issuer and audience validation on the gateway first.",
+        "clientRequired": "Enter the application client ID",
+        "subject": "Workload subject (sub)",
+        "subjectRequired": "Enter the service account subject",
+        "scopes": "Required scopes",
+        "scopesRequired": "Enter a required scope",
+        "scopeNote": "Comma-separated scopes required on the application access token. External agents currently support autonomous execution only.",
+        "verificationNote": "The gateway verifies the token signature, issuer and audience before matching the client, subject and scopes. Saving a binding does not prove authentication.",
+        "claimNote": "Copy the exact case-sensitive value from the identity platform. No client secret is stored in this binding."
+      }
     },
     "formKit": {
       "noMatchingOptions": "No matching options"
@@ -643,14 +657,17 @@
         },
         "skip": {
           "entra": "Use Entra JWT authentication",
-          "later": "Skip for now, I’ll assign a key later"
-        }
+          "later": "Skip for now, I’ll assign a key later",
+          "external": "Use external OIDC authentication"
+        },
+        "externalNotice": "This agent uses external OIDC authentication. You can skip virtual key creation."
       },
       "ready": {
         "title": "Agent Created!",
         "keyAssigned": "Key <alias/> has been assigned to this agent.",
         "entraConfigured": "Microsoft Entra ID is configured. Send an authenticated agent request to verify the connection.",
-        "noKey": "No key assigned. You can create one from the Virtual Keys page."
+        "noKey": "No key assigned. You can create one from the Virtual Keys page.",
+        "externalConfigured": "External OIDC identity is configured. Send an authenticated agent request to verify the connection."
       },
       "dialog": {
         "logoLabel": "Agent",

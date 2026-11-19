@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useWatch } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import type { ParseKeys } from "i18next";
 import { Trans, useTranslation } from "react-i18next";
 import i18n from "@/i18n/i18n";
@@ -7,10 +7,11 @@ import { apiClient } from "@/components/networking";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AgentFormField, type AgentFormValues } from "./AgentFormKit";
-import { entraTenantFromIssuer, IDENTITY_UUID_PATTERN } from "./agent_identity";
+import { entraTenantFromIssuer, IDENTITY_UUID_PATTERN, isManagedIdentityProvider } from "./agent_identity";
 import { codeSamples } from "@/i18n/untranslated/codeSamples";
 
 const PROVIDER_OPTIONS: { value: string; labelKey: ParseKeys }[] = [
+  { value: "external_oidc", labelKey: "agents.identityFields.providers.externalOidc" },
   { value: "none", labelKey: "agents.identityFields.providers.none" },
   { value: "microsoft_entra", labelKey: "agents.identityFields.providers.microsoftEntra" },
 ];
@@ -28,12 +29,17 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
   const { t } = useTranslation();
   const provider = useWatch<AgentFormValues>({ name: "identity_provider" });
   const mode = useWatch<AgentFormValues>({ name: "execution_mode" });
-  const showScopes = mode !== "autonomous" && mode !== undefined;
+  const external = provider === "external_oidc";
+  const { setValue } = useFormContext<AgentFormValues>();
+  const showScopes = external || (mode !== "autonomous" && mode !== undefined);
+  const defaultScope = external ? "gateway.invoke" : "user_impersonation";
+  const identityText = (entraKey: ParseKeys, externalKey: ParseKeys) => t(external ? externalKey : entraKey);
+  const executionModes = external ? EXECUTION_MODE_OPTIONS.slice(0, 1) : EXECUTION_MODE_OPTIONS;
   const [tenants, setTenants] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!accessToken || provider !== "microsoft_entra") return;
+    if (!accessToken || !isManagedIdentityProvider(provider)) return;
     let active = true;
     apiClient
       .get<string[]>("/v1/agents/identity/providers", { accessToken })
@@ -43,6 +49,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
           setTenants(
             issuers.flatMap((issuer) => {
               const tenant = entraTenantFromIssuer(issuer);
+              if (external) return tenant ? [] : [issuer];
               return tenant ? [tenant] : [];
             }),
           );
@@ -54,7 +61,19 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
     return () => {
       active = false;
     };
-  }, [accessToken, provider]);
+  }, [accessToken, provider, external]);
+
+  const changeProvider = (next: string | null, onChange: (value: unknown) => void) => {
+    setTenants([]);
+    setError(null);
+    onChange(next);
+    setValue("identity_tenant_id", "");
+    setValue("identity_client_id", "");
+    setValue("identity_service_principal_id", "");
+    setValue("identity_required_roles", "");
+    setValue("identity_required_scopes", next === "external_oidc" ? "gateway.invoke" : "user_impersonation");
+    setValue("execution_mode", "autonomous");
+  };
 
   return (
     <>
@@ -71,7 +90,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
             <Select
               items={PROVIDER_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
               value={typeof value === "string" ? value : "none"}
-              onValueChange={onChange}
+              onValueChange={(next) => changeProvider(next, onChange)}
             >
               <SelectTrigger id={id}>
                 <SelectValue />
@@ -86,17 +105,27 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
             </Select>
           )}
         </AgentFormField>
-        {provider === "microsoft_entra" && (
+        {isManagedIdentityProvider(provider) && (
           <>
             <AgentFormField
               name="identity_tenant_id"
-              label={t("agents.identityFields.tenant.label")}
-              rules={{ required: t("agents.identityFields.tenant.required") }}
+              label={identityText("agents.identityFields.tenant.label", "agents.identityFields.external.issuer")}
+              rules={{
+                required: identityText(
+                  "agents.identityFields.tenant.required",
+                  "agents.identityFields.external.issuerRequired",
+                ),
+              }}
             >
               {({ value, onChange, id }) => (
                 <Select value={typeof value === "string" ? value : ""} onValueChange={onChange}>
                   <SelectTrigger id={id}>
-                    <SelectValue placeholder={t("agents.identityFields.tenant.placeholder")} />
+                    <SelectValue
+                      placeholder={identityText(
+                        "agents.identityFields.tenant.placeholder",
+                        "agents.identityFields.external.issuerRequired",
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {tenants.map((tenant) => (
@@ -114,24 +143,37 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
               </p>
             )}
             {!error && tenants.length === 0 && (
-              <p className="text-sm text-muted-foreground">{t("agents.identityFields.tenant.noneAvailable")}</p>
+              <p className="text-sm text-muted-foreground">
+                {identityText("agents.identityFields.tenant.noneAvailable", "agents.identityFields.external.noIssuers")}
+              </p>
             )}
             <AgentFormField
               name="identity_client_id"
               label={t("agents.identityFields.clientId.label")}
               rules={{
-                required: t("agents.identityFields.clientId.required"),
-                pattern: { value: IDENTITY_UUID_PATTERN, message: t("agents.identityFields.clientId.invalid") },
+                required: identityText(
+                  "agents.identityFields.clientId.required",
+                  "agents.identityFields.external.clientRequired",
+                ),
+                ...(external
+                  ? {}
+                  : {
+                      pattern: { value: IDENTITY_UUID_PATTERN, message: t("agents.identityFields.clientId.invalid") },
+                    }),
               }}
               description={
-                <Trans
-                  i18nKey="agents.identityFields.clientId.description"
-                  components={{
-                    registrations: (
-                      <a className="underline" href="https://entra.microsoft.com/" target="_blank" rel="noreferrer" />
-                    ),
-                  }}
-                />
+                external ? (
+                  t("agents.identityFields.external.claimNote")
+                ) : (
+                  <Trans
+                    i18nKey="agents.identityFields.clientId.description"
+                    components={{
+                      registrations: (
+                        <a className="underline" href="https://entra.microsoft.com/" target="_blank" rel="noreferrer" />
+                      ),
+                    }}
+                  />
+                )
               }
             >
               {({ value, onChange, ref, ...control }) => (
@@ -140,7 +182,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                   ref={ref}
                   value={typeof value === "string" ? value : ""}
                   onChange={onChange}
-                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  placeholder={external ? "" : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"}
                 />
               )}
             </AgentFormField>
@@ -151,7 +193,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
             >
               {({ value, onChange, id }) => (
                 <Select
-                  items={EXECUTION_MODE_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
+                  items={executionModes.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
                   value={typeof value === "string" ? value : "autonomous"}
                   onValueChange={onChange}
                 >
@@ -159,7 +201,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {EXECUTION_MODE_OPTIONS.map((option) => (
+                    {executionModes.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {t(option.labelKey)}
                       </SelectItem>
@@ -170,25 +212,45 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
             </AgentFormField>
             <AgentFormField
               name="identity_service_principal_id"
-              label={t("agents.identityFields.servicePrincipal.label")}
+              label={identityText(
+                "agents.identityFields.servicePrincipal.label",
+                "agents.identityFields.external.subject",
+              )}
               rules={{
-                required: mode !== "delegated" ? t("agents.identityFields.servicePrincipal.required") : false,
-                pattern: { value: IDENTITY_UUID_PATTERN, message: t("agents.identityFields.servicePrincipal.invalid") },
+                required:
+                  mode !== "delegated"
+                    ? identityText(
+                        "agents.identityFields.servicePrincipal.required",
+                        "agents.identityFields.external.subjectRequired",
+                      )
+                    : false,
+                ...(external
+                  ? {}
+                  : {
+                      pattern: {
+                        value: IDENTITY_UUID_PATTERN,
+                        message: t("agents.identityFields.servicePrincipal.invalid"),
+                      },
+                    }),
               }}
               description={
-                <Trans
-                  i18nKey="agents.identityFields.servicePrincipal.description"
-                  components={{
-                    enterprise: (
-                      <a
-                        className="underline"
-                        href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/~/AppAppsPreview"
-                        target="_blank"
-                        rel="noreferrer"
-                      />
-                    ),
-                  }}
-                />
+                external ? (
+                  t("agents.identityFields.external.claimNote")
+                ) : (
+                  <Trans
+                    i18nKey="agents.identityFields.servicePrincipal.description"
+                    components={{
+                      enterprise: (
+                        <a
+                          className="underline"
+                          href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/~/AppAppsPreview"
+                          target="_blank"
+                          rel="noreferrer"
+                        />
+                      ),
+                    }}
+                  />
+                )
               }
             >
               {({ value, onChange, ref, ...control }) => (
@@ -196,40 +258,55 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
               )}
             </AgentFormField>
 
-            <AgentFormField
-              name="identity_required_roles"
-              label={t("agents.identityFields.requiredRoles.label")}
-              description={t("agents.identityFields.requiredRoles.description")}
-            >
-              {({ value, onChange, ref, ...control }) => (
-                <Input
-                  {...control}
-                  ref={ref}
-                  value={typeof value === "string" ? value : ""}
-                  onChange={onChange}
-                  placeholder={codeSamples.agents.identityScope}
-                />
-              )}
-            </AgentFormField>
+            {!external && (
+              <AgentFormField
+                name="identity_required_roles"
+                label={t("agents.identityFields.requiredRoles.label")}
+                description={t("agents.identityFields.requiredRoles.description")}
+              >
+                {({ value, onChange, ref, ...control }) => (
+                  <Input
+                    {...control}
+                    ref={ref}
+                    value={typeof value === "string" ? value : ""}
+                    onChange={onChange}
+                    placeholder={codeSamples.agents.identityScope}
+                  />
+                )}
+              </AgentFormField>
+            )}
 
             {showScopes && (
               <>
                 <AgentFormField
                   name="identity_required_scopes"
-                  label={t("agents.identityFields.requiredScopes.label")}
-                  defaultValue="user_impersonation"
-                  rules={{ required: t("agents.identityFields.requiredScopes.required") }}
+                  label={identityText(
+                    "agents.identityFields.requiredScopes.label",
+                    "agents.identityFields.external.scopes",
+                  )}
+                  defaultValue={external ? "gateway.invoke" : "user_impersonation"}
+                  rules={{
+                    required: identityText(
+                      "agents.identityFields.requiredScopes.required",
+                      "agents.identityFields.external.scopesRequired",
+                    ),
+                  }}
                 >
                   {({ value, onChange, ref, ...control }) => (
                     <Input
                       {...control}
                       ref={ref}
-                      value={typeof value === "string" ? value : "user_impersonation"}
+                      value={typeof value === "string" ? value : defaultScope}
                       onChange={onChange}
                     />
                   )}
                 </AgentFormField>
-                <p className="text-sm text-muted-foreground">{t("agents.identityFields.requiredScopes.note")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {identityText(
+                    "agents.identityFields.requiredScopes.note",
+                    "agents.identityFields.external.scopeNote",
+                  )}
+                </p>
               </>
             )}
             <AgentFormField name="enabled" label={t("agents.identityFields.executionLabel")} defaultValue={true}>
@@ -252,7 +329,12 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                 </Select>
               )}
             </AgentFormField>
-            <p className="text-sm text-muted-foreground">{t("agents.identityFields.verificationNote")}</p>
+            <p className="text-sm text-muted-foreground">
+              {identityText(
+                "agents.identityFields.verificationNote",
+                "agents.identityFields.external.verificationNote",
+              )}
+            </p>
           </>
         )}
       </section>

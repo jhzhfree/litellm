@@ -11463,3 +11463,20 @@ async def test_sso_login_still_joins_the_team_and_warns_when_creating_it_fails(
     warnings: Final = [r.getMessage() for r in caplog.records if r.levelno == logging.WARNING]
     assert events == [("join", "finance")]
     assert len(warnings) == 1 and "finance" in warnings[0] and str(create_error.detail) in warnings[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("query", [b"code=test", b"code=test&state="])
+async def test_strict_pkce_rejects_missing_browser_state(monkeypatch: pytest.MonkeyPatch, query: bytes) -> None:
+    from starlette.requests import Request
+
+    from litellm.proxy._types import ProxyException
+    from litellm.proxy.management_endpoints.ui_sso import SSOAuthenticationHandler
+
+    monkeypatch.setenv("GENERIC_CLIENT_USE_PKCE", "true")
+    monkeypatch.setenv("PKCE_STRICT_CACHE_MISS", "true")
+    request: Final = Request({"type": "http", "query_string": query, "headers": []})
+    with pytest.raises(ProxyException) as exc:
+        await SSOAuthenticationHandler.prepare_token_exchange_parameters(request, False)
+    assert str(exc.value.code) == "400"
+    assert exc.value.param == "state"

@@ -26,3 +26,14 @@ PYTHONPATH=. .venv/bin/python identity-platform/smoke.py --gateway-jwt
 前端身份参数单元测试 17 项、创建与编辑组件集成测试 29 项、身份详情测试 2 项、语言资源测试 4 项通过，共 52 项。`npm run typecheck` 通过，修改涉及的 ESLint 检查无错误，仍有警告。本轮组件测试替换了网络边界，没有浏览器或真实数据库验收。
 
 测试命令均在 ui/litellm-dashboard 执行，使用 node_modules/.bin/vitest 的 unit、integration、component 项目，分别指定 agent_identity.test.ts、add_agent_form.integration.test.tsx、agent_info.integration.test.tsx、AgentIdentityDetails.test.tsx 和 src/i18n/locales.test.ts。文件位置为 src/app/(dashboard)/agents/_components，语言资源测试除外。
+
+
+## 用户授权码与严格 PKCE
+
+2026-11-19，`PYTHONPATH=. .venv/bin/python identity-platform/smoke_sso.py` 通过。使用本机 Chromium、真实 Keycloak 临时用户和 confidential 客户端完成授权码登录，再调用网关 `get_generic_sso_response` 完成真实 token 与 userinfo 请求，用户 ID 与 Keycloak sub 一致。
+
+缺少 state、Cookie state 不匹配、重复使用回调均拒绝。新增缺少 state 的两项回归在修复前均失败（未抛出错误），修复后 PKCE 相关 39 项测试全部通过。命令为 `.venv/bin/python -m pytest tests/unit/proxy/management_endpoints/test_ui_sso.py -q -k 'pkce or PKCE' --disable-warnings`。
+
+修复只影响显式启用 PKCE_STRICT_CACHE_MISS 的部署；默认非严格模式兼容行为保留。身份平台接入示例已启用严格模式。
+
+本测试的浏览器回调由 Playwright 拦截，再直接调用 SSO 组件，未启动网关 HTTP 服务，未执行网关数据库用户同步或最终控制台会话签发。Prisma 官方校验文件本轮复查仍返回 403，未跳过校验或绕过网络规则。统一管理 API、同步与完整产品联调仍待完成。

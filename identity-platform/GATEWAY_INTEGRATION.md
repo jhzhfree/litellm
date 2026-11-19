@@ -4,9 +4,9 @@
 
 ## 用户登录
 
-参考 gateway-sso.env.example 设置已有 GENERIC_* 配置。GENERIC_CLIENT_USE_PKCE=true 与 gateway-console 的 S256 配置匹配。GENERIC_USER_ID_ATTRIBUTE=sub 避免使用可变用户名作为身份标识。只设置所选通用提供商，避免同时启用 Microsoft/Google 配置导致旧选择逻辑优先匹配其他提供商。
+参考 gateway-sso.env.example 设置已有 GENERIC_* 配置。GENERIC_CLIENT_USE_PKCE=true 与 gateway-console 的 S256 配置匹配。示例同时开启 PKCE_STRICT_CACHE_MISS=true，缺少 state 或 verifier 时直接拒绝登录回调。GENERIC_USER_ID_ATTRIBUTE=sub 避免使用可变用户名作为身份标识。只设置所选通用提供商，避免同时启用 Microsoft/Google 配置导致旧选择逻辑优先匹配其他提供商。
 
-复制示例后在本地安全地填写 gateway-console 密钥，不提交环境文件。PROXY_BASE_URL 与 Keycloak 客户端回调列表必须一致。示例只适合全部进程运行于同一宿主机的回环开发环境；跨容器必须使用一致且可达的 issuer。完整浏览器 SSO 回调尚未验证，不能将这份配置视为已通过登录验收。
+复制示例后在本地安全地填写 gateway-console 密钥，不提交环境文件。PROXY_BASE_URL 与 Keycloak 客户端回调列表必须一致。示例只适合全部进程运行于同一宿主机的回环开发环境；跨容器必须使用一致且可达的 issuer。本地浏览器与真实身份服务、网关 SSO 组件的授权码交换已经验证；网关数据库写入及最终控制台 Cookie 尚未验证，不能将这份配置视为完整产品登录验收。
 
 ## JWT 验证
 

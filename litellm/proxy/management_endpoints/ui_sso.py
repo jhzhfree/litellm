@@ -4164,6 +4164,13 @@ class SSOAuthenticationHandler:
         use_pkce: Final = os.getenv("GENERIC_CLIENT_USE_PKCE", "false").lower() == "true"
 
         if use_pkce and not state:
+            if os.getenv("PKCE_STRICT_CACHE_MISS", "false").lower() == "true":
+                raise ProxyException(
+                    message="Missing OAuth state in PKCE callback",
+                    type=ProxyErrorTypes.auth_error,
+                    param="state",
+                    code=status.HTTP_400_BAD_REQUEST,
+                )
             verbose_proxy_logger.warning(
                 "PKCE is enabled (GENERIC_CLIENT_USE_PKCE=true) but no 'state' parameter "
                 "was found in the callback. The PKCE verifier cannot be retrieved without "

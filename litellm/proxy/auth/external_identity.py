@@ -6,7 +6,6 @@ from typing import Final, Literal
 @dataclass(frozen=True, slots=True)
 class ExternalIdentityPolicy:
     issuer: str
-    audience: str
     client_id: str
     subject: str | None = None
     required_scopes: frozenset[str] = frozenset()
@@ -28,13 +27,9 @@ class ExternalIdentityDenied:
 def classify_verified_external_claims(
     claims: Mapping[str, object], policy: ExternalIdentityPolicy
 ) -> ExternalIdentitySubject | ExternalIdentityDenied:
-    """Apply the platform profile only after cryptographic JWT validation."""
-    audience: Final = claims.get("aud")
-    audiences: Final = (audience,) if isinstance(audience, str) else audience
+    """Apply the binding only after JWT signature, issuer and audience validation."""
     if claims.get("iss") != policy.issuer:
         return ExternalIdentityDenied("issuer_mismatch")
-    if not isinstance(audiences, (list, tuple)) or policy.audience not in audiences:
-        return ExternalIdentityDenied("audience_mismatch")
     client: Final = claims.get("azp")
     if client != policy.client_id:
         return ExternalIdentityDenied("client_mismatch")

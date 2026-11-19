@@ -85,9 +85,9 @@ from litellm.types.agents import (
 )
 from litellm.types.llms.custom_http import httpxSpecialProvider
 from litellm.types.proxy.agent_identity import (
+    AGENT_IDENTITY_CONFIG,
     AgentIdentityBinding,
     AgentIdentityFailure,
-    EntraIdentityConfig,
     ManagedAgentIdentityStatus,
 )
 from litellm.types.proxy.management_endpoints.common_daily_activity import (
@@ -577,12 +577,14 @@ def _validate_managed_identity_request(
     if raw is None:
         return
     try:
-        identity: Final = raw if isinstance(raw, AgentIdentityBinding) else EntraIdentityConfig.model_validate(raw)
+        identity: Final = raw if isinstance(raw, AgentIdentityBinding) else AGENT_IDENTITY_CONFIG.validate_python(raw)
     except ValidationError as exc:
-        raise HTTPException(400, "Invalid Entra identity configuration") from exc
+        raise HTTPException(400, "Invalid agent identity configuration") from exc
     if identity.issuer not in _trusted_agent_issuers():
-        raise HTTPException(400, "Configure trusted JWT issuer and audience validation for this Entra tenant first")
+        raise HTTPException(400, "Configure trusted JWT issuer and audience validation for this identity provider first")
     if request.get("execution_mode", existing.execution_mode if existing else "autonomous") != "autonomous":
+        if identity.provider == "external_oidc":
+            raise HTTPException(400, "External OIDC agents currently support autonomous execution only")
         if os.getenv("MICROSOFT_TENANT") != identity.tenant_id or not os.getenv("MICROSOFT_CLIENT_ID"):
             raise HTTPException(400, "Delegated agents require Microsoft SSO for the same trusted tenant")
 

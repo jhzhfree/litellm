@@ -11,14 +11,14 @@
 | 独立身份核心 | 已有开发部署 | 本目录 Compose，Keycloak 26.4.7 与独立 PostgreSQL |
 | 原生用户和应用管理 | 已验证部分操作 | smoke.py 验证创建、查询、用户禁用及应用令牌签发 |
 | 网关 JWT 验证组件 | 已与真实身份核心令牌联调 | 实际 JWKS 验签，错误 audience 拒绝 |
-| 外部 Agent 声明分类 | 独立模块及单元测试 | 尚未接入网关请求链路 |
+| 外部 Agent 声明分类 | 已接入既有 Agent 身份路径 | 自主工作负载支持，真实令牌主体和 scope 测试通过，数据库及完整 HTTP 待验收 |
 | 现有 Agent 身份和授权回归 | 2026-11-18 测试通过 | 与新增模块合计 320 项，不等于端到端验收 |
 | 外部用户网页登录 | 待实现与端到端验证 | 现有通用 SSO 是可复用基础 |
 | 外部应用与 Agent 完整 HTTP 调用 | 待接入 | 组件验签成功不能替代业务授权验证 |
 | 统一管理 API、管理页面、同步 | 待实现 | Keycloak 原生管理 API 不等于本文拟定义的产品 API |
 | 生产部署及真实 Entra 联邦 | 未验收 | 当前仅回环 HTTP 开发环境 |
 
-已有验证详见 [VALIDATION.md](VALIDATION.md)。本次文档提交不改变这些状态。
+已有验证详见 [VALIDATION.md](VALIDATION.md)，当前复用方案与配置步骤见 [GATEWAY_INTEGRATION.md](GATEWAY_INTEGRATION.md)。
 
 ## 2. 目标与边界
 

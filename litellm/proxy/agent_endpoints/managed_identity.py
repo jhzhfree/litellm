@@ -9,11 +9,12 @@ from typing_extensions import ReadOnly
 
 from litellm.types.agents import AgentResponse
 from litellm.types.proxy.agent_identity import (
+    AGENT_IDENTITY_CONFIG,
     AgentExecutionMode,
     AgentIdentityBinding,
+    AgentIdentityConfig,
     AgentIdentityFailure,
     AgentSubject,
-    EntraIdentityConfig,
 )
 
 _MODE: Final = TypeAdapter(AgentExecutionMode)
@@ -70,10 +71,12 @@ def raise_identity_failure(failure: AgentIdentityFailure, status_code: int = 403
 
 
 def _configuration_failure(
-    identity: EntraIdentityConfig | AgentIdentityBinding | None,
+    identity: AgentIdentityConfig | AgentIdentityBinding | None,
     mode: AgentExecutionMode,
     enabling_without_binding: bool,
 ) -> AgentIdentityFailure | None:
+    if identity is not None and identity.provider == "external_oidc" and mode != "autonomous":
+        return AgentIdentityFailure(message="External OIDC delegated identities require verified user enrollment")
     if identity is not None and mode != "delegated" and not identity.service_principal_id:
         return AgentIdentityFailure(
             message="Autonomous mode requires the Enterprise application service-principal object ID"
@@ -92,7 +95,9 @@ def managed_write_fields(
 ) -> ManagedWriteFields | AgentIdentityFailure:
     try:
         identity: Final = (
-            EntraIdentityConfig.model_validate(incoming["identity"]) if incoming.get("identity") is not None else None
+            AGENT_IDENTITY_CONFIG.validate_python(incoming["identity"])
+            if incoming.get("identity") is not None
+            else None
         )
         mode: Final = _MODE.validate_python(
             incoming.get("execution_mode", existing.execution_mode if existing else "autonomous")
@@ -119,11 +124,11 @@ def managed_write_fields(
         return AgentIdentityFailure(message=f"Invalid agent identity configuration: {exc}")
 
 
-def _identity_fields(identity: EntraIdentityConfig) -> Mapping[str, object]:
+def _identity_fields(identity: AgentIdentityConfig) -> Mapping[str, object]:
     return identity.model_dump()
 
 
-def _identity_write(identity: EntraIdentityConfig | None, existing: AgentResponse | None) -> ManagedWriteFields:
+def _identity_write(identity: AgentIdentityConfig | None, existing: AgentResponse | None) -> ManagedWriteFields:
     if identity is None:
         unbind: Final[ManagedWriteFields] = {
             **(
@@ -174,6 +179,26 @@ def classify_agent_subject(
     claims: Mapping[str, object],
     allowed_mode: AgentExecutionMode,
 ) -> AgentSubject | AgentIdentityFailure:
+    if binding.provider == "external_oidc":
+        from litellm.proxy.auth.external_identity import (
+            ExternalIdentityDenied,
+            ExternalIdentityPolicy,
+            classify_verified_external_claims,
+        )
+
+        result: Final = classify_verified_external_claims(
+            claims,
+            ExternalIdentityPolicy(
+                issuer=binding.issuer,
+                client_id=binding.client_id,
+                subject=binding.service_principal_id,
+                required_scopes=frozenset(binding.required_scopes),
+                mode="autonomous",
+            ),
+        )
+        if allowed_mode != "autonomous" or binding.required_roles or isinstance(result, ExternalIdentityDenied):
+            return AgentIdentityFailure(message="External workload identity does not match its binding")
+        return AgentSubject(kind="application", oid=result.subject, mode="autonomous")
     if (claims.get("iss"), claims.get("tid"), claims.get("azp")) != (
         binding.issuer,
         binding.tenant_id,

@@ -255,3 +255,57 @@ def test_empty_requirements_do_not_make_a_scope_less_human_token_valid(scope: ob
     binding: Final = BINDING.model_copy(update={"required_scopes": ()})
     result: Final = classify_agent_subject(binding, claims(oid=HUMAN, scp=scope), "both")
     assert isinstance(result, AgentIdentityFailure)
+
+
+@pytest.mark.parametrize("mode", ["autonomous", "delegated", "both"])
+def test_external_identity_registration_preserves_case_and_rejects_delegation(mode: str) -> None:
+    issuer: Final = "https://identity.example/realms/Company"
+    result: Final = managed_write_fields(
+        {
+            "execution_mode": mode,
+            "identity": {
+                "provider": "external_oidc",
+                "tenant_id": issuer,
+                "client_id": "AgentClient",
+                "service_principal_id": "ServiceSubject",
+            },
+        },
+        None,
+        "admin",
+    )
+    if mode != "autonomous":
+        assert isinstance(result, AgentIdentityFailure)
+        return
+    assert not isinstance(result, AgentIdentityFailure)
+    binding: Final = result["identity"]["create"]
+    assert binding["issuer"] == issuer
+    assert binding["client_id"] == "AgentClient"
+    assert binding["service_principal_id"] == "ServiceSubject"
+    assert binding["required_scopes"] == ("gateway.invoke",)
+    assert result["identity_managed"] is True
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        {"service_principal_id": ""},
+        {"client_id": ""},
+        {"tenant_id": ""},
+        {"required_roles": ["Agent.Invoke"]},
+    ],
+)
+def test_external_identity_registration_rejects_incomplete_or_entra_policy(invalid: dict[str, object]) -> None:
+    result: Final = managed_write_fields(
+        {
+            "identity": {
+                "provider": "external_oidc",
+                "tenant_id": "https://identity.example/realms/company",
+                "client_id": "AgentClient",
+                "service_principal_id": "ServiceSubject",
+                **invalid,
+            }
+        },
+        None,
+        "admin",
+    )
+    assert isinstance(result, AgentIdentityFailure)

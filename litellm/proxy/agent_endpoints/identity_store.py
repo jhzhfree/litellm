@@ -94,14 +94,16 @@ class AgentIdentityStore:
         return None
 
     @with_service_target(_AGENT_IDENTITIES_TARGET)
-    async def _bound_agent_id(self, tenant_id: str, client_id: str) -> str | AgentIdentityFailure | None:
-        cache_key: Final = f"agent_identity:{json.dumps((tenant_id, client_id))}"
+    async def _bound_agent_id(
+        self, tenant_id: str, client_id: str, provider: str = "microsoft_entra"
+    ) -> str | AgentIdentityFailure | None:
+        cache_key: Final = f"agent_identity:{json.dumps((provider, tenant_id, client_id))}"
         cached: Final[object] = await self.cache.async_get_cache(key=cache_key) if self.cache is not None else None
         if isinstance(cached, str):
             return cached
         where: Final[LiteLLM_AgentIdentityWhereUniqueInput] = {
             "provider_tenant_id_client_id": {
-                "provider": "microsoft_entra",
+                "provider": provider,
                 "tenant_id": tenant_id,
                 "client_id": client_id,
             }
@@ -122,11 +124,12 @@ class AgentIdentityStore:
         self, claims: Mapping[str, object]
     ) -> ManagedAgentContext | AgentIdentityFailure | None:
         issuer: Final = claims.get("iss")
-        tenant: Final = claims.get("tid")
+        external: Final = issuer != f"https://login.microsoftonline.com/{claims.get('tid')}/v2.0"
+        tenant: Final = issuer if external else claims.get("tid")
         client: Final = claims.get("azp")
         if not isinstance(issuer, str) or not isinstance(tenant, str) or not isinstance(client, str):
             return None
-        agent_id: Final = await self._bound_agent_id(tenant, client)
+        agent_id: Final = await self._bound_agent_id(tenant, client, "external_oidc" if external else "microsoft_entra")
         if agent_id is None or isinstance(agent_id, AgentIdentityFailure):
             return agent_id
         agent: Final = await self.agent(agent_id)

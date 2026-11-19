@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Literal, TypeAlias
 from uuid import UUID
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, TypeAdapter, field_validator
 
 from litellm.types.llms.base import LiteLLMBaseModel
 
@@ -32,12 +32,38 @@ class EntraIdentityConfig(LiteLLMBaseModel):
         return f"https://login.microsoftonline.com/{self.tenant_id}/v2.0"
 
 
+class ExternalOIDCIdentityConfig(LiteLLMBaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    provider: Literal["external_oidc"]
+    tenant_id: str = Field(min_length=1, description="Exact trusted OIDC issuer, used as the binding namespace")
+    client_id: str = Field(min_length=1)
+    service_principal_id: str = Field(min_length=1, description="Registered workload sub")
+    required_roles: tuple[str, ...] = ()
+    required_scopes: tuple[str, ...] = ("gateway.invoke",)
+
+    @field_validator("required_roles")
+    @classmethod
+    def reject_external_roles(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if value:
+            raise ValueError("External OIDC workload bindings use required_scopes, not Entra roles")
+        return value
+
+    @property
+    def issuer(self) -> str:
+        return self.tenant_id
+
+
+AgentIdentityConfig: TypeAlias = EntraIdentityConfig | ExternalOIDCIdentityConfig
+AGENT_IDENTITY_CONFIG = TypeAdapter(AgentIdentityConfig)
+
+
 class AgentIdentityBinding(LiteLLMBaseModel):
     model_config = ConfigDict(frozen=True)
 
     agent_id: str
     active: bool = True
-    provider: Literal["microsoft_entra"]
+    provider: Literal["microsoft_entra", "external_oidc"]
     tenant_id: str
     client_id: str
     service_principal_id: str | None = None

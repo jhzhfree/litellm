@@ -1,11 +1,10 @@
 from datetime import datetime, timezone
 from types import SimpleNamespace
-from typing import Final
+from typing import TYPE_CHECKING, Final
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import HTTPException
-from prisma.models import LiteLLM_VerifiedSubject
 
 from litellm.proxy.agent_endpoints.identity_store import AgentIdentityStore, resolve_managed_agent
 from litellm.proxy.common_utils.user_api_key_cache import UserApiKeyCache
@@ -21,6 +20,9 @@ from litellm.types.proxy.agent_identity import (
     ManagedAgentContext,
     MicrosoftInteractiveSubject,
 )
+
+if TYPE_CHECKING:
+    from prisma.models import LiteLLM_VerifiedSubject
 
 TENANT: Final = "11111111-1111-4111-8111-111111111111"
 CLIENT: Final = "22222222-2222-4222-8222-222222222222"
@@ -56,7 +58,7 @@ def stored_agent(**overrides: object) -> AgentResponse:
 
 def setup_store(
     agent: AgentResponse | None = stored_agent(),
-    human: LiteLLM_VerifiedSubject | None = None,
+    human: "LiteLLM_VerifiedSubject | None" = None,
     cache: UserApiKeyCache | None = None,
 ) -> tuple[AgentIdentityStore, AsyncMock, AsyncMock, AsyncMock]:
     agents: Final = AsyncMock()
@@ -74,7 +76,9 @@ def setup_store(
         )
     )
     return (
-        AgentIdentityStore(AgentsRepository(db), AgentIdentityRepository(db), VerifiedSubjectRepository(db), cache=cache),
+        AgentIdentityStore(
+            AgentsRepository(db), AgentIdentityRepository(db), VerifiedSubjectRepository(db), cache=cache
+        ),
         agents,
         identities,
         humans,
@@ -164,6 +168,8 @@ async def test_unclassified_delegated_subject_cannot_authenticate_as_a_user() ->
 
 @pytest.mark.asyncio
 async def test_delegated_subject_uses_canonical_sso_user_not_email_claim() -> None:
+    from prisma.models import LiteLLM_VerifiedSubject
+
     human: Final = LiteLLM_VerifiedSubject(
         kind="human",
         subject_id="subject-one",
@@ -365,6 +371,8 @@ async def test_missing_or_unavailable_retirement_history_fails_closed(configured
 @pytest.mark.asyncio
 @pytest.mark.parametrize("owner", ["canonical-user", "another-user"])
 async def test_interactive_enrollment_preserves_existing_subject_ownership(owner: str) -> None:
+    from prisma.models import LiteLLM_VerifiedSubject
+
     store, _, _, humans = setup_store()
     humans.upsert.return_value = LiteLLM_VerifiedSubject(
         subject_id="subject-one",
@@ -448,3 +456,75 @@ async def test_application_and_unregistered_clients_do_not_depend_on_human_subje
     else:
         assert result is None
     humans.find_unique.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("enabled", [True, False])
+async def test_external_workload_resolves_bound_agent_and_honors_disable(enabled: bool) -> None:
+    issuer: Final = "https://identity.example/realms/company"
+    binding: Final = BINDING.model_copy(
+        update={
+            "provider": "external_oidc",
+            "tenant_id": issuer,
+            "issuer": issuer,
+            "required_roles": (),
+            "required_scopes": ("gateway.invoke",),
+        }
+    )
+    store, _, identities, humans = setup_store(
+        stored_agent(
+            identity=binding,
+            execution_mode="autonomous",
+            enabled=enabled,
+        )
+    )
+    identities.find_unique.return_value = binding
+    claims: Final = {
+        "iss": issuer,
+        "aud": "gateway",
+        "azp": CLIENT,
+        "sub": PRINCIPAL,
+        "identity_kind": "workload",
+        "scope": "gateway.invoke",
+    }
+    result: Final = await store.resolve_verified_claims(claims)
+    if enabled:
+        assert isinstance(result, ManagedAgentContext)
+        assert result.agent_id == binding.agent_id
+        assert result.subject_oid == PRINCIPAL
+        assert result.user_id is None
+    else:
+        assert isinstance(result, AgentIdentityFailure)
+    humans.find_unique.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kind", [None, "human", "workload"])
+async def test_external_tenant_claim_cannot_select_entra_binding_namespace(kind: str | None) -> None:
+    issuer: Final = "https://identity.example/realms/company"
+    binding: Final = BINDING.model_copy(
+        update={
+            "provider": "external_oidc",
+            "tenant_id": issuer,
+            "issuer": issuer,
+            "required_roles": (),
+            "required_scopes": ("gateway.invoke",),
+        }
+    )
+    store, _, identities, _ = setup_store(stored_agent(identity=binding, execution_mode="autonomous"))
+    identities.find_unique.return_value = binding
+    claims: Final = {
+        "iss": issuer,
+        "tid": TENANT,
+        "azp": CLIENT,
+        "sub": PRINCIPAL,
+        "identity_kind": kind,
+        "scope": "gateway.invoke",
+    }
+    result: Final = await store.resolve_verified_claims(claims)
+    identities.find_unique.assert_awaited_once_with(
+        where={
+            "provider_tenant_id_client_id": {"provider": "external_oidc", "tenant_id": issuer, "client_id": CLIENT},
+        }
+    )
+    assert isinstance(result, ManagedAgentContext if kind == "workload" else AgentIdentityFailure)

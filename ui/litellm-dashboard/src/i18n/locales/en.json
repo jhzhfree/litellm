@@ -5834,7 +5834,8 @@
     },
     "agent": {
       "stepLimit": "I reached the step limit. Any completed actions remain applied; check the relevant page before continuing.",
-      "noAnswer": "The model returned no answer. Try another request or model."
+      "noAnswer": "The model returned no answer. Try another request or model.",
+      "contentFiltered": "Xiao Heng could not complete this request: the model's safety policy rejected the response. Please rephrase your question or try a different model."
     },
     "answer": {
       "exportDocumentTitle": "{{agent}} answer",

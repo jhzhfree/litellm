@@ -1,13 +1,14 @@
 # 统一身份认证平台与 AI 治理网关对接说明（实操版）
 
-文档更新：2026-11-19。源码基线：当前分支 `litellm_identity_platform_integration`（HEAD `07d9b86a`）。
+文档更新：2026-11-20。核对源码基线为 `b6ede959d6`，分支 `litellm_identity_platform_integration`。整体改造与三方边界见 [SOLUTION.md](SOLUTION.md)，本页保留当前接入实操。
 
 ## 0. 先读这一节：本文的定位与交付状态
 
-本目录已有三份文档，分工不同，不要混用：
+本目录文档分工如下：
 
 | 文档 | 定位 |
 |---|---|
+| `SOLUTION.md` | 最新整体方案、责任边界、SDK、DPoP 和验收阶段。 |
 | `DESIGN.md` | **目标态设计规格**。描述拟建设的统一身份平台、产品管理 API、事件同步、`external_oidc` 新配置结构等。文中“拟新增/目标”**均未实现**，示例配置不能直接用于当前版本。 |
 | `VALIDATION.md` | 已通过的集成验证记录（组件级）。 |
 | 本文 `INTEGRATION.md` | **当前代码下的对接原理与可操作配置**：哪些链路已经能用、怎么配、怎么验证、哪些还没有打通。 |
@@ -15,10 +16,10 @@
 一句话结论：
 
 - **已经打通**：Keycloak 独立身份平台 + 网关 `JWTHandler` 的**令牌验签组件联调**（JWKS 验签、issuer/audience 校验、错误 audience 拒绝）。
-- **框架具备但未联调**：浏览器 SSO 登录（网关 `/sso/key/generate` → `/sso/callback`、UI 的 SSO 按钮/自动跳转），但 Keycloak 尚未注册为网关的 `GENERIC_*` provider，`deploy/proxy_config.yaml` 也没有 JWT 信任锚配置。
-- **仅设计未实现**：统一管理 API、身份同步、Agent 外部身份绑定经完整业务链路、`external_identity` 的生产调用、`external_oidc` 新配置结构。
+- **已通过部分用户登录联调**：真实 Chromium 登录 Keycloak 后，测试拦截回调并调用网关通用 SSO 组件，授权码交换、PKCE 和稳定 sub 映射通过。网关数据库写入、最终控制台会话和实际部署配置仍需验收。
+- **已有实现但未完成端到端验收**：external_oidc 自主 Agent 绑定、请求链路分类和管理页面。统一管理 API、身份同步、SDK、DPoP 与统一认证新配置结构仍未实现。
 
-当前运行中的网关配置 `deploy/proxy_config.yaml` **没有任何 JWT 配置项**（已核对 `jwks|issuer|audience|jwt` 零命中）；要启用对接必须先按第 4 节修改配置并重启/重载网关。
+本文件中的示例不等于实际运行配置。启用对接前检查部署的 JWT 信任锚、功能授权和 GENERIC_*，按第 4 节配置并受控重启；完整 HTTP 验收还需解决 Prisma 依赖阻断。
 
 ---
 
@@ -106,7 +107,7 @@
 
 **容易写错的字段名**（代码中不存在或含义不同）：`jit_fetch_roles`、`common_parameters` 不存在；`role_mapping` 应为复数 `role_mappings`；`enforced_params` 是虚拟 key 预算参数，不是 JWT 配置。
 
-### 2.4 浏览器 SSO 登录链路（框架已有，Keycloak 未联调）
+### 2.4 浏览器 SSO 登录链路（组件联调通过，完整产品待验收）
 
 网关已有通用 SSO 框架，流程：
 
@@ -223,7 +224,7 @@ general_settings:
   litellm_jwtauth:
     user_id_jwt_field: sub
     user_email_jwt_field: email
-    user_id_upsert: true
+    user_id_upsert: false
     team_ids_jwt_field: groups          # 若 Keycloak token 中带 groups 再配
     issuers:
       - issuer: http://127.0.0.1:18080/realms/company
@@ -235,6 +236,7 @@ general_settings:
 
 要点：
 
+- 示例关闭 API JWT 用户自动创建；浏览器 SSO 准入与用户映射需另外配置和验收。
 - `issuer` 必须与 Keycloak discovery 的 `issuer` **逐字一致**（含协议、主机、端口、realm 名）。
 - `jwks_url` 可省略，省略时从 issuer 的 OIDC discovery 自动发现；显式写出更利于排障。
 - `audience` 与 `disable_audience_validation` 二选一；**不要为了省事关闭 audience 校验**（共享签名密钥的其他应用 token 会被接受）。
@@ -262,7 +264,7 @@ general_settings:
 
 字段含义：`roles_jwt_field` 指向 token 中角色 claim（支持 `realm_access.roles` 这类点号路径，由 `get_nested_value` 解析）；`role_mappings` 把 IdP 角色映射到网关内部角色（`RoleMapping`：`role` → `internal_role`，合法值来自 `_types.py:4761` 的 `RBAC_ROLES`，**只有** `proxy_admin` / `team` / `internal_user`）；`object_id_jwt_field` 指定映射对象所在的 claim；管理员路由另需 `admin_jwt_scope`（默认 `litellm_proxy_admin`）scope。注意 SSO 配置里的 `role_mappings`（`ui_sso.py`）用的是另一套 `LitellmUserRoles` 值（可含 `proxy_admin_viewer`），不要与 JWT 的 `RBAC_ROLES` 混淆。自定义角色需要在 Keycloak 里通过协议 mapper 写入 token（例如把 realm role 放进 `roles` 或 `groups` claim），否则 `roles_jwt_field` 取不到值。
 
-Agent 身份：`agent_id_jwt_field: azp`（或 `client_id`）可让 service account 与已注册 Agent 绑定；绑定失败会拒绝请求，先确认 Agent 注册表里有对应 ID/名称。
+受管外部 Agent 使用 external_oidc 绑定，将 issuer、client_id、service account sub 和 required_scopes 交给现有 Agent 管理 API。`agent_id_jwt_field` 属于旧声明映射，不替代此绑定，也不能把 azp 当成网关自动签发的 agent_id。实际请求需启用 JWT，并通过现有功能门控。具体示例见 [GATEWAY_INTEGRATION.md](GATEWAY_INTEGRATION.md)。
 
 JWT → 虚拟 key 映射（可选）：设置 `virtual_key_claim_field: client_id` 后，每个应用可用已有虚拟 key 的模型权限、预算、限流；未注册策略用 `unregistered_jwt_client_behavior` 控制。
 
@@ -279,6 +281,9 @@ GENERIC_AUTHORIZATION_ENDPOINT=http://127.0.0.1:18080/realms/company/protocol/op
 GENERIC_TOKEN_ENDPOINT=http://127.0.0.1:18080/realms/company/protocol/openid-connect/token
 GENERIC_USERINFO_ENDPOINT=http://127.0.0.1:18080/realms/company/protocol/openid-connect/userinfo
 GENERIC_SCOPE=openid email profile
+GENERIC_CLIENT_USE_PKCE=true
+PKCE_STRICT_CACHE_MISS=true
+GENERIC_USER_ID_ATTRIBUTE=sub
 PROXY_BASE_URL=http://127.0.0.1:4000
 AUTO_REDIRECT_UI_LOGIN_TO_SSO=false
 ```
@@ -355,9 +360,9 @@ curl -s -o /dev/null -w '%{http_code}\n' \
 |---|---|---|
 | JWT 验签（M2M） | `enable_jwt_auth` + `litellm_jwtauth.issuers`，组件级实测通过 | 保留并扩展 |
 | claims → 用户/团队/Agent | 字段已在 `_types.py` 定义并有通用链路 | 统一身份模型 |
-| 浏览器 SSO | GENERIC_* 框架可用，Keycloak 未注册联调 | `general_settings.authentication.providers` 新结构（**未实现**） |
+| 浏览器 SSO | 真实登录及通用适配器组件通过，数据库和最终会话待验收 | 以 SOLUTION.md 的统一配置适配层为准（**未实现**） |
 | 角色 | `role_mappings` 需显式配置；`gateway-user/agent` 未被读取 | 统一管理 API + 角色投影 |
-| external_identity | 仅策略分类器，无生产调用方 | 接入请求链路做工作负载/委托身份判定 |
+| external_identity | 已接入自主 Agent 请求身份分类，外部委托明确拒绝 | 完整 HTTP 验收及可信委托扩展 |
 | 应用/Agent 业务授权 | 未做完整 HTTP 路径验证 | 端到端验收 |
 | 统一管理 API/同步 | 无 | 产品 API + Outbox 事件 + 投影表（均未实现） |
 

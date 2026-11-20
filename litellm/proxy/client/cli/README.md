@@ -1,6 +1,6 @@
-# LiteLLM Proxy CLI
+# AI-GovernanceGw Proxy CLI
 
-The LiteLLM Proxy CLI is a command-line tool for managing your LiteLLM proxy server. It provides commands for managing models, viewing server status, and interacting with the proxy server.
+The AI-GovernanceGw Proxy CLI is a command-line tool for managing your AI-GovernanceGw proxy server. It provides commands for managing models, viewing server status, and interacting with the proxy server.
 
 ## Installation
 
@@ -12,7 +12,7 @@ uv tool install 'litellm[proxy]'
 
 The CLI can be configured using environment variables, command-line options, or a persistent config file:
 
-- `LITELLM_PROXY_URL`: Base URL of the LiteLLM proxy server (default: http://localhost:4000)
+- `LITELLM_PROXY_URL`: Base URL of the AI-GovernanceGw proxy server (default: http://localhost:4000)
 - `LITELLM_PROXY_API_KEY`: API key for authentication
 
 To stop exporting `LITELLM_PROXY_URL` in every shell session, store the proxy URL once in `~/.litellm/config.json`:
@@ -51,7 +51,7 @@ Hidden commands drop out of both `lite --help` and the interactive shell's "Avai
 
 ## Global Options
 
-- `--version`, `-v`: Print the LiteLLM Proxy client and server version and exit.
+- `--version`, `-v`: Print the AI-GovernanceGw Proxy client and server version and exit.
 
 Example:
 
@@ -67,7 +67,7 @@ lite -v
 
 ### Models Management
 
-The CLI provides several commands for managing models on your LiteLLM proxy server:
+The CLI provides several commands for managing models on your AI-GovernanceGw proxy server:
 
 #### List Models
 
@@ -205,7 +205,7 @@ lite models import models.yaml --only-models-matching-regex gpt --only-access-gr
 
 ### Credentials Management
 
-The CLI provides commands for managing credentials on your LiteLLM proxy server:
+The CLI provides commands for managing credentials on your AI-GovernanceGw proxy server:
 
 #### List Credentials
 
@@ -262,7 +262,7 @@ lite credentials delete <credential-name>
 
 ### Keys Management
 
-The CLI provides commands for managing API keys on your LiteLLM proxy server:
+The CLI provides commands for managing API keys on your AI-GovernanceGw proxy server:
 
 #### List Keys
 
@@ -350,7 +350,7 @@ lite keys info --key sk-key1
 
 ### User Management
 
-The CLI provides commands for managing users on your LiteLLM proxy server:
+The CLI provides commands for managing users on your AI-GovernanceGw proxy server:
 
 #### List Users
 
@@ -386,7 +386,7 @@ lite users delete <user-id-1> <user-id-2>
 
 ### Chat Commands
 
-The CLI provides commands for interacting with chat models through your LiteLLM proxy server:
+The CLI provides commands for interacting with chat models through your AI-GovernanceGw proxy server:
 
 #### Chat Completions
 
@@ -436,7 +436,7 @@ lite chat completions gpt-4 \
 
 ### HTTP Commands
 
-The CLI provides commands for making direct HTTP requests to your LiteLLM proxy server:
+The CLI provides commands for making direct HTTP requests to your AI-GovernanceGw proxy server:
 
 #### Make HTTP Request
 
@@ -474,7 +474,7 @@ lite http request GET /health/test_connection -H "X-Custom-Header:value"
 
 ### Run a Coding Agent
 
-Launch a coding agent with all of its LLM traffic routed through your LiteLLM proxy. Each supported agent is its own command, so there is nothing to remember beyond the agent's name:
+Launch a coding agent with all of its LLM traffic routed through your AI-GovernanceGw proxy. Each supported agent is its own command, so there is nothing to remember beyond the agent's name:
 
 ```bash
 lite claude
@@ -490,7 +490,7 @@ lite claude --resume
 lite codex exec "summarize the repo"
 ```
 
-Each command resolves your LiteLLM key (logging in via SSO when none is stored and you are at a terminal; otherwise it expects `LITELLM_PROXY_API_KEY` or `--api-key`), checks the key against the proxy so bad credentials fail immediately instead of deep inside the agent, exports the environment variables the agent reads, then replaces itself with the agent process.
+Each command resolves your AI-GovernanceGw key (logging in via SSO when none is stored and you are at a terminal; otherwise it expects `LITELLM_PROXY_API_KEY` or `--api-key`), checks the key against the proxy so bad credentials fail immediately instead of deep inside the agent, exports the environment variables the agent reads, then replaces itself with the agent process.
 
 The right variables are picked per agent. Claude Code gets `ANTHROPIC_BASE_URL` (the proxy root, so it appends `/v1/messages`) and `ANTHROPIC_AUTH_TOKEN`, with any stray `ANTHROPIC_API_KEY` cleared so the proxy token wins, and `ENABLE_TOOL_SEARCH=true` (unless you already set it) so Claude Code keeps tool search on even though the base URL is a proxy rather than a first-party Anthropic host. It also gets `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` (again unless you already set it) so Claude Code v2.1.129+ fills its `/model` picker from the proxy's `/v1/models`; Claude Code only lists entries whose id contains `claude` or `anthropic`, so the proxy lists every other group to Claude Code as `claude-router-<UTF-8 hex of the group name>` and marks a group whose input window reaches 1M with `[1m]`, and a request on such an id is served by the group. Older Claude Code versions ignore the variable. Export it as `0` to turn discovery off. Codex and OpenCode get `OPENAI_BASE_URL` (the proxy plus `/v1`) and `OPENAI_API_KEY`. Codex ignores `OPENAI_BASE_URL`, so it is additionally pointed at the proxy through a custom provider passed as `-c` config overrides (HTTP/SSE Responses transport, since the proxy does not speak the Responses WebSocket protocol). OpenCode additionally gets `OPENCODE_CONFIG_CONTENT` holding a generated `litellm` provider (`@ai-sdk/openai-compatible`, the proxy `/v1` URL, `{env:OPENAI_API_KEY}`) with one model entry per chat model your key can see on `/v1/models`, so its model picker mirrors the proxy without a hand-maintained `opencode.json`; OpenCode merges that over your own config files, and if you already export `OPENCODE_CONFIG_CONTENT` yours is left alone. When the list cannot be fetched, `lite opencode` says so on stderr and launches anyway. Codex gets the same list as a catalog file, `$CODEX_HOME/litellm-models.json` (default `~/.codex/`), passed as `-c model_catalog_json=<path>` so `/model` lists exactly the proxy's chat models; a proxy model the installed Codex already knows (`gpt-5.5`, say) keeps that Codex's own entry, reasoning levels and prompt included, and only its place in the picker comes from the proxy, while a model Codex does not know gets the plain entry Codex uses for an unknown `-m` slug, plus whichever reasoning levels its model group lists on `/model_group/info` the installed Codex can parse. Before launching, `lite codex` asks the installed Codex for its own list and then has it read the written file back (both through `codex debug models`), and when the fetch, either of those or the write fails (Codex releases older than 0.130 have no such command) it says so on stderr and launches with Codex's built-in catalog, leaving a rejected file in place.
 
@@ -510,7 +510,7 @@ The credential is short-lived by design (default 24h, configurable via `LITELLM_
 
 ### Route Every Claude Code Session Through the Proxy
 
-`lite claude` wraps a single invocation, but `lite up` goes further: it patches `~/.claude/settings.json`, Claude Code's own config file, so that every Claude Code session started afterward -- from any terminal, launched normally with just `claude`, no wrapper needed -- routes through your LiteLLM proxy. It sets `env.ANTHROPIC_BASE_URL` to the proxy URL, `env.ENABLE_TOOL_SEARCH` to `true` and `env.CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` to `1` when those keys are missing, writes the key it resolved (your fresh `lite login`, or an explicit `--api-key`) into `env.ANTHROPIC_AUTH_TOKEN` as a static token, drops any stray `ANTHROPIC_API_KEY` or `apiKeyHelper` so nothing fights that token, and leaves every other setting in the file untouched. It backs up the original file before patching it. Nothing here writes an `apiKeyHelper`: Claude Code would spawn `lite` (and its keychain check) on every credential refresh, so the key is copied in instead and `lite up` restores the file when it stops.
+`lite claude` wraps a single invocation, but `lite up` goes further: it patches `~/.claude/settings.json`, Claude Code's own config file, so that every Claude Code session started afterward -- from any terminal, launched normally with just `claude`, no wrapper needed -- routes through your AI-GovernanceGw proxy. It sets `env.ANTHROPIC_BASE_URL` to the proxy URL, `env.ENABLE_TOOL_SEARCH` to `true` and `env.CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` to `1` when those keys are missing, writes the key it resolved (your fresh `lite login`, or an explicit `--api-key`) into `env.ANTHROPIC_AUTH_TOKEN` as a static token, drops any stray `ANTHROPIC_API_KEY` or `apiKeyHelper` so nothing fights that token, and leaves every other setting in the file untouched. It backs up the original file before patching it. Nothing here writes an `apiKeyHelper`: Claude Code would spawn `lite` (and its keychain check) on every credential refresh, so the key is copied in instead and `lite up` restores the file when it stops.
 
 Two things need to already be true: you've run `lite login` (or passed a key), and the proxy is already reachable, since `lite up` does not start one for you.
 
@@ -557,7 +557,7 @@ lite configure
 
 `lite configure` reuses all saved setups for the current agent homes. Name an agent to reconnect only that one, such as `lite configure claude` or `lite configure codex`. Saved setup works without a terminal when the key and model are still valid
 
-Run `lite reconfigure` to edit your choices with the saved values prefilled, or `lite reconfigure codex` to edit one agent. The agent picker selects which setups to edit; unchecked agents keep their settings. For Claude Code, choose its own default in the wizard or use `lite configure claude --default-model` to remove LiteLLM's model pin. Omitting `--model` keeps your saved choice
+Run `lite reconfigure` to edit your choices with the saved values prefilled, or `lite reconfigure codex` to edit one agent. The agent picker selects which setups to edit; unchecked agents keep their settings. For Claude Code, choose its own default in the wizard or use `lite configure claude --default-model` to remove AI-GovernanceGw's model pin. Omitting `--model` keeps your saved choice
 
 `lite unconfigure --forget` undoes settings it still owns and deletes the saved setups, including their saved keys. `lite unconfigure claude --forget` forgets only Claude Code. Both work after an earlier disconnect. Saved setup files have owner-only permissions and follow the same resolved config-file scope as the undo records, including `CLAUDE_CONFIG_DIR` and `CODEX_HOME`. A pending undo record remains available if an original credential could not safely be restored. If the undo record is missing, agent settings are left unchanged and the command asks you to remove any remaining gateway connection and key manually; forgetting the saved profile does not erase unowned agent settings
 
@@ -572,7 +572,7 @@ lite unconfigure codex
 
 Codex setup requires an installed stable Codex version of [0.129.0 or newer](https://github.com/openai/codex/releases/tag/rust-v0.129.0), which prevents repository settings from redirecting requests carrying your saved key. Setup checks `codex --version` before fetching models or changing either selected agent's settings. Undo remains available without Codex installed
 
-Codex setup updates `~/.codex/config.toml` (or `$CODEX_HOME/config.toml`) with the selected model and a LiteLLM Responses provider. The gateway key lives in that provider's static Authorization header, in a file written atomically with owner-only permissions. Other providers, hooks, MCP servers and comments are preserved. A default profile selection is removed so it cannot override the gateway settings; its contents are preserved, and undo restores the selection. Explicit Codex flags and supported project settings still follow Codex's normal precedence
+Codex setup updates `~/.codex/config.toml` (or `$CODEX_HOME/config.toml`) with the selected model and a AI-GovernanceGw Responses provider. The gateway key lives in that provider's static Authorization header, in a file written atomically with owner-only permissions. Other providers, hooks, MCP servers and comments are preserved. A default profile selection is removed so it cannot override the gateway settings; its contents are preserved, and undo restores the selection. Explicit Codex flags and supported project settings still follow Codex's normal precedence
 
 The Codex undo receipt is kept in a private `.litellm` directory beside the resolved config file. `lite unconfigure codex` restores only values still holding what configure wrote, preserving later edits. The provider URL and credential are restored together. Symlinks are followed and their targets become owner-only; keep these credential-bearing files out of version control
 
@@ -608,7 +608,7 @@ After upgrading the CLI, run `lite configure claude` to refresh `~/.litellm/stat
 
 ### QA Complexity-Based Auto-Routing Against Your Real Proxy
 
-`lite autoroute` lets you try LiteLLM's complexity-based auto-routing -- picking a cheaper or more expensive model depending on how complex a prompt looks -- against models your key already has access to on your real, running proxy, without editing that proxy's `config.yaml` and without any real request ever bypassing it. It builds a second, throwaway proxy locally that forwards every request back to your real proxy, and points Claude Code at that local proxy for the duration of the session.
+`lite autoroute` lets you try AI-GovernanceGw's complexity-based auto-routing -- picking a cheaper or more expensive model depending on how complex a prompt looks -- against models your key already has access to on your real, running proxy, without editing that proxy's `config.yaml` and without any real request ever bypassing it. It builds a second, throwaway proxy locally that forwards every request back to your real proxy, and points Claude Code at that local proxy for the duration of the session.
 
 #### Install the CLI
 

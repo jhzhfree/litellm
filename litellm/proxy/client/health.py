@@ -7,7 +7,7 @@ from .http_client import HTTPClient
 
 class HealthManagementClient:
     """
-    Client for interacting with the health endpoints of the LiteLLM proxy server.
+    Client for interacting with the health endpoints of the AI-GovernanceGw proxy server.
     """
 
     def __init__(self, base_url: str, api_key: str | None = None, timeout: int = 30):
@@ -15,7 +15,7 @@ class HealthManagementClient:
         Initialize the HealthManagementClient.
 
         Args:
-            base_url (str): The base URL of the LiteLLM proxy server (e.g., "http://localhost:4000")
+            base_url (str): The base URL of the AI-GovernanceGw proxy server (e.g., "http://localhost:4000")
             api_key (Optional[str]): API key for authentication. If provided, it will be sent as a Bearer token.
             timeout (int): Request timeout in seconds (default: 30)
         """
@@ -23,7 +23,7 @@ class HealthManagementClient:
 
     def get_readiness(self) -> object:
         """
-        Check the readiness of the LiteLLM proxy server.
+        Check the readiness of the AI-GovernanceGw proxy server.
 
         Returns:
             Dict[str, Any]: The readiness status and details from the server.
@@ -36,7 +36,7 @@ class HealthManagementClient:
 
     def get_server_version(self) -> object:
         """
-        Get the LiteLLM server version from the readiness endpoint.
+        Get the AI-GovernanceGw server version from the readiness endpoint.
 
         Returns:
             Optional[str]: The server version if available, otherwise None.

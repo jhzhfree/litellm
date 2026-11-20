@@ -12,7 +12,7 @@ In October 2026, `Usage` and `ResponseAPIUsage` kept unknown usage keys as pydan
 
 ## Decision
 
-Provider-only usage fields stay on the usage object as pydantic extras, and cost tracking reads them there, in that provider's cost calculator or in a shared gate that checks the field instead of the provider. An extra reaches callers as an added usage key. No transform renames, removes, or reshapes a usage field the endpoint's schema defines to feed cost tracking, though it may fill one LiteLLM's usage object already defines, such as `server_tool_use`
+Provider-only usage fields stay on the usage object as pydantic extras, and cost tracking reads them there, in that provider's cost calculator or in a shared gate that checks the field instead of the provider. An extra reaches callers as an added usage key. No transform renames, removes, or reshapes a usage field the endpoint's schema defines to feed cost tracking, though it may fill one AI治理网关's usage object already defines, such as `server_tool_use`
 
 A shared path that rebuilds usage, such as the stream builder or a bridge between endpoint shapes, copies the extras instead of naming provider fields. A provider transform that builds usage from named fields names the new field. Neither is bypassed with a side channel. Older code that differs, such as the Azure branches in the shared tracker and the Gemini pricing tier read from `_hidden_params`, predates this ADR
 
@@ -36,4 +36,4 @@ Costs:
 
 - Extras are untyped, so a reader validates them before use, as `_usage_reports_server_side_web_search_calls` does
 - The stream builder and the bridges from chat usage did not copy extras when this was written, so until they do, a field billed on those paths is named in them, and tests and proof runs cover each endpoint and `"stream": true`
-- This covers usage fields LiteLLM prices, not request-side params or a provider's own charge for the request, which OpenRouter and opencode Go report and `response_cost_calculator` reads from `_hidden_params` first
+- This covers usage fields AI治理网关 prices, not request-side params or a provider's own charge for the request, which OpenRouter and opencode Go report and `response_cost_calculator` reads from `_hidden_params` first

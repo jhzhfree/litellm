@@ -109,7 +109,7 @@ def create_client(ctx: click.Context) -> Client:
 
 @click.group()
 def models() -> None:
-    """Manage models on your LiteLLM proxy server"""
+    """Manage models on your AI-GovernanceGw proxy server"""
 
 
 @models.command("list")

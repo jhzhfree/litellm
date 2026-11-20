@@ -347,7 +347,7 @@ def install_statusline_script(
             if installed_version is not None and (bundled_version is None or installed_version > bundled_version):
                 cli_version: Final = str(bundled_version) if bundled_version is not None else "unknown"
                 click.echo(
-                    f"Keeping the status line from LiteLLM {installed_version}; this CLI is {cli_version}. "
+                    f"Keeping the status line from AI-GovernanceGw {installed_version}; this CLI is {cli_version}. "
                     "Upgrade the CLI to refresh it.",
                     err=True,
                 )

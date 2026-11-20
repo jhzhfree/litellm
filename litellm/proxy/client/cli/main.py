@@ -38,18 +38,18 @@ def _writable_cli_context_obj(view: _WritableCliContextView) -> _CliContextObjSl
 
 def print_version(base_url: str, api_key: str | None):
     """Print CLI and server version info."""
-    click.echo(f"LiteLLM Proxy CLI Version: {litellm_version}")
+    click.echo(f"AI-GovernanceGw Proxy CLI Version: {litellm_version}")
     if base_url:
-        click.echo(f"LiteLLM Proxy Server URL: {base_url}")
+        click.echo(f"AI-GovernanceGw Proxy Server URL: {base_url}")
     from litellm.proxy.client.health import HealthManagementClient
 
     try:
         health_client: Final = HealthManagementClient(base_url=base_url, api_key=api_key)
         server_version: Final = health_client.get_server_version()
         if server_version:
-            click.echo(f"LiteLLM Proxy Server Version: {server_version}")
+            click.echo(f"AI-GovernanceGw Proxy Server Version: {server_version}")
         else:
-            click.echo("LiteLLM Proxy Server Version: (unavailable)")
+            click.echo("AI-GovernanceGw Proxy Server Version: (unavailable)")
     except Exception as e:
         click.echo(f"Could not retrieve server version: {e}")
 
@@ -151,7 +151,7 @@ LITE_COMMANDS: Final = LazyCommands(
     "-v",
     "show_version",
     is_flag=True,
-    help="Show the LiteLLM Proxy CLI and server version and exit.",
+    help="Show the AI-GovernanceGw Proxy CLI and server version and exit.",
 )
 @click.option(
     "--base-url",
@@ -159,7 +159,7 @@ LITE_COMMANDS: Final = LazyCommands(
     show_envvar=True,
     default=None,
     show_default="base_url from `lite config`, else the `lite login` server for a bare `lite` with no key, else http://localhost:4000",
-    help="Base URL of the LiteLLM proxy server",
+    help="Base URL of the AI-GovernanceGw proxy server",
 )
 @click.option(
     "--api-key",
@@ -169,7 +169,7 @@ LITE_COMMANDS: Final = LazyCommands(
 )
 @click.pass_context
 def cli(ctx: click.Context, show_version: bool, base_url: str | None, api_key: str | None) -> None:
-    """LiteLLM Proxy CLI - Manage your LiteLLM proxy server"""
+    """AI-GovernanceGw Proxy CLI - Manage your AI-GovernanceGw proxy server"""
     ctx.ensure_object(dict)
 
     stored_base_url: Final = get_config_value("base_url")
@@ -232,7 +232,7 @@ def cli(ctx: click.Context, show_version: bool, base_url: str | None, api_key: s
 @cli.command()
 @click.pass_context
 def version(ctx: click.Context):
-    """Show the LiteLLM Proxy CLI and server version."""
+    """Show the AI-GovernanceGw Proxy CLI and server version."""
     ctx_obj: Final = cli_context_obj(ctx)
     print_version(ctx_obj.get("base_url"), ctx_obj.get("api_key"))
 

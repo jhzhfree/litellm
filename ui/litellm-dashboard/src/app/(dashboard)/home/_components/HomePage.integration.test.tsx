@@ -154,7 +154,7 @@ describe("HomePage", () => {
         </LiteAdminFrame>
       </QueryClientProvider>,
     );
-    expect(screen.queryByRole("region", { name: "Ask Aria Agent" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Ask 小恒" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Send message" })).not.toBeInTheDocument();
     expect(await screen.findByText(i18n.t("format.usd", { val: activity.metadata.total_spend }))).toBeInTheDocument();
   });
@@ -195,7 +195,7 @@ describe("HomePage", () => {
 
   it("renders card_title, card_summary and the provider logo, falling back to the title and first sentence", async () => {
     blogPosts.posts = [
-      post("Gemini 4 Argon API Pricing and Day 0 Support on LiteLLM", "2026-10-13", [
+      post("Gemini 4 Argon API Pricing and Day 0 Support on AI-GovernanceGw", "2026-10-13", [
         "gemini",
         "card_title:Gemini 4 Argon",
         "card_summary:Gemini 4 Argon costs $2.00 per 1M input tokens.",

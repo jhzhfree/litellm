@@ -1,6 +1,6 @@
-# LiteLLM Proxy Client
+# AI-GovernanceGw Proxy Client
 
-A Python client library for interacting with the LiteLLM proxy server. This client provides a clean, typed interface for managing models, keys, credentials, and making chat completions.
+A Python client library for interacting with the AI-GovernanceGw proxy server. This client provides a clean, typed interface for managing models, keys, credentials, and making chat completions.
 
 ## Installation
 
@@ -15,7 +15,7 @@ from litellm.proxy.client import Client
 
 # Initialize the client
 client = Client(
-    base_url="http://localhost:4000",  # Your LiteLLM proxy server URL
+    base_url="http://localhost:4000",  # Your AI-GovernanceGw proxy server URL
     api_key="sk-api-key"               # Optional: API key for authentication
 )
 
@@ -42,7 +42,7 @@ The client is organized into several resource clients for different functionalit
 
 ## Chat Completions
 
-Make chat completion requests to your LiteLLM proxy:
+Make chat completion requests to your AI-GovernanceGw proxy:
 
 ```python
 # Basic chat completion
@@ -189,7 +189,7 @@ users.delete_user(["u1", "u2"])
 ## Low-Level HTTP Client
 
 The client provides access to a low-level HTTP client for making direct requests
-to the LiteLLM proxy server. This is useful when you need more control or when
+to the AI-GovernanceGw proxy server. This is useful when you need more control or when
 working with endpoints that don't yet have a high-level interface.
 
 ```python
@@ -302,7 +302,7 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 
 ## CLI Authentication Flow
 
-The LiteLLM CLI supports SSO authentication through a polling-based approach that works with any OAuth-compatible SSO provider.
+The AI-GovernanceGw CLI supports SSO authentication through a polling-based approach that works with any OAuth-compatible SSO provider.
 
 ### How CLI Authentication Works
 
@@ -310,7 +310,7 @@ The LiteLLM CLI supports SSO authentication through a polling-based approach tha
 sequenceDiagram
     participant CLI as CLI
     participant Browser as Browser
-    participant Proxy as LiteLLM Proxy
+    participant Proxy as AI-GovernanceGw Proxy
     participant SSO as SSO Provider
     
     CLI->>Proxy: POST /sso/cli/start

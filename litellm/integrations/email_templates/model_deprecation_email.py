@@ -35,7 +35,7 @@ def _recommendation_source(source: SuccessorModelSource | None) -> str:
     if source is SuccessorModelSource.DEPLOYMENT_CONFIG:
         return "Gateway configuration"
     if source is SuccessorModelSource.MODEL_COST_MAP:
-        return "LiteLLM model cost map"
+        return "AI-GovernanceGw model cost map"
     return "Not provided"
 
 
@@ -84,7 +84,7 @@ def render_model_deprecation_email(email: ModelDeprecationEmail, *, base_url: st
     timing: Final = "tomorrow" if urgent else "in 30 days"
     provider: Final = _provider(email.usage_model, email.model.litellm_provider)
     provider_name: Final = _provider_name(provider)
-    subject: Final = f"[LiteLLM] Model being deprecated by {provider_name} {timing}: {email.usage_model}"
+    subject: Final = f"[AI-GovernanceGw] Model being deprecated by {provider_name} {timing}: {email.usage_model}"
     deadline: Final = email.model.deprecation_date.strftime("%d %b %Y")
     announcement: Final = f"{provider_name} is deprecating this model on {deadline} (UTC)."
     preheader: Final = f"{announcement} Review the model change and migrate your affected keys."
@@ -132,7 +132,7 @@ def render_model_deprecation_email(email: ModelDeprecationEmail, *, base_url: st
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td style="padding:0;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#ffffff;">
 <tr><td class="brand" style="padding:24px 36px;border-bottom:1px solid #e2e6ee;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td><img src="{_EMAIL_LOGO_URL}" width="112" alt="LiteLLM" style="display:block;border:0;height:auto;"></td>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td><img src="{_EMAIL_LOGO_URL}" width="112" alt="AI-GovernanceGw" style="display:block;border:0;height:auto;"></td>
 <td align="right" style="font:11px 'Courier New',monospace;letter-spacing:1.5px;color:#526079;">/ MODEL DEPRECATIONS</td></tr></table></td></tr>
 <tr><td class="pad" style="padding:32px 36px;background:#263cdb;color:#ffffff;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="font:11px 'Courier New',monospace;letter-spacing:1.8px;color:#ffffff;">{label}</td>
@@ -165,7 +165,7 @@ def render_model_deprecation_email(email: ModelDeprecationEmail, *, base_url: st
 <a href="{escape(review_url, quote=True)}" style="display:inline-block;padding:14px 20px;color:#ffffff;font-size:13px;font-weight:600;line-height:18px;text-decoration:none;">Review affected usage &#8599;</a></td></tr></table>
 </td></tr>
 <tr><td class="pad" style="padding:20px 36px;background:#fafbfc;border-top:1px solid #e2e6ee;font-size:11px;line-height:18px;color:#526079;">
-Your gateway admin enabled these emails. Reminder schedule: 30 days and 1 day before deprecation.<br><br>LiteLLM &middot; AI Gateway</td></tr>
+Your gateway admin enabled these emails. Reminder schedule: 30 days and 1 day before deprecation.<br><br>AI-GovernanceGw &middot; AI Gateway</td></tr>
 </table></td></tr></table></body></html>"""
     text: Final = (
         f"{subject}\n\n{announcement}\n\n"

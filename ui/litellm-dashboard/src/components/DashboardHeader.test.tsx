@@ -29,7 +29,7 @@ vi.mock("@/components/Navbar/CommunityEngagementButtons/CommunityEngagementButto
 }));
 vi.mock("@/components/Navbar/NotificationsBell/NotificationsBell", () => ({ NotificationsBell: () => null }));
 vi.mock("@/components/Navbar/WorkerDropdown/WorkerDropdown", () => ({ default: () => null }));
-vi.mock("@/components/liteadmin/LiteAdmin", () => ({ default: () => <button>Aria Agent</button> }));
+vi.mock("@/components/liteadmin/LiteAdmin", () => ({ default: () => <button>小恒</button> }));
 
 const renderDashboardHeader = () =>
   render(
@@ -68,7 +68,7 @@ describe("DashboardHeader breadcrumb", () => {
   it("names the Aria workspace in the header", () => {
     state.pathname = "/ui/aria";
     renderDashboardHeader();
-    expect(screen.getByRole("heading", { name: "Aria Agent" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "小恒" })).toBeInTheDocument();
   });
 
   it("keeps the scoped key search available", () => {

@@ -25,7 +25,7 @@
 
 ## 企业员工统一登录的接入决策
 
-三个产品可以独立选择沿用现有登录方式，或将用户登录指向统一身份平台的 OIDC issuer。Octop 已实现认证模式选择。LiteLLM 现有 Generic SSO 可接入该 issuer，独立认证模式与完整控制台会话验收待实施。AKB 控制台 OIDC 登录待新增；AKB 的外部 API 委托认证采用独立配置。
+三个产品可以独立选择沿用现有登录方式，或将用户登录指向统一身份平台的 OIDC issuer。Octop 已实现认证模式选择。AI治理网关 现有 Generic SSO 可接入该 issuer，独立认证模式与完整控制台会话验收待实施。AKB 控制台 OIDC 登录待新增；AKB 的外部 API 委托认证采用独立配置。
 
 ### Keycloak 联邦企业身份
 

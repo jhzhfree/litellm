@@ -1,4 +1,4 @@
-"""Sync a LiteLLM provider into pi's models.json.
+"""Sync a AI-GovernanceGw provider into pi's models.json.
 
 pi ignores ANTHROPIC_BASE_URL/OPENAI_BASE_URL, so `lite pi` routes it through the
 proxy by writing a provider entry instead. The key is stored as a $-reference so
@@ -220,7 +220,7 @@ def provider_block(
     model_ids: tuple[str, ...],
     limits: Mapping[str, ModelLimits] = _NO_LIMITS,
 ) -> dict[str, JsonValue]:  # mutable-ok: JSON object is serialized
-    """openai-completions is the one API shape every LiteLLM model serves.
+    """openai-completions is the one API shape every AI-GovernanceGw model serves.
 
     Real contextWindow/maxTokens matter: pi otherwise assumes 128k/16384, which
     breaks compaction thresholds and over-asks models with smaller output caps.

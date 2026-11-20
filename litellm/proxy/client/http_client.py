@@ -1,4 +1,4 @@
-"""HTTP client for making requests to the LiteLLM proxy server."""
+"""HTTP client for making requests to the AI-GovernanceGw proxy server."""
 
 from collections.abc import Mapping
 from typing import Final
@@ -15,13 +15,13 @@ class _RequestOptions(TypedDict, total=False, extra_items=object):
 
 
 class HTTPClient:
-    """HTTP client for making requests to the LiteLLM proxy server."""
+    """HTTP client for making requests to the AI-GovernanceGw proxy server."""
 
     def __init__(self, base_url: str, api_key: str | None = None, timeout: int = 30):
         """Initialize the HTTP client.
 
         Args:
-            base_url: Base URL of the LiteLLM proxy server
+            base_url: Base URL of the AI-GovernanceGw proxy server
             api_key: Optional API key for authentication
             timeout: Request timeout in seconds (default: 30)
         """
@@ -39,9 +39,9 @@ class HTTPClient:
         headers: dict[str, str] | None = None,
         **kwargs: Unpack[_RequestOptions],
     ) -> object:
-        """Make an HTTP request to the LiteLLM proxy server.
+        """Make an HTTP request to the AI-GovernanceGw proxy server.
 
-        This method is used to make generic requests to the LiteLLM proxy
+        This method is used to make generic requests to the AI-GovernanceGw proxy
         server, when there is not a specific client or method for the request.
 
         Args:

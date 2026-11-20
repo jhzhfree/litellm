@@ -9044,17 +9044,17 @@
   },
   "aria": {
     "page": {
-      "unavailable": "本会话无法使用原生agent。"
+      "unavailable": "本会话无法使用小恒。"
     },
     "usageTrigger": {
-      "ask": "询问原生agent"
+      "ask": "询问小恒"
     },
     "destination": {
       "loadingSettings": "正在加载网关设置",
       "settingsError": "无法加载网关设置。",
       "retry": "重试",
       "consentTitle": "连接到已配置的网关",
-      "consentBody": "该网关使用不同的地址。原生agent 会将你现有的会话凭据发送到上面显示的地址。",
+      "consentBody": "该网关使用不同的地址。小恒 会将你现有的会话凭据发送到上面显示的地址。",
       "useConfigured": "使用已配置的网关"
     },
     "inferenceTarget": {
@@ -9066,7 +9066,7 @@
     },
     "composer": {
       "tooLong": "消息长度不能超过 {{limit}} 个字符。",
-      "placeholder": "询问原生agent…"
+      "placeholder": "询问小恒…"
     },
     "modelPicker": {
       "loading": "正在加载模型",

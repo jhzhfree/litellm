@@ -1,4 +1,4 @@
-"""Teams management client for LiteLLM proxy."""
+"""Teams management client for AI-GovernanceGw proxy."""
 
 import builtins
 from typing import Any, Final
@@ -12,14 +12,14 @@ _DECODED_JSON: Final = TypeAdapter(object)
 
 
 class TeamsManagementClient:
-    """Client for managing teams in LiteLLM proxy."""
+    """Client for managing teams in AI-GovernanceGw proxy."""
 
     def __init__(self, base_url: str, api_key: str | None = None, timeout: int = 30):
         """
         Initialize the TeamsManagementClient.
 
         Args:
-            base_url (str): The base URL of the LiteLLM proxy server (e.g., "http://localhost:4000")
+            base_url (str): The base URL of the AI-GovernanceGw proxy server (e.g., "http://localhost:4000")
             api_key (Optional[str]): API key for authentication. If provided, it will be sent as a Bearer token.
             timeout (int): Request timeout in seconds (default: 30)
         """

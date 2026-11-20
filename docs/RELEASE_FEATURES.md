@@ -1,4 +1,4 @@
-# LiteLLM 产品功能发布清单
+# AI治理网关 产品功能发布清单
 
 ## 1 说明
 
@@ -16,7 +16,7 @@
 
 | 项 | 值 |
 |---|---|
-| 产品 | LiteLLM SDK + AI Gateway |
+| 产品 | AI治理网关 SDK + AI Gateway |
 | 版本 | 1.110.0 |
 | 运行形态 | Python SDK、FastAPI 网关、Next.js 管理后台 |
 | Python 支持 | 3.10 至 3.15，推荐 3.12 |

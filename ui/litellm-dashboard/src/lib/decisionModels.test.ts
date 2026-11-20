@@ -128,7 +128,7 @@ describe("buildDecisionGarden", () => {
     ]);
   });
 
-  it("marks a model from a provider this proxy cannot serve on /v1/decisions as needing a newer LiteLLM, last", () => {
+  it("marks a model from a provider this proxy cannot serve on /v1/decisions as needing a newer AI-GovernanceGw, last", () => {
     const rows = buildDecisionGarden(
       {
         "aaa/self-hosted": { litellm_provider: "aaa", mode: "evaluation", supported_endpoints: ["/v1/systemone"] },

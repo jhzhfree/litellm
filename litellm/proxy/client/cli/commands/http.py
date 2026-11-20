@@ -32,7 +32,7 @@ def _cli_context(view: _CliContextView) -> _CliContext:
 
 @click.group()
 def http():
-    """Make HTTP requests to the LiteLLM proxy server"""
+    """Make HTTP requests to the AI-GovernanceGw proxy server"""
 
 
 @http.command()
@@ -65,7 +65,7 @@ def request(
     json: str | None = None,
     header: tuple[str, ...] = (),
 ):
-    """Make an HTTP request to the LiteLLM proxy server
+    """Make an HTTP request to the AI-GovernanceGw proxy server
 
     METHOD: HTTP method (GET, POST, PUT, DELETE, etc.)
     URI: URI path (will be appended to base_url)

@@ -252,7 +252,7 @@ def test_should_render_the_current_ui_logo_safe_model_text_and_actionable_links(
     assert "javascript:" not in rendered.html
     assert "&lt;script&gt;" in rendered.html
     assert "/ui/usage?tab=models&amp;from=2026-10-03&amp;to=2026-11-01" in rendered.html
-    assert "Recommendation source: LiteLLM model cost map" in rendered.text
+    assert "Recommendation source: AI-GovernanceGw model cost map" in rendered.text
     assert "Google is deprecating this model on 01 Dec 2026 (UTC)." in rendered.html
     assert "Google is deprecating this model on 01 Dec 2026 (UTC)." in rendered.text
     assert "google_pse.png" in rendered.html

@@ -625,7 +625,7 @@ def _start_cli_sso_flow(base_url: str) -> CliSsoStartData:
         content_type: Final = response.headers.get("content-type", "unknown")
         raise ValueError(
             f"The proxy returned a non-JSON response from {start_url} (content-type: {content_type}). "
-            "A proxy, load balancer, or auth gateway in front of LiteLLM may be intercepting the request. "
+            "A proxy, load balancer, or auth gateway in front of AI-GovernanceGw may be intercepting the request. "
             f"Response starts with: {response.text[:200]!r}"
         )
 
@@ -897,7 +897,7 @@ def _pkce_login(base_url: str, config_claude: bool, vault: SecretVault) -> None:
 )
 @click.pass_context
 def login(ctx: click.Context, config_claude: bool, pkce: bool | None) -> None:
-    """Login to LiteLLM proxy using SSO authentication"""
+    """Login to AI-GovernanceGw proxy using SSO authentication"""
     from litellm.constants import LITELLM_CLI_SOURCE_IDENTIFIER
 
     ctx_obj: Final = cli_context_obj(ctx)

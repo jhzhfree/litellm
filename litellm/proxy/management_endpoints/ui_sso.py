@@ -2,7 +2,7 @@
 Has all /sso/* routes
 
 /sso/key/generate - handles user signing in with SSO and redirects to /sso/callback
-/sso/callback - returns JWT Redirect Response that redirects to LiteLLM UI
+/sso/callback - returns JWT Redirect Response that redirects to AI-GovernanceGw UI
 
 /sso/debug/login - handles user signing in with SSO and redirects to /sso/debug/callback
 /sso/debug/callback - returns the OpenID object returned by the SSO provider
@@ -457,7 +457,7 @@ def _parse_cli_sso_claim_map() -> list[tuple[str, str]]:
     Format: comma-separated ``source_claim->metadata_key`` pairs, e.g.
     ``employment_type->acme_employment_type,org_info.department->department``.
     Destination keys may use an optional ``metadata.`` prefix; values are stored
-    on the LiteLLM user's ``metadata`` JSON column.
+    on the AI-GovernanceGw user's ``metadata`` JSON column.
     """
     claim_map_raw: Final = CLI_SSO_CLAIM_MAP.strip()
     if not claim_map_raw:
@@ -688,7 +688,7 @@ def _render_cli_sso_verification_page(
     <!doctype html>
     <html>
       <head>
-        <title>LiteLLM CLI Login</title>
+        <title>AI-GovernanceGw CLI Login</title>
         <style>
           body {{
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -1201,7 +1201,7 @@ async def google_login(
             )
         except ImportError:
             raise ValueError(
-                "Enterprise features are not available. Custom UI SSO sign-in requires LiteLLM Enterprise."
+                "Enterprise features are not available. Custom UI SSO sign-in requires AI-GovernanceGw Enterprise."
             )
 
     if (
@@ -1580,7 +1580,7 @@ def _handle_generic_sso_error(
 
         detailed_message = (
             f"SSO authentication failed: {provider_name} requires PKCE (Proof Key for Code Exchange) "
-            f"but it's not enabled in your LiteLLM configuration.\n\n"
+            f"but it's not enabled in your AI-GovernanceGw configuration.\n\n"
             f"SOLUTION: Add this environment variable and restart your proxy:\n"
             f"  GENERIC_CLIENT_USE_PKCE=true\n\n"
         )
@@ -2044,7 +2044,7 @@ async def get_user_info_from_db(
             "user_info: %s; litellm.default_internal_user_params: %s", user_info, litellm.default_internal_user_params
         )
 
-        # Upsert SSO User to LiteLLM DB
+        # Upsert SSO User to AI-GovernanceGw DB
         user_info = await SSOAuthenticationHandler.upsert_sso_user(
             result=result,
             user_info=user_info,
@@ -2078,7 +2078,7 @@ def _should_use_role_from_sso_response(sso_role: str | None) -> bool:
 
     if not is_valid_litellm_user_role(sso_role):
         verbose_proxy_logger.debug(
-            "SSO role '%s' is not a valid LiteLLM user role. Ignoring role from SSO response. See LitellmUserRoles enum for valid roles.",
+            "SSO role '%s' is not a valid AI-GovernanceGw user role. Ignoring role from SSO response. See LitellmUserRoles enum for valid roles.",
             sso_role,
         )
         return False
@@ -2140,7 +2140,7 @@ def _build_sso_user_update_data(
         # Convert enum to string if needed
         sso_role_str: Final = sso_role.value if isinstance(sso_role, LitellmUserRoles) else sso_role
 
-        # Only include if it's a valid LiteLLM role
+        # Only include if it's a valid AI-GovernanceGw role
         if _should_use_role_from_sso_response(sso_role_str):
             update_data["user_role"] = sso_role_str
             verbose_proxy_logger.info("Updating user %s role from SSO: %s", user_id, sso_role_str)
@@ -2869,11 +2869,11 @@ async def insert_sso_user(
     user_defined_values: SSOUserDefinedValues | None = None,
 ) -> NewUserResponse:
     """
-    Helper function to create a New User in LiteLLM DB after a successful SSO login
+    Helper function to create a New User in AI-GovernanceGw DB after a successful SSO login
 
     Args:
         result_openid (OpenID): User information in OpenID format if the login was successful.
-        user_defined_values (Optional[SSOUserDefinedValues], optional): LiteLLM SSOValues / fields that were read
+        user_defined_values (Optional[SSOUserDefinedValues], optional): AI-GovernanceGw SSOValues / fields that were read
 
     Returns:
         Tuple[str, str]: User ID and User Role
@@ -2891,7 +2891,7 @@ async def insert_sso_user(
 
     # Apply default_internal_user_params
     if litellm.default_internal_user_params:
-        # Preserve the SSO-extracted role if it's a valid LiteLLM role,
+        # Preserve the SSO-extracted role if it's a valid AI-GovernanceGw role,
         # regardless of how it was determined (role_mappings, Microsoft app_roles,
         # GENERIC_USER_ROLE_ATTRIBUTE, custom SSO handler, etc.)
         sso_role: Final = user_defined_values.get("user_role")
@@ -3654,10 +3654,10 @@ class SSOAuthenticationHandler:
         raise_database_outage: bool = False,
     ):
         """
-        Connects the SSO Users to the User Table in LiteLLM DB
+        Connects the SSO Users to the User Table in AI-GovernanceGw DB
 
-        - If user on LiteLLM DB, update the user_email and user_role (if SSO provides valid role) with the SSO values
-        - If user not on LiteLLM DB, insert the user into LiteLLM DB
+        - If user on AI-GovernanceGw DB, update the user_email and user_role (if SSO provides valid role) with the SSO values
+        - If user not on AI-GovernanceGw DB, insert the user into AI-GovernanceGw DB
         """
         try:
             if user_info is not None:
@@ -3673,8 +3673,8 @@ class SSOAuthenticationHandler:
                     where={"user_id": user_id}, data=update_data
                 )
             else:
-                verbose_proxy_logger.info("user not in DB, inserting user into LiteLLM DB")
-                # user not in DB, insert User into LiteLLM DB
+                verbose_proxy_logger.info("user not in DB, inserting user into AI-GovernanceGw DB")
+                # user not in DB, insert User into AI-GovernanceGw DB
                 user_info = await _insert_sso_user_or_find_concurrent_insert(
                     insert=insert_sso_user(result_openid=result, user_defined_values=user_defined_values),
                     user_id=None if user_defined_values is None else user_defined_values.get("user_id"),
@@ -3690,7 +3690,7 @@ class SSOAuthenticationHandler:
                 and PrismaDBExceptionHandler.is_database_service_unavailable_error_in_chain(e)
             ):
                 raise
-            verbose_proxy_logger.exception("Error upserting SSO user into LiteLLM DB: %s", e)
+            verbose_proxy_logger.exception("Error upserting SSO user into AI-GovernanceGw DB: %s", e)
             return user_info
 
     @staticmethod
@@ -3705,7 +3705,7 @@ class SSOAuthenticationHandler:
         The `team_ids` field is populated by litellm after processing the SSO response
         """
         if user_info is None:
-            verbose_proxy_logger.debug("User not found in LiteLLM DB, skipping team member addition")
+            verbose_proxy_logger.debug("User not found in AI-GovernanceGw DB, skipping team member addition")
             return
         sso_teams: Final = result.team_ids if isinstance(result, CustomOpenID) else []
         await add_missing_team_member(
@@ -3758,7 +3758,7 @@ class SSOAuthenticationHandler:
         """
         Creates a Litellm Team from a SSO Group ID
 
-        Your SSO provider might have groups that should be created on LiteLLM
+        Your SSO provider might have groups that should be created on AI-GovernanceGw
 
         Use this helper to create a Litellm Team from a SSO Group ID
 
@@ -4831,7 +4831,7 @@ class MicrosoftSSOHandler:
         app_roles: Sequence[str] | None,
     ) -> LitellmUserRoles | None:
         """
-        Resolve the one role LiteLLM stores for a user from their Entra app roles.
+        Resolve the one role AI-GovernanceGw stores for a user from their Entra app roles.
 
         Entra does not guarantee `roles` claim ordering, so a user holding several app
         roles resolves to the highest privilege one rather than whichever the claim
@@ -5138,7 +5138,7 @@ async def debug_sso_login(request: Request):
     if microsoft_client_id is not None or google_client_id is not None or generic_client_id is not None:
         if premium_user is not True:
             raise ProxyException(
-                message="You must be a LiteLLM Enterprise user to use SSO. If you have a license please set `LITELLM_LICENSE` in your env. If you want to obtain a license meet with us here: https://enterprise.litellm.ai/demo You are seeing this error message because You set one of `MICROSOFT_CLIENT_ID`, `GOOGLE_CLIENT_ID`, or `GENERIC_CLIENT_ID` in your env. Please unset this",
+                message="You must be a AI-GovernanceGw Enterprise user to use SSO. If you have a license please set `LITELLM_LICENSE` in your env. If you want to obtain a license meet with us here: https://enterprise.litellm.ai/demo You are seeing this error message because You set one of `MICROSOFT_CLIENT_ID`, `GOOGLE_CLIENT_ID`, or `GENERIC_CLIENT_ID` in your env. Please unset this",
                 type=ProxyErrorTypes.auth_error,
                 param="premium_user",
                 code=status.HTTP_403_FORBIDDEN,

@@ -108,7 +108,7 @@ describe("Chat layout product navigation", () => {
 
       await user.click(screen.getByRole("button", { name: "Open chat navigation" }));
       const logo = await screen.findByRole("link", { name: "Chat home" });
-      const light = within(logo).getByAltText("LiteLLM");
+      const light = within(logo).getByAltText("AI-GovernanceGw");
       const dark = within(logo).getByAltText("");
       const source = (path: string) => (path.startsWith("/") ? `${getProxyBaseUrl()}${path}` : path);
       expect(light).toHaveAttribute("src", source(lightSource));
@@ -127,8 +127,8 @@ describe("Chat layout product navigation", () => {
     );
 
     await user.click(screen.getByRole("button", { name: "Open chat navigation" }));
-    expect(await screen.findByRole("dialog", { name: "LiteLLM Chat" })).toBeInTheDocument();
-    expect(screen.getByAltText("LiteLLM")).toHaveAttribute("src", `${getProxyBaseUrl()}/get_image`);
+    expect(await screen.findByRole("dialog", { name: "AI-GovernanceGw Chat" })).toBeInTheDocument();
+    expect(screen.getByAltText("AI-GovernanceGw")).toHaveAttribute("src", `${getProxyBaseUrl()}/get_image`);
   });
 
   it.each([

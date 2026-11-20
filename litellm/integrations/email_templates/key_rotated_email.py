@@ -1,5 +1,5 @@
 """
-Modern Email Templates for LiteLLM Email Service with professional styling
+Modern Email Templates for AI-GovernanceGw Email Service with professional styling
 """
 
 from typing import Final
@@ -158,7 +158,7 @@ KEY_ROTATED_EMAIL_TEMPLATE: Final = """
 <body>
     <div class="container">
         <div class="header">
-            <img src="{email_logo_url}" alt="LiteLLM Logo" style="height: 32px; width: auto;">
+            <img src="{email_logo_url}" alt="AI-GovernanceGw Logo" style="height: 32px; width: auto;">
         </div>
         <div class="content">
             <div class="greeting">
@@ -166,7 +166,7 @@ KEY_ROTATED_EMAIL_TEMPLATE: Final = """
             </div>
             
             <div class="message">
-                <p><strong>Your LiteLLM API key has been rotated</strong> as part of our ongoing commitment to security best practices.</p>
+                <p><strong>Your AI-GovernanceGw API key has been rotated</strong> as part of our ongoing commitment to security best practices.</p>
                 <p style="margin-top: 16px;">Your previous API key has been deactivated and will no longer work. Please update your applications with the new key below.</p>
             </div>
             

@@ -31,10 +31,10 @@ REPORT_DIR: Final = Path.home() / ".litellm" / "debug"
 SESSION_ID_ENV: Final = "CLAUDE_CODE_SESSION_ID"
 SLASH_COMMAND_NAME: Final = "debug-lite"
 SLASH_COMMAND_BODY: Final = """---
-description: Pull the LiteLLM debug report (spend, request, response, error) for this Claude Code session
+description: Pull the AI-GovernanceGw debug report (spend, request, response, error) for this Claude Code session
 allowed-tools: Bash(lite debug claude:*)
 ---
-Below is the LiteLLM debug report for this Claude Code session. Summarize the failing
+Below is the AI-GovernanceGw debug report for this Claude Code session. Summarize the failing
 request(s) in a few sentences (model, error, request id) and tell me the path the full
 report was saved to so I can hand it off. If nothing failed, say so.
 
@@ -248,7 +248,7 @@ def render_report(
 ) -> str:
     failures: Final = tuple(r for r in rows if r.failed)
     summary: Final = (
-        f"# LiteLLM debug report: Claude Code session `{session_id}`",
+        f"# AI-GovernanceGw debug report: Claude Code session `{session_id}`",
         "",
         f"- proxy: {base_url}",
         f"- generated: {datetime.now(timezone.utc).isoformat(timespec='seconds')}",

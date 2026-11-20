@@ -711,7 +711,7 @@ export const PARTNER_GUARDRAIL_CARDS: GuardrailCardInfo[] = [
     id: "wingback",
     name: "Wingback",
     description:
-      "Wingback runtime security for LiteLLM — PII detection, prompt injection, toxic content, and policy enforcement via the Wingback connectors service.",
+      "Wingback runtime security for AI-GovernanceGw — PII detection, prompt injection, toxic content, and policy enforcement via the Wingback connectors service.",
     descriptionKey: "guardrails.gardenCatalog.partner.wingback.description",
     category: "partner",
     logo: guardrailLogoMap["Wingback"],

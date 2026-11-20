@@ -2,7 +2,7 @@
 
 > 产品：AI治理网关（AI-GovernanceGw）
 > 功能：用户使用大模型时，禁止将财务数据发送给外部模型。
-> 实现方式：LiteLLM 自定义护栏（Custom Guardrail），`pre_call` 阶段拦截。
+> 实现方式：AI治理网关 自定义护栏（Custom Guardrail），`pre_call` 阶段拦截。
 
 ---
 
@@ -62,7 +62,7 @@
 文件：`enterprise/financial_guardrail.py`（随镜像分发，容器内路径
 `/app/enterprise/financial_guardrail.py`）。
 
-类：`FinancialDataGuardrail`，基于 LiteLLM `CustomGuardrail` 基类的统一
+类：`FinancialDataGuardrail`，基于 AI治理网关 `CustomGuardrail` 基类的统一
 `apply_guardrail` 接口。
 
 ### 2.2 配置文件写法（proxy_config.yaml）

@@ -15,7 +15,7 @@ describe("LitellmModelNameField", () => {
         />
       </MountedFormHost>,
     );
-    expect(screen.getByText("LiteLLM Model Name(s)")).toBeInTheDocument();
+    expect(screen.getByText("AI-GovernanceGw Model Name(s)")).toBeInTheDocument();
   });
 
   it("should show Azure placeholder as 'my-deployment'", () => {

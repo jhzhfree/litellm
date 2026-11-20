@@ -62,7 +62,7 @@ OPENAI_BASE_URL_ENV: Final = "OPENAI_BASE_URL"
 OPENAI_API_KEY_ENV: Final = "OPENAI_API_KEY"
 OPENCODE_CONFIG_CONTENT_ENV: Final = "OPENCODE_CONFIG_CONTENT"
 OPENCODE_PROVIDER_ID: Final = "litellm"
-OPENCODE_PROVIDER_NAME: Final = "LiteLLM"
+OPENCODE_PROVIDER_NAME: Final = "AI-GovernanceGw"
 OPENCODE_PROVIDER_NPM: Final = "@ai-sdk/openai-compatible"
 
 _SKIP_VERIFY_FLAG: Final = "--skip-verify"
@@ -183,7 +183,7 @@ def build_agent_env(
 def codex_proxy_provider(base_url: str, *, subscription: bool = False) -> Mapping[str, str | bool]:
     return MappingProxyType(
         {
-            "name": "LiteLLM proxy",
+            "name": "AI-GovernanceGw proxy",
             "base_url": base_url.rstrip("/") + "/v1",
             "wire_api": "responses",
             "supports_websockets": False,
@@ -280,7 +280,7 @@ OVERLAY_FILE_NAME: Final = "litellm-subscription-overlay.json"
 def write_settings_overlay(text: str, environ: Mapping[str, str]) -> Path:
     """Write the overlay next to Claude Code's own settings.json (so under CLAUDE_CONFIG_DIR when set) and return
     its path. One file per user, rewritten on every launch, mode 0600 whether or not it already existed. It carries
-    the LiteLLM key, which is why it is a private file and not an inline `--settings` argument that every local
+    the AI-GovernanceGw key, which is why it is a private file and not an inline `--settings` argument that every local
     user could read from the process list, and why it does not pile up in the temp dir."""
     path: Final = claude_settings_path(environ).parent / OVERLAY_FILE_NAME
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -304,7 +304,7 @@ def subscription_launch_args(
     Claude Code applies `env` from its settings files over the process environment, so a key that `lite up` or
     `lite configure claude` left in ANTHROPIC_AUTH_TOKEN would land back in `Authorization`, and an
     ANTHROPIC_CUSTOM_HEADERS there would drop the x-litellm-api-key header. The overlay blanks both credential
-    keys (read as unset for this session only) and carries the custom headers with the LiteLLM key appended,
+    keys (read as unset for this session only) and carries the custom headers with the AI-GovernanceGw key appended,
     taking the headers from the user's `--settings`, else the settings files in Claude Code's precedence order,
     else the process environment. Any `--settings` the user passed is stripped and the last one (inline JSON or a
     file, the one Claude Code would keep) is merged in, since Claude Code keeps only the last `--settings`.
@@ -974,12 +974,12 @@ def verify_proxy_key(
         resp: Final = get(url, headers={key_header: f"Bearer {api_key}"}, timeout=10)
     except requests.RequestException as e:
         raise AgentRunError(
-            f"Could not reach the LiteLLM proxy at {base_url.rstrip('/')}: {e}. "
+            f"Could not reach the AI-GovernanceGw proxy at {base_url.rstrip('/')}: {e}. "
             "Is it running, and is --base-url (or LITELLM_PROXY_URL) correct?"
         )
     if resp.status_code in (401, 403):
         raise AgentRunError(
-            f"LiteLLM rejected your key (HTTP {resp.status_code}). "
+            f"AI-GovernanceGw rejected your key (HTTP {resp.status_code}). "
             "Run `lite login` to refresh it, or pass a valid --api-key."
         )
 
@@ -1175,11 +1175,11 @@ def resolve_api_key(ctx: click.Context) -> str:
 
     if not _is_interactive():
         raise click.ClickException(
-            "No LiteLLM key found. Set LITELLM_PROXY_API_KEY (or pass --api-key) for "
+            "No AI-GovernanceGw key found. Set LITELLM_PROXY_API_KEY (or pass --api-key) for "
             "non-interactive use, or run `lite login` from a terminal."
         )
 
-    click.echo("No LiteLLM credentials found; starting login...")
+    click.echo("No AI-GovernanceGw credentials found; starting login...")
     ctx.invoke(login)
     api_key = get_stored_api_key(expected_base_url=base_url, vault=context_secret_vault(ctx))
     if not api_key:
@@ -1191,12 +1191,12 @@ _SKIP_VERIFY_HELP: Final = "Skip the pre-launch key check against the proxy."
 _SUBSCRIPTION_HELP: Final = MappingProxyType(
     {
         "claude": (
-            "Keep using your claude.ai login (and its connectors). The LiteLLM key is sent in the "
+            "Keep using your claude.ai login (and its connectors). The AI-GovernanceGw key is sent in the "
             "x-litellm-api-key header instead of replacing Claude Code's own credential. "
             "Make it the default with `lite config set claude_subscription true`."
         ),
         "codex": (
-            "Keep using your ChatGPT login. The LiteLLM key is sent in the "
+            "Keep using your ChatGPT login. The AI-GovernanceGw key is sent in the "
             "x-litellm-api-key header instead of replacing Codex's own credential. "
             "Make it the default with `lite config set codex_subscription true`."
         ),
@@ -1243,7 +1243,7 @@ def _make_agent_command(binary: str, display_name: str) -> click.Command:
     @click.command(
         name=binary,
         context_settings={"ignore_unknown_options": True},
-        short_help=f"Run {display_name} through your LiteLLM proxy",
+        short_help=f"Run {display_name} through your AI-GovernanceGw proxy",
         hidden=binary in _HIDDEN_AGENTS,
     )
     @click.option("--skip-verify", is_flag=True, default=False, help=_SKIP_VERIFY_HELP)
@@ -1254,8 +1254,8 @@ def _make_agent_command(binary: str, display_name: str) -> click.Command:
         _launch(ctx, binary, list(args), skip_verify=skip_verify, subscription=subscription)
 
     _command.help = (
-        f"Run {display_name} routed through your LiteLLM proxy.\n\n"
-        f"Logs in with LiteLLM if needed, verifies your key against the proxy, "
+        f"Run {display_name} routed through your AI-GovernanceGw proxy.\n\n"
+        f"Logs in with AI-GovernanceGw if needed, verifies your key against the proxy, "
         f"exports the env vars {binary} reads, then hands off. Any arguments are "
         f"forwarded to `{binary}`."
     )

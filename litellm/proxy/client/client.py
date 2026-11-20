@@ -10,7 +10,7 @@ from .teams import TeamsManagementClient
 
 
 class Client:
-    """Main client for interacting with the LiteLLM proxy API."""
+    """Main client for interacting with the AI-GovernanceGw proxy API."""
 
     def __init__(
         self,
@@ -19,10 +19,10 @@ class Client:
         timeout: int = 30,
     ):
         """
-        Initialize the LiteLLM proxy client.
+        Initialize the AI-GovernanceGw proxy client.
 
         Args:
-            base_url (str): The base URL of the LiteLLM proxy server (e.g., "http://localhost:4000")
+            base_url (str): The base URL of the AI-GovernanceGw proxy server (e.g., "http://localhost:4000")
             api_key (Optional[str]): API key for authentication. If provided, it will be sent as a Bearer token.
             timeout: Request timeout in seconds for management calls (default: 30). Chat completions keep
                 ChatClient's own 600 second default, since a completion can legitimately take minutes

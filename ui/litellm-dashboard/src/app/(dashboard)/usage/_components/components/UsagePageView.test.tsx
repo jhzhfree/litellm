@@ -1449,7 +1449,7 @@ describe("UsagePage", () => {
     });
   });
 
-  describe("Aria Agent", () => {
+  describe("小恒", () => {
     it("offers a link to Aria without a second composer in global view", async () => {
       renderWithProviders(<UsagePage {...defaultProps} />);
 
@@ -1458,7 +1458,7 @@ describe("UsagePage", () => {
       });
 
       expect(screen.getByRole("link", { name: "Ask Aria" })).toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Ask Aria Agent" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "Ask 小恒" })).not.toBeInTheDocument();
       expect(screen.queryByText("Ask AI")).not.toBeInTheDocument();
     });
 
@@ -1475,7 +1475,7 @@ describe("UsagePage", () => {
 
       expect(await screen.findByText("Entity Usage")).toBeInTheDocument();
       expect(screen.queryByPlaceholderText(/Ask Aria/)).not.toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Ask Aria Agent" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "Ask 小恒" })).not.toBeInTheDocument();
     });
   });
 

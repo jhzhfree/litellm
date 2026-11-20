@@ -87,7 +87,7 @@ def show_commands():
     from .commands.config import hidden_command_names
 
     commands = [
-        ("login", "Authenticate with the LiteLLM proxy server"),
+        ("login", "Authenticate with the AI-GovernanceGw proxy server"),
         ("logout", "Clear stored authentication"),
         ("whoami", "Show current authentication status"),
         ("models", "Manage and view model configurations"),
@@ -120,7 +120,7 @@ def setup_shell(ctx: click.Context):
 
     # Show server connection info
     base_url: Final = cli_context_obj(ctx).get("base_url")
-    click.secho(f"Connected to LiteLLM server: {base_url}\n", fg="green")
+    click.secho(f"Connected to AI-GovernanceGw server: {base_url}\n", fg="green")
 
     show_commands()
 

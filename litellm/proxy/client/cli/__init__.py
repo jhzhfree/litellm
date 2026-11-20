@@ -1,4 +1,4 @@
-"""CLI package for LiteLLM Proxy Client."""
+"""CLI package for AI-GovernanceGw Proxy Client."""
 
 from .main import cli, litellm_proxy_cli
 

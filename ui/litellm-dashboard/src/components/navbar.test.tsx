@@ -263,7 +263,7 @@ describe("Navbar", () => {
       renderWithProviders(<Navbar {...defaultProps} />);
 
       const brand = within(screen.getByRole("link", { name: /litellm brand/i }));
-      const light = brand.getByAltText("LiteLLM Brand");
+      const light = brand.getByAltText("AI-GovernanceGw Brand");
       const dark = brand.getByAltText("");
       expect(light).toHaveAttribute("src", logoUrl);
       expect(dark).toHaveAttribute("src", logoUrlDark ?? logoUrl);

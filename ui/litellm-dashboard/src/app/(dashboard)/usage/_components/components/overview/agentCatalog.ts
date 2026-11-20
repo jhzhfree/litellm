@@ -192,7 +192,7 @@ const FAMILIES: readonly AgentFamily[] = [
   },
   {
     id: "litellm",
-    label: "LiteLLM SDK",
+    label: "AI-GovernanceGw SDK",
     description: "usage.agentCatalog.descriptions.litellmSdk",
     kind: "sdk",
     logo: litellmLogo.src,

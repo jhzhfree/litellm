@@ -113,7 +113,7 @@ def _preflight(target: Target) -> None:
 def _listing_error(base_url: str, error: PiSyncError, target: str) -> str:
     """The hint that fits how the listing failed: only an unreachable proxy gets the "is it running" question."""
     if error.kind is ListingFailure.REJECTED:
-        return f"LiteLLM rejected your key (HTTP {error.status}). Pass a valid --api-key."
+        return f"AI-GovernanceGw rejected your key (HTTP {error.status}). Pass a valid --api-key."
     if error.kind is ListingFailure.UNREACHABLE:
         return (
             f"Could not connect. Is the proxy at {base_url} running, and is --base-url (or LITELLM_PROXY_URL) correct?"
@@ -121,7 +121,7 @@ def _listing_error(base_url: str, error: PiSyncError, target: str) -> str:
     if error.kind is ListingFailure.EMPTY:
         name: Final = "Claude Code" if target == _CLAUDE_TARGET else "Codex"
         return f"{error.message} {name} would have nothing to run; give the key access to at least one model."
-    return f"The proxy at {base_url} answered, so check that it is a LiteLLM proxy and is healthy."
+    return f"The proxy at {base_url} answered, so check that it is a AI-GovernanceGw proxy and is healthy."
 
 
 def _fetch_models(base_url: str, key: str, target: Target) -> tuple[ListedModel, ...] | PiSyncError:
@@ -224,7 +224,7 @@ def pick_targets(defaults: tuple[Target, ...] = ("claude", "codex"), *, edit: bo
         inquirer.checkbox(
             message="Which agents should be edited? Unselected agents keep their current setup"
             if edit
-            else "Which agents should route through LiteLLM?",
+            else "Which agents should route through AI-GovernanceGw?",
             choices=choices,
             validate=_has_targets,
             invalid_message="Pick at least one.",

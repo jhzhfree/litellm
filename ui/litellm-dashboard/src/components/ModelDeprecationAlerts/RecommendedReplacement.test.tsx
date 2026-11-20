@@ -12,7 +12,7 @@ describe("recommended replacement", () => {
   it("should render the model with its cost-map source and provider notice", () => {
     render(<RecommendedReplacement recommendation={recommendation} />);
     expect(screen.getByText("new-model")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "LiteLLM model cost map" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "AI-GovernanceGw model cost map" })).toHaveAttribute(
       "href",
       "/docs",
     );
@@ -26,7 +26,7 @@ describe("recommended replacement", () => {
       <RecommendedReplacement recommendation={{ ...recommendation, successor_model_source: "deployment_config" }} />,
     );
     expect(screen.getByText(/Deployment configuration/)).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "LiteLLM model cost map" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "AI-GovernanceGw model cost map" })).not.toBeInTheDocument();
   });
   it("should omit provenance when no replacement is provided", () => {
     render(<RecommendedReplacement recommendation={{}} />);

@@ -1,6 +1,6 @@
 import type { ParseKeys } from "i18next";
 
-/** A single MCP tool event emitted by the LiteLLM proxy during a Responses API turn. */
+/** A single MCP tool event emitted by the AI-GovernanceGw proxy during a Responses API turn. */
 export interface MCPEvent {
   type: string;
   sequence_number?: number;
@@ -65,7 +65,7 @@ export const AUTH_TYPE_ITEMS: { value: string; label: ParseKeys }[] = [
 ];
 
 // The two client-forwarded token modes: the caller supplies the upstream Authorization (forwarded
-// verbatim for true_passthrough, alongside LiteLLM admission for oauth_delegate). The dashboard holds
+// verbatim for true_passthrough, alongside AI-GovernanceGw admission for oauth_delegate). The dashboard holds
 // their token in sessionStorage instead of persisting it, and the browser-authorize temp payload keeps
 // their real auth_type so the backend does not treat them as needing a stored per-user token.
 export const isClientForwardedTokenMode = (authType?: string | null): boolean =>

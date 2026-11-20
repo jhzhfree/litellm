@@ -106,7 +106,7 @@ async def send_team_budget_alert(webhook_event: WebhookEvent) -> bool:
 
     event_name: Final = webhook_event.event_message
     max_budget: Final = webhook_event.max_budget
-    email_html_content = "Alert from LiteLLM Server"
+    email_html_content = "Alert from AI-GovernanceGw Server"
 
     if recipient_emails_str is None:
         verbose_proxy_logger.warning(
@@ -115,7 +115,7 @@ async def send_team_budget_alert(webhook_event: WebhookEvent) -> bool:
         )
 
     email_html_content = f"""
-    <img src="{email_logo_url}" alt="LiteLLM Logo" width="150" height="50" /> <br/><br/><br/>
+    <img src="{email_logo_url}" alt="AI-GovernanceGw Logo" width="150" height="50" /> <br/><br/><br/>
 
     Budget Crossed for Team <b> {team_alias} </b> <br/> <br/>
 
@@ -126,12 +126,12 @@ async def send_team_budget_alert(webhook_event: WebhookEvent) -> bool:
     If you have any questions, please send an email to {email_support_contact} <br /> <br />
 
     Best, <br />
-    The LiteLLM team <br />
+    The AI-GovernanceGw team <br />
     """
 
     email_event: Final = {
         "to": recipient_emails_str,
-        "subject": f"LiteLLM {event_name} for Team {team_alias}",
+        "subject": f"AI-GovernanceGw {event_name} for Team {team_alias}",
         "html": email_html_content,
     }
 

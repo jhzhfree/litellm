@@ -1,4 +1,4 @@
-"""Team management commands for LiteLLM CLI."""
+"""Team management commands for AI-GovernanceGw CLI."""
 
 from collections.abc import Mapping, Sequence
 from typing import Any, Final

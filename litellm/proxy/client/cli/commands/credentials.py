@@ -41,7 +41,7 @@ def _print_json(data: object) -> None:
 
 @click.group()
 def credentials():
-    """Manage credentials for the LiteLLM proxy server"""
+    """Manage credentials for the AI-GovernanceGw proxy server"""
 
 
 @credentials.command()

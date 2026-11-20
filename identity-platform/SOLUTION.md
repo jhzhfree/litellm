@@ -1,4 +1,4 @@
-# LiteLLM、Octop 与 AKB 统一认证解决方案
+# AI治理网关、Octop 与 AKB 统一认证解决方案
 
 版本 2.1，2026-11-20。原方案源码核对基线为 `b6ede959d691d1a8b3dc311cebac9e5ad198378d`，分支为 `litellm_identity_platform_integration`，仓库为 `jhzhfree/litellm`。本次先从远端 fast-forward 到该提交，再核对源码。本文件只定义方案及实施边界，不表示新增接口、SDK、DPoP 已交付。
 
@@ -6,7 +6,7 @@
 
 ## 1. 结论与建设目标
 
-企业已有员工身份来源继续管理员工账号、组织关系及在职状态。独立统一身份平台负责接入这些来源、关联员工身份并作为通用 OIDC Provider / OAuth Authorization Server 向 LiteLLM、Octop 和 AKB 签发自己的令牌。企业已部署 Entra ID 等 OIDC IdP 时优先联邦登录，由上游执行员工认证与 MFA；企业微信通讯录等只提供目录数据的来源可用于用户预置、组织同步和生命周期管理。Keycloak 本地用户可用于测试、没有企业 IdP 的部署及受控恢复。
+企业已有员工身份来源继续管理员工账号、组织关系及在职状态。独立统一身份平台负责接入这些来源、关联员工身份并作为通用 OIDC Provider / OAuth Authorization Server 向 AI治理网关、Octop 和 AKB 签发自己的令牌。企业已部署 Entra ID 等 OIDC IdP 时优先联邦登录，由上游执行员工认证与 MFA；企业微信通讯录等只提供目录数据的来源可用于用户预置、组织同步和生命周期管理。Keycloak 本地用户可用于测试、没有企业 IdP 的部署及受控恢复。
 
 改造继续复用网关现有通用 SSO、JWTHandler、Agent 身份存储和授权链路。网关负责本产品内“可以访问什么”，统一身份平台负责“是谁、凭证是否有效、可以获得什么目标令牌”，Agent 平台负责“哪个运行实例使用哪个身份、如何保护凭证、如何正确发起请求”。同一个身份平台不意味着所有产品共用一个客户端、一种 audience 或同一管理员权限。
 
@@ -97,7 +97,7 @@ flowchart TB
 
 ### 6.1 统一身份平台作为外部 SSO
 
-LiteLLM、Octop 和 AKB 分别注册独立 confidential 登录客户端，例如 `gateway-console`、`octop-console`、`akb-console`。回调 URI 分别精确登记，各产品维护自己的会话和授权。同一平台发行的 API token 仍按产品使用独立 audience。平台可对接 Entra；网关既可保留原生 Entra 直连，也可通过统一平台联邦接入。两条路径的 issuer 和 subject 不同，切换时必须执行受控账户关联，不能按邮箱静默合并。
+AI治理网关、Octop 和 AKB 分别注册独立 confidential 登录客户端，例如 `gateway-console`、`octop-console`、`akb-console`。回调 URI 分别精确登记，各产品维护自己的会话和授权。同一平台发行的 API token 仍按产品使用独立 audience。平台可对接 Entra；网关既可保留原生 Entra 直连，也可通过统一平台联邦接入。两条路径的 issuer 和 subject 不同，切换时必须执行受控账户关联，不能按邮箱静默合并。
 
 OIDC 提供用户登录身份层；授权码流程与 PKCE 采用成熟协议库，网关后端完成 code 交换和令牌验证。PKCE 的依据为 [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)，OIDC 登录语义依据 [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html)。这是目标完整登录契约，不代表现有通用适配器已通过所有安全项验收。
 
@@ -195,11 +195,11 @@ identity_integration:
 
 ### 6.4 各产品独立选择认证方式
 
-每个产品采用 `legacy` 或 `unified_oidc`，可逐个切换。未配置时采用 `legacy`。Octop 已通过 `OCTOP_USER_AUTHENTICATION_MODE` 与 `OCTOP_UNIFIED_OIDC_ISSUER` 实现这项选择，LiteLLM 与 AKB 的模式选择仍在规划中。切换仅影响该产品的人类用户登录；API Key、Service Key、既有 Agent 绑定和工作负载令牌继续由各入口的策略管理。
+每个产品采用 `legacy` 或 `unified_oidc`，可逐个切换。未配置时采用 `legacy`。Octop 已通过 `OCTOP_USER_AUTHENTICATION_MODE` 与 `OCTOP_UNIFIED_OIDC_ISSUER` 实现这项选择，AI治理网关 与 AKB 的模式选择仍在规划中。切换仅影响该产品的人类用户登录；API Key、Service Key、既有 Agent 绑定和工作负载令牌继续由各入口的策略管理。
 
 | 产品 | `legacy` | `unified_oidc` 接入路径与差距 |
 | --- | --- | --- |
-| LiteLLM | 保留现有本地登录和 Generic/Google/Microsoft SSO 选择 | 显式选定统一身份 issuer 并复用 Generic SSO；完整 ID Token 验证、外部账号映射及会话联调按本节验收 |
+| AI治理网关 | 保留现有本地登录和 Generic/Google/Microsoft SSO 选择 | 显式选定统一身份 issuer 并复用 Generic SSO；完整 ID Token 验证、外部账号映射及会话联调按本节验收 |
 | Octop | 保留现有本地账号、LDAP 和现有 SSO 配置 | 复用 OIDC 授权码、PKCE 和本地会话；启用 `approved_only`，已有绑定须归属于当前 issuer |
 | AKB | 保留本地控制台登录及现有外部 API 认证 | 控制台新增 OIDC 登录入口、回调、显式账号绑定和本地会话签发。已有外部 API 委托 JWT 校验可单独指向统一身份 issuer |
 
@@ -427,7 +427,7 @@ sequenceDiagram
 | 阶段 | 网关交付 | 身份平台交付 | Agent 平台/SDK交付 | 完成条件 |
 | --- | --- | --- | --- | --- |
 | P0 基线闭环 | 解决数据库依赖和实际 JWT 门控、启动隔离网关 | 保持本地身份服务、测试客户端 | 可重复的应用调用脚本 | 完整HTTP认证及授权正反例，不只组件调用 |
-| P1 用户 SSO | LiteLLM、Octop、AKB 独立选择认证模式，逐个上线 | 独立产品客户端及企业 OIDC 联邦 | Octop 按已批准绑定登录；工作负载身份独立 | 三产品旧入口兼容、联邦登录、故障拒绝、切回与会话验收 |
+| P1 用户 SSO | AI治理网关、Octop、AKB 独立选择认证模式，逐个上线 | 独立产品客户端及企业 OIDC 联邦 | Octop 按已批准绑定登录；工作负载身份独立 | 三产品旧入口兼容、联邦登录、故障拒绝、切回与会话验收 |
 | P1b 员工目录 | 下游账户或会话状态投影 | 企业微信通讯录和其他目录连接器 | Octop 处理员工状态及 Agent 归属 | 目录预置、同名隔离、部分同步及离职回收通过 |
 | P2 管理与同步 | 产品管理代理、绑定与投影、状态UI | 用户/应用/Agent管理API、操作状态机和Outbox | 身份申请及凭证安全注入 | 三方创建/禁用/轮换/删除及故障补偿闭环 |
 | P3 可复用SDK | 稳定的资源与错误契约 | 稳定token/profile能力 | Python/TS取token缓存与HTTP适配 | 至少两个不同Agent平台共用SDK，权限隔离验证 |

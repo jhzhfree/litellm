@@ -119,7 +119,7 @@ describe("pass_through_info update payload", () => {
     renderView({ ...endpoint, headers: {}, auth });
     await openEditForm(user);
 
-    const toggle = screen.getByRole("switch", { name: "Require LiteLLM authentication" });
+    const toggle = screen.getByRole("switch", { name: "Require AI-GovernanceGw authentication" });
     if (auth) {
       expect(toggle).toBeChecked();
     } else {
@@ -131,7 +131,7 @@ describe("pass_through_info update payload", () => {
     await waitFor(() => expect(updatePassThroughEndpoint).toHaveBeenCalledOnce());
     expect(lastPayload()).toMatchObject({ headers: {}, auth: !auth });
     await openEditForm(user);
-    const savedToggle = screen.getByRole("switch", { name: "Require LiteLLM authentication" });
+    const savedToggle = screen.getByRole("switch", { name: "Require AI-GovernanceGw authentication" });
     if (auth) {
       expect(savedToggle).not.toBeChecked();
     } else {

@@ -4919,7 +4919,7 @@
         },
         "mcp-security-unregistered-server-block": {
           "name": "MCP Security: Block Unregistered Servers",
-          "description": "Blocks requests that reference MCP servers not registered on this LiteLLM gateway. Prevents unauthorized tool access via unregistered MCP endpoints."
+          "description": "Blocks requests that reference MCP servers not registered on this AI-GovernanceGw gateway. Prevents unauthorized tool access via unregistered MCP endpoints."
         },
         "airline-passenger-data-protection-uae": {
           "name": "Airline Passenger Data Protection (UAE)",
@@ -5732,17 +5732,17 @@
   },
   "aria": {
     "page": {
-      "unavailable": "Native agent is not available for this session."
+      "unavailable": "Xiao Heng is not available for this session."
     },
     "usageTrigger": {
-      "ask": "Ask native agent"
+      "ask": "Ask Xiao Heng"
     },
     "destination": {
       "loadingSettings": "Loading gateway settings",
       "settingsError": "Could not load gateway settings.",
       "retry": "Retry",
       "consentTitle": "Connect to the configured gateway",
-      "consentBody": "This gateway uses a different address. The native agent will send your existing session credential to the address shown above.",
+      "consentBody": "This gateway uses a different address. The Xiao Heng will send your existing session credential to the address shown above.",
       "useConfigured": "Use configured gateway"
     },
     "inferenceTarget": {
@@ -5754,7 +5754,7 @@
     },
     "composer": {
       "tooLong": "Keep your message within {{limit}} characters.",
-      "placeholder": "Ask native agent…"
+      "placeholder": "Ask Xiao Heng…"
     },
     "modelPicker": {
       "loading": "Loading models",

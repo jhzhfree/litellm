@@ -100,6 +100,10 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
   };
 
   const handleToggleDefaultOn = async (guardrail: Guardrail, enabled: boolean) => {
+    if (!accessToken) {
+      console.error("Cannot toggle guardrail default_on: missing access token");
+      return;
+    }
     try {
       await setConfigGuardrailDefaultOn(accessToken, guardrail.guardrail_name || "", enabled);
       await fetchGuardrails();

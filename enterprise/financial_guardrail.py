@@ -128,6 +128,45 @@ class FinancialDataGuardrail(CustomGuardrail):
     # ------------------------------------------------------------------
     # 检测逻辑
     # ------------------------------------------------------------------
+    @staticmethod
+    def _message_content_texts(content: object) -> list[str]:
+        """Extract plain text pieces from one message content (string or parts list)."""
+        if isinstance(content, str):
+            return [content]
+        if isinstance(content, list):
+            texts: list[str] = []
+            for part in content:
+                if isinstance(part, dict) and isinstance(part.get("text"), str):
+                    texts.append(part["text"])
+            return texts
+        return []
+
+    def _extract_user_side_texts(
+        self,
+        inputs: GenericGuardrailAPIInputs,
+        request_data: dict[str, object],
+    ) -> list[str]:
+        """
+        Only scan user-side conversation content (user/assistant/tool messages).
+
+        System prompts are fixed gateway copy (they legitimately contain words
+        like "预算/支出" plus dates or counters) and carry no user financial
+        data - scanning them caused false positives that blocked every request.
+        """
+        messages = request_data.get("messages")
+        if isinstance(messages, list) and messages:
+            texts: list[str] = []
+            for message in messages:
+                if not isinstance(message, dict):
+                    continue
+                if message.get("role") == "system":
+                    continue
+                texts.extend(self._message_content_texts(message.get("content")))
+            if texts:
+                return texts
+        # Fallback for direct /guardrail/apply style inputs without messages.
+        return list(inputs.get("texts", []))
+
     def _scan_text(self, text: str) -> list[FinancialDetection]:
         detections: list[FinancialDetection] = []
         if self.detect_bank_cards:
@@ -174,7 +213,7 @@ class FinancialDataGuardrail(CustomGuardrail):
         start_time: Final = datetime.now()
         status: GuardrailStatus = "success"
         try:
-            texts: Final = inputs.get("texts", [])
+            texts: Final = self._extract_user_side_texts(inputs, request_data)
             if not texts:
                 return inputs
 

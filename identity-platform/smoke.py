@@ -1,7 +1,10 @@
 """Validate a local identity deployment without printing credentials or tokens."""
 
+import argparse
 import asyncio
 import json
+import os
+import subprocess
 import sys
 import urllib.parse
 import urllib.request
@@ -25,8 +28,89 @@ def request(path, data=None, token=None, form=False, method=None):
         return json.loads(raw) if raw else None
 
 
+def run_octop(args, client_name, secret, expected=200):
+    command = [
+        sys.executable,
+        str(args.octop_smoke),
+        "--issuer",
+        BASE + "/realms/company",
+        "--client-id",
+        client_name,
+    ]
+    if args.gateway:
+        command.extend(["--gateway", args.gateway, "--expect-gateway-status", str(expected)])
+    subprocess.run(
+        command,
+        env={"OCTOP_GATEWAY_OIDC_CLIENT_SECRET": secret},
+        check=True,
+        timeout=60,
+    )
+
+
+def verify_octop_gateway(args, subject, client_name, secret, scope):
+    import httpx
+
+    run_octop(args, client_name, secret, expected=403)
+    with httpx.Client(
+        base_url=args.gateway,
+        headers={"Authorization": "Bearer " + os.environ["OCTOP_E2E_GATEWAY_ADMIN_KEY"]},
+        timeout=15,
+        follow_redirects=False,
+        trust_env=False,
+    ) as gateway:
+        created = gateway.post(
+            "/v1/agents",
+            json={
+                "agent_name": client_name,
+                "execution_mode": "autonomous",
+                "identity": {
+                    "provider": "external_oidc",
+                    "tenant_id": BASE + "/realms/company",
+                    "client_id": client_name,
+                    "service_principal_id": subject,
+                    "required_scopes": [scope],
+                },
+            },
+        )
+        created.raise_for_status()
+        path = "/v1/agents/" + urllib.parse.quote(created.json()["agent_id"], safe="")
+        try:
+            run_octop(args, client_name, secret)
+            status = gateway.get(path + "/identity")
+            status.raise_for_status()
+            assert status.json()["last_authenticated_at"], "Gateway did not record workload authentication"
+            disabled = gateway.patch(path, json={"enabled": False})
+            disabled.raise_for_status()
+            run_octop(args, client_name, secret, expected=403)
+        finally:
+            gateway.delete(path).raise_for_status()
+    print("PASS gateway persisted an Octop Agent binding, recorded authentication and denied the disabled binding")
+
+
 def main():
-    env = dict(line.split("=", 1) for line in Path(__file__).with_name(".env").read_text().splitlines() if "=" in line)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--env-file", type=Path, default=Path(__file__).with_name(".env"))
+    parser.add_argument("--gateway-jwt", action="store_true")
+    parser.add_argument("--octop-smoke", type=Path)
+    parser.add_argument("--gateway", help="Base URL of an isolated gateway with a real database and JWT entitlement")
+    args = parser.parse_args()
+    if args.gateway:
+        target = urllib.parse.urlsplit(args.gateway)
+        if (
+            not args.octop_smoke
+            or not os.environ.get("OCTOP_E2E_GATEWAY_ADMIN_KEY")
+            or not target.hostname
+            or target.username is not None
+            or target.password is not None
+            or target.query
+            or target.fragment
+            or (
+                target.scheme != "https"
+                and not (target.scheme == "http" and target.hostname in {"127.0.0.1", "localhost", "::1"})
+            )
+        ):
+            parser.error("Gateway mode requires --octop-smoke, an HTTPS or loopback URL and OCTOP_E2E_GATEWAY_ADMIN_KEY")
+    env = dict(line.split("=", 1) for line in args.env_file.read_text().splitlines() if "=" in line)
     discovery = request("/realms/company/.well-known/openid-configuration")
     assert discovery["issuer"] == BASE + "/realms/company"
     token = request(
@@ -34,12 +118,12 @@ def main():
         {
             "grant_type": "password",
             "client_id": "admin-cli",
-            "username": "admin",
+            "username": env.get("IDENTITY_ADMIN_USER", "admin"),
             "password": env["IDENTITY_ADMIN_PASSWORD"],
         },
         form=True,
     )["access_token"]
-    name = "integration-" + uuid4().hex
+    name = ("octop-e2e-" if args.octop_smoke else "integration-") + uuid4().hex
     root = "/admin/realms/company"
     with ExitStack() as cleanup:
         request(root + "/users", {"username": name, "enabled": True}, token)
@@ -104,8 +188,14 @@ def main():
         credentials = {"grant_type": "client_credentials", "client_id": name, "client_secret": secret}
         result = request("/realms/company/protocol/openid-connect/token", credentials, form=True)
         assert result["access_token"] and result["token_type"].lower() == "bearer"
-        if "--gateway-jwt" in sys.argv:
-            asyncio.run(verify_gateway_jwt(result["access_token"], scope_name))
+        if args.gateway_jwt or args.gateway:
+            account = request(root + "/clients/" + client_id + "/service-account-user", token=token)
+            if args.gateway_jwt:
+                asyncio.run(verify_gateway_jwt(result["access_token"], scope_name, name, account["id"]))
+            if args.gateway:
+                verify_octop_gateway(args, account["id"], name, secret, scope_name)
+        if args.octop_smoke and not args.gateway:
+            run_octop(args, name, secret)
         request(root + "/users/" + users[0]["id"], {"enabled": False}, token, method="PUT")
         assert request(root + "/users/" + users[0]["id"], token=token)["enabled"] is False
         request(root + "/clients/" + client_id, {"enabled": False}, token, method="PUT")
@@ -118,7 +208,7 @@ def main():
         print("PASS discovery, user lifecycle, application registration, scoped token issuance and application disable")
 
 
-async def verify_gateway_jwt(token, required_scope):
+async def verify_gateway_jwt(token, required_scope, client_name, subject_id):
     from litellm.caching.dual_cache import DualCache
     from litellm.proxy._types import LiteLLM_JWTAuth
     from litellm.proxy.auth.handle_jwt import JWTHandler
@@ -148,7 +238,7 @@ async def verify_gateway_jwt(token, required_scope):
                 print("PASS gateway JWT rejects wrong audience")
             else:
                 assert should_accept, "Gateway accepted wrong audience"
-                assert claims["iss"] == issuer and claims["sub"]
+                assert claims["iss"] == issuer and claims["sub"] == subject_id and claims["azp"] == client_name
                 print("PASS gateway JWT verifies live Keycloak signature and claims")
                 from litellm.proxy.agent_endpoints.managed_identity import classify_agent_subject
                 from litellm.types.proxy.agent_identity import AgentIdentityBinding, AgentIdentityFailure

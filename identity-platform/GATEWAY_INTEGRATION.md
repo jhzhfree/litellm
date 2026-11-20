@@ -36,6 +36,26 @@ Keycloak 应用使用 confidential service account，禁用密码授权和不需
 
 运行中的网关先进行真实 JWT 验证，再从身份存储解析绑定和调用 classify_agent_subject，随后保留现有准入与资源授权。新分类器本身不是验签入口。iss、客户端、主体与 scope 必须匹配，禁用或 revision 变化仍由原有策略执行。
 
+## Octop 工作负载端到端验收
+
+使用隔离的 Keycloak 和独立 PostgreSQL，另启动配有独立数据库和合法 JWT 功能授权的网关。网关配置须信任与 Octop 看到的完全相同的 issuer（本机 Compose 默认 `http://127.0.0.1:18080/realms/company`）、JWKS 和 audience `ai-governance-gateway`。网关启用 `enable_jwt_auth` 与 `strict_issuer_allowlist`。
+
+将隔离网关的管理密钥从测试密钥设施注入 `OCTOP_E2E_GATEWAY_ADMIN_KEY`，然后在 LiteLLM 根目录运行：
+
+```bash
+python identity-platform/smoke.py \
+  --env-file identity-platform/.env \
+  --octop-smoke ../Octop/scripts/smoke_gateway_identity.py \
+  --gateway http://127.0.0.1:4000
+```
+
+1. 测试管理员通过 Keycloak 管理 API 为 Octop 工作负载注册独立的 confidential client、服务账号和临时调用 scope，并从服务账号记录读取真实主体 ID。
+2. Octop 验收脚本仅接收运行凭证，通过 discovery 和 Client Credentials 换取令牌，再用该令牌请求真实网关的 `GET /v1/agents`。缺少网关绑定时预期 HTTP 403。
+3. 网关管理员通过 `POST /v1/agents` 写入 `external_oidc` 自主工作负载绑定。再次调用预期 HTTP 200，并通过网关管理接口检查身份绑定的 `last_authenticated_at`。
+4. 禁用网关绑定后再次调用，预期 HTTP 403。Keycloak 随后禁用客户端，验证新取令牌失败。脚本清理本次创建的临时对象。
+
+省略 `--gateway` 可单独验证身份平台注册及 Octop 取令牌。附加 `--gateway-jwt` 可运行真实 JWKS 的组件验签。只有完整 HTTP 模式通过才算完成网关认证验收。该用例使用 Agent 发现接口，无需调用模型；Octop 脚本是工作负载验收入口，生产 Agent 运行时仍需接入令牌提供器。
+
 ## 已执行验证
 
 ```bash

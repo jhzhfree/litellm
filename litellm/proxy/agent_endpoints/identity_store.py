@@ -251,9 +251,16 @@ async def resolve_managed_agent(
 ) -> ManagedAgentContext | None:
     from litellm.proxy.agent_endpoints.managed_identity import raise_identity_failure
 
+    is_external_workload: Final = claims.get("identity_kind") == "workload"
     if client is None:
+        if is_external_workload:
+            raise_identity_failure(
+                AgentIdentityFailure(code="policy_unavailable", message="Agent identity storage is unavailable")
+            )
         return None
     result: Final = await AgentIdentityStore.from_client(client, cache=cache).resolve_verified_claims(claims)
     if isinstance(result, AgentIdentityFailure):
         raise_identity_failure(result)
+    if result is None and is_external_workload:
+        raise_identity_failure(AgentIdentityFailure(message="Workload identity has no active Agent binding"))
     return result

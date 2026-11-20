@@ -434,6 +434,15 @@ async def test_resolver_maps_denials_and_outages_to_public_errors(outage: bool) 
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("database_available", [True, False])
+async def test_external_workload_cannot_fall_back_to_user_authentication(database_available: bool) -> None:
+    database: Final = MagicMock() if database_available else None
+    with pytest.raises(HTTPException) as exc:
+        await resolve_managed_agent({"sub": "unregistered-workload", "identity_kind": "workload"}, database)
+    assert exc.value.status_code == (403 if database_available else 503)
+
+
+@pytest.mark.asyncio
 async def test_resolver_preserves_unconfigured_and_unrelated_authentication() -> None:
     assert await resolve_managed_agent(CLAIMS, None) is None
     assert await resolve_managed_agent({"sub": "ordinary-user"}, MagicMock()) is None

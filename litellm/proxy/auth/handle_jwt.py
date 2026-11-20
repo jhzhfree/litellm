@@ -140,6 +140,9 @@ class _JWTAuthSettings(Protocol):
     def issuers(self) -> Sequence[JWTIssuerConfig] | None: ...
 
     @property
+    def strict_issuer_allowlist(self) -> bool: ...
+
+    @property
     def public_key_ttl(self) -> float: ...
 
     @property
@@ -1140,6 +1143,10 @@ class JWTHandler:
                 return bool(item.audience) and not item.disable_audience_validation
         return issuer == os.getenv("JWT_ISSUER") and bool(os.getenv("JWT_AUDIENCE"))
 
+    def _requires_configured_issuer(self) -> bool:
+        settings: Final[_JWTAuthSettings | None] = getattr(self, "litellm_jwtauth", None)
+        return getattr(settings, "strict_issuer_allowlist", False) is True
+
     def _get_configured_issuer(self, token: str) -> JWTIssuerConfig | None:
         litellm_jwtauth: Final[_JWTAuthSettings | None] = getattr(self, "litellm_jwtauth", None)
         if litellm_jwtauth is None:
@@ -1333,6 +1340,8 @@ class JWTHandler:
             return AssertionRejection(reason=f"malformed assertion: {malformed}")
         claims: Final = self.get_unverified_claims(token=token)
         issuer_config: Final = self._get_configured_issuer(token=token)
+        if issuer_config is None and self._requires_configured_issuer():
+            return AssertionRejection(reason="iss is not in the gateway issuer allowlist")
         trusted_issuer: Final = issuer_config.issuer if issuer_config is not None else os.getenv("JWT_ISSUER")
         if not trusted_issuer or claims is None or claims.get("iss") != trusted_issuer:
             return AssertionRejection(reason="iss is not an issuer this gateway trusts")
@@ -1385,6 +1394,14 @@ class JWTHandler:
                 token=token,
                 issuer_config=issuer_config,
                 kid=kid,
+            )
+
+        if self._requires_configured_issuer():
+            raise ProxyException(
+                message="JWT issuer is not in the gateway issuer allowlist",
+                type=ProxyErrorTypes.auth_error,
+                param=None,
+                code=status.HTTP_401_UNAUTHORIZED,
             )
 
         decode_kwargs: Final = self._build_decode_kwargs()

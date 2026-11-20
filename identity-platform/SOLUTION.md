@@ -1,12 +1,12 @@
-# 网关、统一身份平台与 Agent 平台统一认证解决方案
+# LiteLLM、Octop 与 AKB 统一认证解决方案
 
-版本 2.0，2026-11-20。核对基线为 `b6ede959d691d1a8b3dc311cebac9e5ad198378d`，分支为 `litellm_identity_platform_integration`，仓库为 `jhzhfree/litellm`。本次先从远端 fast-forward 到该提交，再核对源码。本文件只定义方案及实施边界，不表示新增接口、SDK、DPoP 已交付。
+版本 2.1，2026-11-20。原方案源码核对基线为 `b6ede959d691d1a8b3dc311cebac9e5ad198378d`，分支为 `litellm_identity_platform_integration`，仓库为 `jhzhfree/litellm`。本次先从远端 fast-forward 到该提交，再核对源码。本文件只定义方案及实施边界，不表示新增接口、SDK、DPoP 已交付。
 
 本文作为整体改造主文档。当前接入步骤见 [GATEWAY_INTEGRATION.md](GATEWAY_INTEGRATION.md) 和 [INTEGRATION.md](INTEGRATION.md)，历史详细设计见 [DESIGN.md](DESIGN.md)，测试证据见 [VALIDATION.md](VALIDATION.md)。出现状态差异时，以本文件基线核对结果及带日期的验证记录为准。所有“拟新增”“目标”接口、配置、包名均不得直接当作当前功能使用。
 
 ## 1. 结论与建设目标
 
-统一身份平台可以作为网关的外部 SSO 系统。它承担 OIDC Provider / OAuth Authorization Server 角色，网关承担登录客户端和 API 资源服务器角色，Agent 平台承担工作负载管理及 OAuth 客户端角色。统一身份平台可通过联邦接入 Microsoft Entra，也可服务本地用户。平台使用自己的 issuer 签发令牌，不冒充 Microsoft。
+企业已有员工身份来源继续管理员工账号、组织关系及在职状态。独立统一身份平台负责接入这些来源、关联员工身份并作为通用 OIDC Provider / OAuth Authorization Server 向 LiteLLM、Octop 和 AKB 签发自己的令牌。企业已部署 Entra ID 等 OIDC IdP 时优先联邦登录，由上游执行员工认证与 MFA；企业微信通讯录等只提供目录数据的来源可用于用户预置、组织同步和生命周期管理。Keycloak 本地用户可用于测试、没有企业 IdP 的部署及受控恢复。
 
 改造继续复用网关现有通用 SSO、JWTHandler、Agent 身份存储和授权链路。网关负责本产品内“可以访问什么”，统一身份平台负责“是谁、凭证是否有效、可以获得什么目标令牌”，Agent 平台负责“哪个运行实例使用哪个身份、如何保护凭证、如何正确发起请求”。同一个身份平台不意味着所有产品共用一个客户端、一种 audience 或同一管理员权限。
 
@@ -38,7 +38,10 @@ flowchart TB
     U --> AP[Agent平台界面和后端]
     GUI --> IDP[统一身份核心 OIDC OAuth]
     AP --> IDP
-    ENTRA[Microsoft Entra 可选上游] --> IDP
+    UPSTREAM[企业 OIDC IdP] -->|联邦登录| IDP
+    DIRECTORY[企业微信通讯录或其他企业目录] -->|用户 部门 状态| SYNCIN[目录连接器 拟新增]
+    SYNCIN --> IDP
+    AKB[AKB 控制台及 API] --> IDP
     ADMIN[管理员和其他业务系统] --> IAM[统一身份管理API 拟新增]
     GUI --> IAM
     AP --> IAM
@@ -61,7 +64,7 @@ flowchart TB
 
 | 工作 | 网关系统 | 统一身份平台 | Agent 平台 |
 | --- | --- | --- | --- |
-| 用户账户、密码、MFA、身份联邦 | 使用外部结果，保留默认本地方式 | 外部模式下的权威管理方 | 接入平台登录，不复制密码库 |
+| 用户账户、密码、MFA、身份联邦 | 使用外部结果，保留默认本地方式 | 遵循企业权威来源，管理本地关联和登录策略 | 接入平台登录，不复制密码库 |
 | 浏览器登录事务与本产品会话 | 管理自己的 state、PKCE、回调、Cookie 和退出 | 执行身份验证，签发 code / token，管理 IdP 会话 | 为自己的界面维护独立登录事务和会话 |
 | 应用、Agent 主身份及所有者 | 保存映射和网关专属策略 | 提供对象管理 API、主体与凭证生命周期 | 申请对象、标明所有者并关联运行实例 |
 | 应用密钥和工作负载私钥 | 不收集 Agent 私钥或长期客户端密钥 | 验证客户端，维护公开凭证及状态 | 从密钥库注入，隔离、轮换和销毁运行凭证 |
@@ -79,7 +82,7 @@ flowchart TB
 
 | 对象 | 目标字段 | 权威方与映射 |
 | --- | --- | --- |
-| User | identity_id、issuer、subject、状态、组织、可变资料 | 身份平台主数据，网关独立 user_id 和角色映射 |
+| User | identity_id、issuer、subject、状态、组织、可变资料 | 企业来源掌管员工状态，身份平台掌管统一主体及来源关联，产品保存自己的账号与权限映射 |
 | Application | application_id、client_id、所有者、允许 audience / scope、凭证元数据 | 身份平台管理，网关保存应用授权关系 |
 | AgentIdentity | identity_id、所属 application、workload subject、状态、execution_mode | 身份平台拟新增主对象，网关 agent_id 与之绑定 |
 | RuntimeInstance | instance_id、agent_identity_id、部署版本、密钥引用 | Agent 平台管理，不以实例名称作为认证证明 |
@@ -90,11 +93,11 @@ flowchart TB
 
 后续 API 用 issuer、subject_id 的中性字段，兼容层将旧字段转换到内部模型。数据库迁移须显式记录旧新映射、唯一冲突和回滚方式，不把显示名称替换当作身份迁移。
 
-## 6. 用户认证与网关 SSO 改造
+## 6. 企业身份来源与产品认证方式
 
 ### 6.1 统一身份平台作为外部 SSO
 
-网关注册独立 confidential 客户端 `gateway-console`，Agent 平台注册自己的客户端。回调 URI 分别精确登记。平台可对接 Entra；网关既可保留原生 Entra 直连，也可通过统一平台联邦接入。两条路径的 issuer 和 subject 不同，切换时必须执行受控账户关联，不能按邮箱静默合并。
+LiteLLM、Octop 和 AKB 分别注册独立 confidential 登录客户端，例如 `gateway-console`、`octop-console`、`akb-console`。回调 URI 分别精确登记，各产品维护自己的会话和授权。同一平台发行的 API token 仍按产品使用独立 audience。平台可对接 Entra；网关既可保留原生 Entra 直连，也可通过统一平台联邦接入。两条路径的 issuer 和 subject 不同，切换时必须执行受控账户关联，不能按邮箱静默合并。
 
 OIDC 提供用户登录身份层；授权码流程与 PKCE 采用成熟协议库，网关后端完成 code 交换和令牌验证。PKCE 的依据为 [RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)，OIDC 登录语义依据 [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html)。这是目标完整登录契约，不代表现有通用适配器已通过所有安全项验收。
 
@@ -169,7 +172,7 @@ general_settings:
 ```yaml
 identity_integration:
   user_authentication:
-    mode: legacy              # 默认保留已有行为，外部模式为 external_oidc
+    mode: legacy              # 可选 legacy 或 unified_oidc，默认 legacy
     provider_id: corporate
     provisioning: approved_only
   providers:
@@ -189,6 +192,33 @@ identity_integration:
 ```
 
 配置必须有类型校验。显式新配置与旧环境变量冲突时报错，不猜优先级；未配置新结构时完全走原路径。provider 不得由调用方任意指定 URL。管理 API 凭证与 SSO 客户端凭证分离。SSO 迁移保留经过审计的运维恢复账户，关闭外部登录不能自动放开被禁用的受管 Agent。
+
+### 6.4 各产品独立选择认证方式
+
+每个产品采用 `legacy` 或 `unified_oidc`，可逐个切换。未配置时采用 `legacy`。Octop 已通过 `OCTOP_USER_AUTHENTICATION_MODE` 与 `OCTOP_UNIFIED_OIDC_ISSUER` 实现这项选择，LiteLLM 与 AKB 的模式选择仍在规划中。切换仅影响该产品的人类用户登录；API Key、Service Key、既有 Agent 绑定和工作负载令牌继续由各入口的策略管理。
+
+| 产品 | `legacy` | `unified_oidc` 接入路径与差距 |
+| --- | --- | --- |
+| LiteLLM | 保留现有本地登录和 Generic/Google/Microsoft SSO 选择 | 显式选定统一身份 issuer 并复用 Generic SSO；完整 ID Token 验证、外部账号映射及会话联调按本节验收 |
+| Octop | 保留现有本地账号、LDAP 和现有 SSO 配置 | 复用 OIDC 授权码、PKCE 和本地会话；启用 `approved_only`，已有绑定须归属于当前 issuer |
+| AKB | 保留本地控制台登录及现有外部 API 认证 | 控制台新增 OIDC 登录入口、回调、显式账号绑定和本地会话签发。已有外部 API 委托 JWT 校验可单独指向统一身份 issuer |
+
+显式选择 `unified_oidc` 时，登录入口仅启用配置的 issuer 和客户端。启动时校验 issuer、客户端、回调与冲突配置。上游不可用、令牌无效或账号未批准时拒绝登录。保留现有认证代码及配置，以便管理员显式切回 `legacy`。如需应急本地运维账号，采用独立、显式启用且受审计的恢复入口。切换或回滚需明确现有会话的失效策略。
+
+### 6.5 上游来源、账户关联与同步
+
+| 来源 | 作用 | 处理方式 |
+| --- | --- | --- |
+| 外部 OIDC，如 Entra ID | 员工登录、MFA，可提供已授权声明 | 在 Keycloak 按企业租户配置可信 issuer 和联邦客户端。校验上游签发者和主体；Keycloak 建立稳定关联并向产品使用自身 issuer 签发。 |
+| 企业微信通讯录 | 员工、部门及接口可见范围内的状态数据 | 新增服务端连接器，使用企业授权的最小权限读取通讯录。先全量对账，再按可用变更通知或定时同步更新。 |
+| 其他目录或 HR 来源 | 按企业约定提供人员、组织和在职状态 | 通过受控 SCIM、目录或 API 连接器同步，对象按来源与租户隔离。 |
+| Keycloak 本地账号 | 独立 OIDC 部署、测试及受控恢复 | 由本地管理员审批。生产员工默认由企业来源管理。 |
+
+接入企业微信登录须单独启用并验证企业微信授权回调，使用企业 ID 与可信成员标识关联已同步用户。只同步通讯录时，用户仍须通过企业 OIDC 或其他已配置的登录方式证明身份。通讯录服务凭证只驻留在身份平台连接器；下游应用和 Agent 不持有该凭证。
+
+统一身份保存不可变的内部用户标识。外部 OIDC 关联键为上游 `(issuer, sub)`，企业微信目录记录按 `(corp_id, user_id)` 隔离。产品按统一平台签发的 `(issuer, sub)` 关联本地账户。原有登录账号与新主体在迁移期通过已验证的双边登录或管理员审批绑定，邮箱、手机号和显示名仅作资料使用。多个来源同时提供数据时，为每个租户明确在职状态、部门与资料字段的权威来源。部门映射只经产品允许列表授予业务权限。
+
+同步处理分页、重复事件、顺序、游标与失败重试。仅在完整且权限范围已确认的同步中处理成员消失；部分同步或权限缩小时保留现状并告警。权威来源确认离职或禁用后，阻止新登录，按配置撤销身份平台会话并通知下游清理会话。短期 access token 的剩余有效窗口单独验收。Agent 归属转移及禁用使用独立流程。
 
 ## 7. 应用与 Agent 凭证完整生命周期
 
@@ -397,7 +427,8 @@ sequenceDiagram
 | 阶段 | 网关交付 | 身份平台交付 | Agent 平台/SDK交付 | 完成条件 |
 | --- | --- | --- | --- | --- |
 | P0 基线闭环 | 解决数据库依赖和实际 JWT 门控、启动隔离网关 | 保持本地身份服务、测试客户端 | 可重复的应用调用脚本 | 完整HTTP认证及授权正反例，不只组件调用 |
-| P1 用户SSO | 复合身份映射、默认兼容配置、完整OIDC和会话验收 | 网关/Agent平台独立登录客户端、可选Entra联邦 | 本平台用户SSO接入 | 登录、退出、禁用、多issuer隔离与最低权限通过 |
+| P1 用户 SSO | LiteLLM、Octop、AKB 独立选择认证模式，逐个上线 | 独立产品客户端及企业 OIDC 联邦 | Octop 按已批准绑定登录；工作负载身份独立 | 三产品旧入口兼容、联邦登录、故障拒绝、切回与会话验收 |
+| P1b 员工目录 | 下游账户或会话状态投影 | 企业微信通讯录和其他目录连接器 | Octop 处理员工状态及 Agent 归属 | 目录预置、同名隔离、部分同步及离职回收通过 |
 | P2 管理与同步 | 产品管理代理、绑定与投影、状态UI | 用户/应用/Agent管理API、操作状态机和Outbox | 身份申请及凭证安全注入 | 三方创建/禁用/轮换/删除及故障补偿闭环 |
 | P3 可复用SDK | 稳定的资源与错误契约 | 稳定token/profile能力 | Python/TS取token缓存与HTTP适配 | 至少两个不同Agent平台共用SDK，权限隔离验证 |
 | P4 DPoP | proof校验、共享重放、代理URI规范、灰度策略 | 精确版本能力验证及绑定token签发 | 私钥设施、proof、nonce、轮换 | 多副本重放拒绝、错误密钥拒绝、禁止降级 |
@@ -409,6 +440,10 @@ P0 的阻断由环境所有者按正规渠道提供允许的官方依赖下载�
 
 | 场景 | 预期结果 | 主要责任方 |
 | --- | --- | --- |
+| 三产品独立选择认证方式 | 切换单个产品，其他产品沿用自己的配置；现有 API 认证按各自策略运行 | 三产品 |
+| 企业 OIDC 联邦登录 | 企业上游认证后统一平台签发令牌；其他产品的 token 和回调被拒绝 | 统一身份平台/三产品 |
+| 企业微信通讯录同步 | 可预置用户与部门；登录仍需通过已配置的认证方式；其他企业同名成员独立 | 统一身份平台 |
+| 权威来源禁用及目录异常 | 分别验证新登录阻断、旧会话与令牌失效窗口；部分扫描不得触发批量停用 | 统一身份平台/三产品 |
 | 无新配置的旧用户和未绑定 Agent | 行为兼容，仍执行原权限 | 网关 |
 | 受管 Agent 改名/运行地址变化 | 身份不变，授权不意外扩大 | 网关/Agent平台 |
 | SSO 正常回调及Cookie | 最低权限会话，安全Cookie，无token泄漏 | 网关/身份平台 |

@@ -37,3 +37,11 @@ PYTHONPATH=. .venv/bin/python identity-platform/smoke.py --gateway-jwt
 修复只影响显式启用 PKCE_STRICT_CACHE_MISS 的部署；默认非严格模式兼容行为保留。身份平台接入示例已启用严格模式。
 
 本测试的浏览器回调由 Playwright 拦截，再直接调用 SSO 组件，未启动网关 HTTP 服务，未执行网关数据库用户同步或最终控制台会话签发。Prisma 官方校验文件本轮复查仍返回 403，未跳过校验或绕过网络规则。统一管理 API、同步与完整产品联调仍待完成。
+
+## Octop 工作负载注册与网关认证
+
+2026-11-20，在独立 Compose 项目中启动 Keycloak 26.4.7 和 PostgreSQL，执行 `smoke.py --octop-smoke ../Octop/scripts/smoke_gateway_identity.py --gateway-jwt`，并以 `--env-file` 指定隔离测试配置。
+
+- 通过 Keycloak 管理 API 创建临时客户端、服务账号和调用 scope。Octop 验收进程以 Client Credentials 向实际身份平台换取 Bearer 令牌。禁用客户端后，新签发请求被拒绝。
+- 网关 JWT 组件从实际 JWKS 验签，核对 issuer、audience 以及与 Keycloak 管理 API 一致的客户端和服务账号主体。错误 audience、错误主体和缺失所需 scope 被拒绝。
+- 完整 HTTP 用例已加入，覆盖未绑定拒绝、持久化绑定后放行、认证时间记录和禁用后拒绝。本环境未配置网关 JWT 授权，且访问 Prisma 官方引擎域名返回 403，本轮未运行完整网关 HTTP 用例。

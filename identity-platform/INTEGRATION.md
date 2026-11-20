@@ -23,6 +23,23 @@
 
 ---
 
+## 企业员工统一登录的接入决策
+
+三个产品可以独立选择沿用现有登录方式，或将用户登录指向统一身份平台的 OIDC issuer。Octop 已实现认证模式选择。LiteLLM 现有 Generic SSO 可接入该 issuer，独立认证模式与完整控制台会话验收待实施。AKB 控制台 OIDC 登录待新增；AKB 的外部 API 委托认证采用独立配置。
+
+### Keycloak 联邦企业身份
+
+在业务 realm 的 Identity Providers 中新增 OpenID Connect v1.0 提供商，填写企业租户的 discovery URL，配置专用联邦客户端与密钥。在企业 IdP 注册 Keycloak 管理界面显示的精确 Redirect URI。建议上线前为既有员工审批关联，确保首次登录流程要求重新认证或管理员确认后才关联已有账号。验证 Keycloak 签发的下游令牌使用业务 realm issuer。每个产品在该 realm 单独注册登录客户端并开启 S256 PKCE。
+
+企业微信通讯录连接器属于规划项，负责用户、部门与生命周期数据。员工登录还需配置独立的认证入口。来源优先级和稳定账号映射见[主方案第 6 节](SOLUTION.md#6-企业身份来源与产品认证方式)。
+
+### Octop 启用与回滚
+
+1. 使用现有管理员登录，将 Octop 的 OIDC 提供商配置为业务 realm 的 issuer，登记 Octop 返回的精确回调 URL。先完成至少一名管理员的账户绑定并验证其 OIDC 登录。
+2. 设置 `OCTOP_UNIFIED_OIDC_ISSUER` 为该 issuer，设置 `OCTOP_USER_AUTHENTICATION_MODE=unified_oidc`，然后重启 Octop。也可在 Octop 的 `config.json` 设置 `unified_oidc_issuer` 和 `user_authentication_mode`。统一模式固定 issuer，并拒绝未绑定主体、密码登录、邀请码兑付和其他 SSO 提供商。Agent 与 API 凭证采用各自现有策略。
+3. 逐一核对已绑定账号。若要更换 OIDC issuer，应先使用当前身份完成受控解绑与迁移。存在绑定时 Octop 拒绝直接修改 issuer。
+4. 回滚时设置 `OCTOP_USER_AUTHENTICATION_MODE=legacy` 并重启。切换模式本身不撤销已签发的 Octop 会话，要求立即回收时须另行执行会话撤销。
+
 ## 1. 对接组件与网络拓扑
 
 ```
@@ -225,6 +242,7 @@ general_settings:
     user_id_jwt_field: sub
     user_email_jwt_field: email
     user_id_upsert: false
+    strict_issuer_allowlist: true
     team_ids_jwt_field: groups          # 若 Keycloak token 中带 groups 再配
     issuers:
       - issuer: http://127.0.0.1:18080/realms/company
@@ -240,7 +258,7 @@ general_settings:
 - `issuer` 必须与 Keycloak discovery 的 `issuer` **逐字一致**（含协议、主机、端口、realm 名）。
 - `jwks_url` 可省略，省略时从 issuer 的 OIDC discovery 自动发现；显式写出更利于排障。
 - `audience` 与 `disable_audience_validation` 二选一；**不要为了省事关闭 audience 校验**（共享签名密钥的其他应用 token 会被接受）。
-- 生产环境应同时设置全局 `JWT_ISSUER` 与 `JWT_AUDIENCE` 环境变量，兜住 `issuers` 未命中的回退路径；或确保未命中时网关拒绝（不要留空走无作用域模式）。
+- `strict_issuer_allowlist: true` 要求签发者命中 `issuers`，每项都必须启用 audience 校验。仅启用旧配置的部署仍按原来的全局配置处理未命中的令牌。
 - 也可用环境变量替代 issuer 级配置：`JWT_ISSUER`（= Keycloak issuer）、`JWT_AUDIENCE`（= `ai-governance-gateway`）、`JWT_PUBLIC_KEY_URL`（= JWKS URL）。`initialize_jwt_auth` 会把 `os.environ/XXX` 形式的值解析为环境变量。
 - 修改配置后重启或触发配置热重载；用 `curl .../health/liveliness` 与网关日志确认启动无报错。
 
@@ -301,6 +319,12 @@ AUTO_REDIRECT_UI_LOGIN_TO_SSO=false
 - 多 issuer 场景：每个 issuer 可单独覆盖 claim 映射字段；未命中的 `iss` 走全局环境变量路径。
 
 ---
+
+### 4.5 Octop 与 AKB 使用同一签发者
+
+- 为 Octop 注册独立的 OIDC 登录客户端，使用 Octop 管理 API 返回的精确回调地址，并启用授权码与 S256 PKCE。在 Octop 的 `PUT /api/auth/oidc/config` 配置该客户端及 realm issuer，并设置 `approved_only: true`。用户先通过本地账号显式绑定其 OIDC 身份，随后可使用 SSO 登录。
+- 为 AKB 用户委托配置独立的用户授权客户端，并让身份平台只为该授权流程签发目标为 AKB 的 access token。在 AKB 配置 `knowledge.external.delegated-identity` 的 issuer、JWKS、audience 和 `authorized-party`。提前将 `(issuer, sub)` 绑定到 AKB 用户主体。知识库调用同时需要现有 Agent Service Key 和该用户的令牌。
+- 为每个网关受管工作负载保留独立客户端和 Agent 绑定。包含 `identity_kind=workload` 的令牌需要有效的 Agent 绑定，身份存储不可用时网关返回 503。网关和 AKB 使用各自的 audience 与本地资源授权。
 
 ## 5. 端到端验证步骤
 

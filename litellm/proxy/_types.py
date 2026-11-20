@@ -5126,6 +5126,10 @@ class LiteLLM_JWTAuth(LiteLLMPydanticObjectBase):
         default=None,
         description="Optional issuer-bound JWT validation rules. When a token's `iss` matches a configured issuer, validation uses that issuer's JWKS, audience, and claim mappings. Tokens with an unlisted `iss` fall back to the global JWT_AUDIENCE/JWT_ISSUER validation path — this is additive routing, not an allow-list.",
     )
+    strict_issuer_allowlist: bool = Field(
+        default=False,
+        description="Require JWT issuers to match an entry in issuers. Disables global issuer fallback.",
+    )
     id_jag_requesting_apps: tuple[IdJagRequestingApp, ...] | None = Field(
         default=None,
         description="Requesting apps allowed to redeem an ID-JAG at the MCP gateway's POST /token with the RFC 7523 jwt-bearer grant. Unset or empty turns that grant off.",
@@ -5183,6 +5187,11 @@ class LiteLLM_JWTAuth(LiteLLMPydanticObjectBase):
             raise ValueError("scope_mappings must be set if enforce_scope_based_access is true.")
 
         super().__init__(**kwargs)
+        if self.strict_issuer_allowlist and (
+            not self.issuers
+            or any(not entry.audience or entry.disable_audience_validation for entry in self.issuers)
+        ):
+            raise ValueError("strict_issuer_allowlist requires issuers with audience validation enabled")
 
     def get_issuer_config(self, issuer: str | None) -> JWTIssuerConfig | None:
         if issuer is None or self.issuers is None:

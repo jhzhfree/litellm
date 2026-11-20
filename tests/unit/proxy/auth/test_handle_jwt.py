@@ -4172,7 +4172,9 @@ def _encode_rsa_jwt(
     )
 
 
-def _get_jwt_handler_with_issuer_keys(issuers: list, keys_by_url: dict) -> JWTHandler:
+def _get_jwt_handler_with_issuer_keys(
+    issuers: list, keys_by_url: dict, *, strict_issuer_allowlist: bool = False
+) -> JWTHandler:
     from litellm.caching.dual_cache import DualCache
 
     cache = DualCache()
@@ -4186,7 +4188,9 @@ def _get_jwt_handler_with_issuer_keys(issuers: list, keys_by_url: dict) -> JWTHa
     jwt_handler.update_environment(
         prisma_client=None,
         user_api_key_cache=cache,
-        litellm_jwtauth=LiteLLM_JWTAuth(issuers=issuers),
+        litellm_jwtauth=LiteLLM_JWTAuth(
+            issuers=issuers, strict_issuer_allowlist=strict_issuer_allowlist
+        ),
     )
     return jwt_handler
 
@@ -5080,6 +5084,40 @@ async def test_multi_issuer_jwt_unknown_issuer_falls_back_to_global_jwks(monkeyp
         await jwt_handler.auth_jwt(token=token)
 
     assert "Missing JWT Public Key URL from environment." in str(exc.value)
+
+
+@pytest.mark.asyncio
+async def test_strict_issuer_allowlist_rejects_global_issuer(monkeypatch):
+    configured_issuer = "https://issuer.example.com"
+    global_issuer = "https://global.example.com"
+    monkeypatch.setenv("JWT_ISSUER", global_issuer)
+    private_key, jwk = _get_rsa_key_and_jwk(kid="issuer-key")
+    handler = _get_jwt_handler_with_issuer_keys(
+        issuers=[
+            {
+                "issuer": configured_issuer,
+                "jwks_url": f"{configured_issuer}/keys",
+                "audience": "expected-audience",
+            }
+        ],
+        keys_by_url={f"{configured_issuer}/keys": [jwk]},
+        strict_issuer_allowlist=True,
+    )
+    listed_token = _encode_rsa_jwt(
+        private_key=private_key,
+        issuer=configured_issuer,
+        audience="expected-audience",
+        kid="issuer-key",
+    )
+    assert (await handler.auth_jwt(token=listed_token))["iss"] == configured_issuer
+    unlisted_token = _encode_rsa_jwt(
+        private_key=private_key,
+        issuer=global_issuer,
+        audience="expected-audience",
+        kid="issuer-key",
+    )
+    with pytest.raises(ProxyException, match="issuer allowlist"):
+        await handler.auth_jwt(token=unlisted_token)
 
 
 @pytest.mark.asyncio

@@ -73,8 +73,12 @@ const userFields = {
   ...limits,
 };
 const object = <Shape extends z.ZodRawShape>(shape: Shape) => z.strictObject(shape);
+// 注意: 不能用 z.iso.date() —— 它会生成 JSON Schema "format": "date",
+// 而 DeepSeek 等上游的 schema 校验不支持该 format 变体, 会导致所有带日期参数
+// 的工具调用 400。用 regex 约束格式, 不产生 format 字段。
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 const dated = <Shape extends z.ZodRawShape>(shape: Shape) =>
-  object({ start_date: z.iso.date(), end_date: z.iso.date(), ...shape }).refine((value: Record<string, unknown>) => {
+  object({ start_date: isoDate, end_date: isoDate, ...shape }).refine((value: Record<string, unknown>) => {
     if (typeof value.start_date !== "string" || typeof value.end_date !== "string") return false;
     const days = (Date.parse(value.end_date) - Date.parse(value.start_date)) / 86_400_000;
     return days >= 0 && days <= 366;

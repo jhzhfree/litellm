@@ -9,6 +9,7 @@ import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdentityCell, StatusBadge } from "@/components/shared/table_cells";
 import { Guardrail, GuardrailDefinitionLocation } from "@/components/guardrails/types";
 import { buttonVariants } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,12 +72,14 @@ function GuardrailRowActions({ guardrail, onDeleteClick }: GuardrailRowActionsPr
 interface GuardrailTableColumnsDeps {
   onGuardrailClick: (guardrailId: string) => void;
   onDeleteClick: (guardrailId: string, guardrailName: string) => void;
+  onToggleDefaultOn?: (guardrail: Guardrail, enabled: boolean) => void;
   t: TFunction;
 }
 
 export const getGuardrailTableColumns = ({
   onGuardrailClick,
   onDeleteClick,
+  onToggleDefaultOn,
   t,
 }: GuardrailTableColumnsDeps): ColumnDef<Guardrail>[] => [
   {
@@ -140,7 +143,23 @@ export const getGuardrailTableColumns = ({
     size: 120,
     enableSorting: false,
     cell: ({ row }) => {
-      const isDefaultOn = !!row.original.litellm_params?.default_on;
+      const guardrail = row.original;
+      const isConfigGuardrail =
+        guardrail.guardrail_definition_location === GuardrailDefinitionLocation.CONFIG;
+      const infoDefaultOn = guardrail.guardrail_info?.default_on;
+      const isDefaultOn = isConfigGuardrail ? !!infoDefaultOn : !!guardrail.litellm_params?.default_on;
+      if (isConfigGuardrail && onToggleDefaultOn) {
+        return (
+          <Switch
+            checked={isDefaultOn}
+            aria-label={t("guardrails.table.defaultOnToggle", {
+              name: guardrail.guardrail_name ?? "",
+            })}
+            disabled={infoDefaultOn === undefined || infoDefaultOn === null}
+            onCheckedChange={(checked) => onToggleDefaultOn(guardrail, checked)}
+          />
+        );
+      }
       return (
         <StatusBadge
           tone={isDefaultOn ? "success" : "neutral"}

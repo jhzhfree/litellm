@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown, Code, Plus } from "lucide-react";
-import { getGuardrailsList } from "@/components/networking";
+import { getGuardrailsList, setConfigGuardrailDefaultOn } from "@/components/networking";
 import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -99,6 +99,15 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
     setGuardrailToDelete(guardrailsList.find((g) => g.guardrail_id === guardrailId) || null);
   };
 
+  const handleToggleDefaultOn = async (guardrail: Guardrail, enabled: boolean) => {
+    try {
+      await setConfigGuardrailDefaultOn(accessToken, guardrail.guardrail_name || "", enabled);
+      await fetchGuardrails();
+    } catch (error) {
+      console.error("Error toggling guardrail default_on:", error);
+    }
+  };
+
   return (
     <div className="w-full mx-auto flex-auto overflow-y-auto m-8 p-2">
       <Tabs defaultValue="guardrails">
@@ -162,6 +171,7 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
               ) : (
                 <GuardrailTable
                   guardrailsList={guardrailsList}
+                  onToggleDefaultOn={handleToggleDefaultOn}
                   isLoading={isLoading}
                   onDeleteClick={handleDeleteClick}
                   onGuardrailClick={(id) => void setSelectedGuardrailId(id)}

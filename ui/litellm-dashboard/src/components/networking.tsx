@@ -3502,6 +3502,38 @@ export const testMCPSemanticFilter = async (accessToken: string, model: string, 
   }
 };
 
+export const setConfigGuardrailDefaultOn = async (
+  accessToken: string,
+  guardrailName: string,
+  enabled: boolean,
+) => {
+  try {
+    const url = proxyBaseUrl
+      ? `${proxyBaseUrl}/v2/guardrails/config-file/${encodeURIComponent(guardrailName)}/default-on`
+      : `/v2/guardrails/config-file/${encodeURIComponent(guardrailName)}/default-on`;
+    const response = await productFetch(url, {
+      method: "PUT",
+      headers: {
+        [globalLitellmHeaderName]: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ enabled }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      const errorMessage = deriveErrorMessage(errorData);
+      handleError(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to toggle config guardrail default_on:", error);
+    throw error;
+  }
+};
+
 export const getGuardrailsList = async (accessToken: string) => {
   try {
     const v2Url = proxyBaseUrl ? `${proxyBaseUrl}/v2/guardrails/list` : `/v2/guardrails/list`;

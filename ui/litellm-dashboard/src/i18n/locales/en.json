@@ -11415,7 +11415,8 @@
         "delete": "Delete"
       },
       "configDeleteHint": "Config guardrails are defined in the config file and cannot be deleted from the dashboard.",
-      "unnamed": "Unnamed Guardrail"
+      "unnamed": "Unnamed Guardrail",
+      "defaultOnToggle": "Toggle global default for {name}"
     },
     "deleteModal": {
       "title": "Delete Guardrail",

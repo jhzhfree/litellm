@@ -12877,7 +12877,8 @@
         "delete": "删除"
       },
       "configDeleteHint": "配置型护栏在配置文件中定义，无法从控制台删除。",
-      "unnamed": "未命名护栏"
+      "unnamed": "未命名护栏",
+      "defaultOnToggle": "切换 {name} 的全局默认生效状态"
     },
     "deleteModal": {
       "title": "删除护栏",

@@ -15,6 +15,7 @@ interface GuardrailTableProps {
   isLoading: boolean;
   onDeleteClick: (guardrailId: string, guardrailName: string) => void;
   onGuardrailClick: (id: string) => void;
+  onToggleDefaultOn?: (guardrail: Guardrail, enabled: boolean) => void;
 }
 
 const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }];
@@ -37,13 +38,14 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
   isLoading,
   onDeleteClick,
   onGuardrailClick,
+  onToggleDefaultOn,
 }) => {
   const { t } = useTranslation();
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(
-    () => getGuardrailTableColumns({ onGuardrailClick, onDeleteClick, t }),
-    [onGuardrailClick, onDeleteClick, t],
+    () => getGuardrailTableColumns({ onGuardrailClick, onDeleteClick, onToggleDefaultOn, t }),
+    [onGuardrailClick, onDeleteClick, onToggleDefaultOn, t],
   );
 
   return (

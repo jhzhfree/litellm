@@ -355,12 +355,18 @@ async def list_guardrails_v2(
                 if masked_in_memory_litellm_params
                 else None
             )
+            config_guardrail_info: Final = dict(guardrail.get("guardrail_info") or {})
+            runtime_callback: Final = (
+                IN_MEMORY_GUARDRAIL_HANDLER.guardrail_id_to_custom_guardrail.get(guardrail.get("guardrail_id"))
+            )
+            if runtime_callback is not None and hasattr(runtime_callback, "default_on"):
+                config_guardrail_info["default_on"] = bool(runtime_callback.default_on)
             guardrail_configs.append(
                 GuardrailInfoResponse(
                     guardrail_id=guardrail.get("guardrail_id"),
                     guardrail_name=guardrail.get("guardrail_name"),
                     litellm_params=masked_in_memory_litellm_params_typed,
-                    guardrail_info=dict(guardrail.get("guardrail_info") or {}),
+                    guardrail_info=config_guardrail_info,
                     guardrail_definition_location="config",
                 )
             )
@@ -2554,3 +2560,344 @@ async def apply_guardrail(
 
 # Usage (dashboard) endpoints: overview, detail, logs
 router.include_router(guardrails_usage_router)
+
+
+
+class ConfigGuardrailDefaultOnRequest(LiteLLMBaseModel):
+    """Toggle request for a config-file-defined guardrail's global default state."""
+
+    enabled: bool
+
+
+def _set_default_on_in_config_file(config_file_path: str, guardrail_name: str, enabled: bool) -> bool:
+    """
+    Rewrite `default_on:` for one guardrail block in config.yaml **in place**,
+    preserving all comments and formatting (plain-text edit, never yaml.dump).
+
+    Returns True when the file was updated.
+    """
+    import re as _re
+
+    with open(config_file_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    name_line_re = _re.compile(
+        rf"^(\s*-\s+)guardrail_name\s*:\s*[\"']?{_re.escape(guardrail_name)}[\"']?\s*(#.*)?$"
+    )
+    default_on_re = _re.compile(r"^(\s*default_on\s*:\s*)(true|false)(\s*.*)$", _re.IGNORECASE)
+
+    name_idx: int | None = None
+    for i, line in enumerate(lines):
+        if name_line_re.match(line):
+            name_idx = i
+            break
+    if name_idx is None:
+        return False
+
+    # Block ends at the next sibling list item or a less-indented key.
+    dash_idx = lines[name_idx].index("-")
+    base_indent = lines[name_idx][:dash_idx]
+    block_end = len(lines)
+    for i in range(name_idx + 1, len(lines)):
+        stripped = lines[i].strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        indent = len(lines[i]) - len(lines[i].lstrip(" "))
+        if indent <= len(base_indent):
+            block_end = i
+            break
+
+    desired = "true" if enabled else "false"
+    for i in range(name_idx + 1, block_end):
+        match = default_on_re.match(lines[i].rstrip("\r\n"))
+        if match:
+            eol = "\r\n" if lines[i].endswith("\r\n") else "\n"
+            lines[i] = f"{match.group(1)}{desired}{match.group(3)}".rstrip() + eol
+            break
+    else:
+        # No default_on line yet - insert inside litellm_params (block tail),
+        # falling back to the end of the guardrail block.
+        insert_at = block_end
+        insert_indent = base_indent + "  "
+        params_idx: int | None = None
+        params_indent = ""
+        for i in range(name_idx + 1, block_end):
+            stripped = lines[i].strip()
+            if stripped.startswith("litellm_params"):
+                params_idx = i
+                params_indent = lines[i][: len(lines[i]) - len(lines[i].lstrip(" "))]
+                break
+        if params_idx is not None:
+            for i in range(params_idx + 1, block_end):
+                stripped = lines[i].strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                indent = len(lines[i]) - len(lines[i].lstrip(" "))
+                if indent <= len(params_indent):
+                    insert_at = i
+                    break
+            insert_indent = params_indent + "  "
+        lines.insert(insert_at, f"{insert_indent}default_on: {desired}\n")
+
+    with open(config_file_path, "w", encoding="utf-8") as f:
+        f.writelines(lines)
+    return True
+
+
+@router.put(
+    "/v2/guardrails/config-file/{guardrail_name}/default-on",
+    tags=["Guardrails"],
+    dependencies=[Depends(user_api_key_auth)],
+)
+async def set_config_guardrail_default_on(
+    guardrail_name: str,
+    request: ConfigGuardrailDefaultOnRequest,
+    user_api_key_dict: UserAPIKeyAuth = Depends(user_api_key_auth),
+):
+    """
+    Enable or disable a config-file-defined guardrail's global default (`default_on`)
+    at runtime - no restart required.
+
+    Hot-updates the running hook instance (`should_run_guardrail` reads
+    `self.default_on` per request) and persists the change back to config.yaml
+    (comment/format preserving) so it survives restarts.
+    """
+    from litellm.proxy.guardrails.guardrail_registry import IN_MEMORY_GUARDRAIL_HANDLER
+    from litellm.proxy.proxy_server import user_config_file_path
+
+    if user_api_key_dict.user_role != LitellmUserRoles.PROXY_ADMIN:
+        raise HTTPException(status_code=403, detail="Admin access required to manage guardrails")
+
+    enabled: bool = bool(request.enabled)
+
+    in_memory_guardrail: Final = next(
+        (
+            guardrail
+            for guardrail in IN_MEMORY_GUARDRAIL_HANDLER.list_config_guardrails()
+            if guardrail.get("guardrail_name") == guardrail_name
+        ),
+        None,
+    )
+    if in_memory_guardrail is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Guardrail '{guardrail_name}' is not defined in the config file",
+        )
+
+    # 1) Hot-update the running hook instance - applies to new requests immediately.
+    updated_callbacks = 0
+    guardrail_id: Final = in_memory_guardrail.get("guardrail_id")
+    callback: Final = (
+        IN_MEMORY_GUARDRAIL_HANDLER.guardrail_id_to_custom_guardrail.get(guardrail_id)
+        if guardrail_id
+        else None
+    )
+    if callback is not None and hasattr(callback, "default_on"):
+        callback.default_on = enabled
+        updated_callbacks += 1
+
+    # 2) Keep in-memory metadata in sync.
+    params = in_memory_guardrail.get("litellm_params")
+    if hasattr(params, "default_on"):
+        params.default_on = enabled
+    elif isinstance(params, dict):
+        params["default_on"] = enabled
+
+    # 3) Persist to config.yaml so the state survives restarts.
+    file_updated = False
+    try:
+        if user_config_file_path and os.path.isfile(user_config_file_path):
+            file_updated = _set_default_on_in_config_file(
+                config_file_path=str(user_config_file_path),
+                guardrail_name=guardrail_name,
+                enabled=enabled,
+            )
+    except OSError as file_error:
+        verbose_proxy_logger.warning(
+            "Guardrail '%s' default_on toggled in memory but config.yaml write failed: %s",
+            guardrail_name,
+            file_error,
+        )
+
+    verbose_proxy_logger.info(
+        "Guardrail '%s' default_on set to %s (callbacks updated: %d, yaml persisted: %s)",
+        guardrail_name,
+        enabled,
+        updated_callbacks,
+        file_updated,
+    )
+    return {
+        "guardrail_name": guardrail_name,
+        "default_on": enabled,
+        "updated_callbacks": updated_callbacks,
+        "config_file_updated": file_updated,
+    }
+
+
+# Usage (dashboard) endpoints: overview, detail, logs
+router.include_router(guardrails_usage_router)
+
+
+
+class ConfigGuardrailDefaultOnRequest(LiteLLMBaseModel):
+    """Toggle request for a config-file-defined guardrail's global default state."""
+
+    enabled: bool
+
+
+def _set_default_on_in_config_file(config_file_path: str, guardrail_name: str, enabled: bool) -> bool:
+    """
+    Rewrite `default_on:` for one guardrail block in config.yaml **in place**,
+    preserving all comments and formatting (plain-text edit, never yaml.dump).
+
+    Returns True when the file was updated.
+    """
+    import re as _re
+
+    with open(config_file_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    name_line_re = _re.compile(
+        rf"^(\s*-\s+)guardrail_name\s*:\s*[\"']?{_re.escape(guardrail_name)}[\"']?\s*(#.*)?$"
+    )
+    default_on_re = _re.compile(r"^(\s*default_on\s*:\s*)(true|false)(\s*.*)$", _re.IGNORECASE)
+
+    name_idx: int | None = None
+    for i, line in enumerate(lines):
+        if name_line_re.match(line):
+            name_idx = i
+            break
+    if name_idx is None:
+        return False
+
+    # Block ends at the next sibling list item or a less-indented key.
+    dash_idx = lines[name_idx].index("-")
+    base_indent = lines[name_idx][:dash_idx]
+    block_end = len(lines)
+    for i in range(name_idx + 1, len(lines)):
+        stripped = lines[i].strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        indent = len(lines[i]) - len(lines[i].lstrip(" "))
+        if indent <= len(base_indent):
+            block_end = i
+            break
+
+    desired = "true" if enabled else "false"
+    for i in range(name_idx + 1, block_end):
+        match = default_on_re.match(lines[i].rstrip("\r\n"))
+        if match:
+            eol = "\r\n" if lines[i].endswith("\r\n") else "\n"
+            lines[i] = f"{match.group(1)}{desired}{match.group(3)}".rstrip() + eol
+            break
+    else:
+        # No default_on line yet - insert inside litellm_params (block tail),
+        # falling back to the end of the guardrail block.
+        insert_at = block_end
+        insert_indent = base_indent + "  "
+        params_idx: int | None = None
+        params_indent = ""
+        for i in range(name_idx + 1, block_end):
+            stripped = lines[i].strip()
+            if stripped.startswith("litellm_params"):
+                params_idx = i
+                params_indent = lines[i][: len(lines[i]) - len(lines[i].lstrip(" "))]
+                break
+        if params_idx is not None:
+            for i in range(params_idx + 1, block_end):
+                stripped = lines[i].strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                indent = len(lines[i]) - len(lines[i].lstrip(" "))
+                if indent <= len(params_indent):
+                    insert_at = i
+                    break
+            insert_indent = params_indent + "  "
+        lines.insert(insert_at, f"{insert_indent}default_on: {desired}\n")
+
+    with open(config_file_path, "w", encoding="utf-8") as f:
+        f.writelines(lines)
+    return True
+
+
+@router.put(
+    "/v2/guardrails/config-file/{guardrail_name}/default-on",
+    tags=["Guardrails"],
+    dependencies=[Depends(user_api_key_auth)],
+)
+async def set_config_guardrail_default_on(
+    guardrail_name: str,
+    request: ConfigGuardrailDefaultOnRequest,
+    user_api_key_dict: UserAPIKeyAuth = Depends(user_api_key_auth),
+):
+    """
+    Enable or disable a config-file-defined guardrail's global default (`default_on`)
+    at runtime - no restart required.
+
+    Hot-updates the running hook instance and in-memory metadata, and persists the
+    change back to config.yaml (comment/format preserving) so it survives restarts.
+    """
+    import litellm
+
+    from litellm.proxy.guardrails.guardrail_registry import IN_MEMORY_GUARDRAIL_HANDLER
+    from litellm.proxy.proxy_server import user_config_file_path
+
+    if user_api_key_dict.user_role != LitellmUserRoles.PROXY_ADMIN:
+        raise HTTPException(status_code=403, detail="Admin access required to manage guardrails")
+
+    guardrail_item = litellm.guardrail_name_config_map.get(guardrail_name)
+    if guardrail_item is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Guardrail '{guardrail_name}' is not defined in the config file",
+        )
+
+    enabled: bool = bool(request.enabled)
+
+    # 1) Hot-update running hook instances - should_run_guardrail reads
+    #    self.default_on per request, so the change applies immediately.
+    updated_callbacks = 0
+    for callback in litellm.logging_callback_manager.get_custom_loggers_for_type(callback_type=CustomGuardrail):
+        if getattr(callback, "guardrail_name", None) == guardrail_name and hasattr(callback, "default_on"):
+            callback.default_on = enabled
+            updated_callbacks += 1
+
+    # 2) Keep in-memory metadata in sync (feeds /v2/guardrails/list).
+    guardrail_item.default_on = enabled
+    for in_memory_guardrail in IN_MEMORY_GUARDRAIL_HANDLER.list_config_guardrails():
+        if in_memory_guardrail.get("guardrail_name") == guardrail_name:
+            params = in_memory_guardrail.get("litellm_params")
+            if hasattr(params, "default_on"):
+                params.default_on = enabled
+            elif isinstance(params, dict):
+                params["default_on"] = enabled
+
+    # 3) Persist to config.yaml so the state survives restarts.
+    file_updated = False
+    try:
+        if user_config_file_path and os.path.isfile(user_config_file_path):
+            file_updated = _set_default_on_in_config_file(
+                config_file_path=str(user_config_file_path),
+                guardrail_name=guardrail_name,
+                enabled=enabled,
+            )
+    except OSError as file_error:
+        verbose_proxy_logger.warning(
+            "Guardrail '%s' default_on toggled in memory but config.yaml write failed: %s",
+            guardrail_name,
+            file_error,
+        )
+
+    verbose_proxy_logger.info(
+        "Guardrail '%s' default_on set to %s (callbacks updated: %d, yaml persisted: %s)",
+        guardrail_name,
+        enabled,
+        updated_callbacks,
+        file_updated,
+    )
+    return {
+        "guardrail_name": guardrail_name,
+        "default_on": enabled,
+        "updated_callbacks": updated_callbacks,
+        "config_file_updated": file_updated,
+    }

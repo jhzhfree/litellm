@@ -55,8 +55,9 @@ CHANGED="$( { git diff --name-only "$LAST_REF" -- . 2>/dev/null || true;
               git diff --name-only 2>/dev/null || true;
               git ls-files --others --exclude-standard; } | sort -u )"
 
-SRC_CHANGED=0; UI_CHANGED=0; RUST_CHANGED=0; CONFIG_ONLY=1; PY_CHANGED=0
+SRC_CHANGED=0; UI_CHANGED=0; RUST_CHANGED=0; CONFIG_ONLY=0; PY_CHANGED=0
 if [[ -n "$CHANGED" ]]; then
+  CONFIG_ONLY=1
   while IFS= read -r f; do
     case "$f" in
       ui/litellm-dashboard/*) UI_CHANGED=1; CONFIG_ONLY=0 ;;
@@ -99,7 +100,16 @@ echo "== 构建模式: $MODE"
 # ---------------------------------------------------------------------------
 if [[ "$MODE" == "config-quick" ]]; then
   echo "== 快速路径: 更新本地容器配置"
-  if [[ -f deploy/proxy_config.yaml ]]; then
+  # 本地部署把 deploy/proxy_config.yaml bind-mount 进容器 → 宿主机文件即是
+  # 容器内文件, restart 即生效; 未挂载时退回 docker cp。
+  MOUNT_SRC="$(docker inspect ai-tokengw-core --format '{{range .Mounts}}{{if eq .Destination "/app/proxy_config.yaml"}}{{.Source}}{{end}}{{end}}')"
+  if [[ -n "$MOUNT_SRC" ]]; then
+    if [[ "$MOUNT_SRC" != "$(pwd)/deploy/proxy_config.yaml" && -f deploy/proxy_config.yaml ]]; then
+      cp deploy/proxy_config.yaml "$MOUNT_SRC"
+    fi
+    docker restart ai-tokengw-core >/dev/null
+    echo "   配置(挂载于 $MOUNT_SRC)已更新并重启 ai-tokengw-core"
+  elif [[ -f deploy/proxy_config.yaml ]]; then
     docker cp deploy/proxy_config.yaml ai-tokengw-core:/app/proxy_config.yaml
     docker restart ai-tokengw-core >/dev/null
     echo "   proxy_config.yaml 已更新并重启 ai-tokengw-core"

@@ -319,3 +319,63 @@ it("keeps a new baggage mapping unsaved until every field the backend requires i
     ["token", "request_tag_mappings", [{ header: "baggage", key: "service", value: "a", tag: "app:support" }]],
   ]);
 });
+
+it("configures the outbound proxy from the General tab", async () => {
+  vi.mocked(updateConfigFieldSetting).mockClear();
+  vi.mocked(deleteConfigFieldSetting).mockClear();
+  vi.mocked(getGeneralSettingsCall).mockResolvedValue([
+    ...SETTINGS_FIXTURE,
+    {
+      field_name: "proxy_url",
+      field_type: "String",
+      field_value: "http://127.0.0.1:7890",
+      field_description: "outbound proxy",
+      stored_in_db: true,
+      field_default_value: null,
+    },
+  ]);
+  const user = userEvent.setup();
+  renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
+  await user.click(screen.getByRole("tab", { name: "General" }));
+
+  const card = await screen.findByRole("group", { name: "Outbound Proxy" });
+  const input = within(card).getByRole("textbox", { name: "Outbound Proxy" });
+  expect(input).toHaveValue("http://127.0.0.1:7890");
+  expect(screen.queryByRole("row", { name: /proxy_url/ })).not.toBeInTheDocument();
+
+  fireEvent.change(input, { target: { value: "socks5://127.0.0.1:1080" } });
+  await user.click(within(card).getByRole("button", { name: "Update" }));
+  expect(vi.mocked(updateConfigFieldSetting).mock.calls).toEqual([
+    ["token", "proxy_url", "socks5://127.0.0.1:1080"],
+  ]);
+
+  await user.click(within(card).getByRole("button", { name: "Clear" }));
+  expect(vi.mocked(deleteConfigFieldSetting).mock.calls).toEqual([["token", "proxy_url"]]);
+});
+
+it("disables proxy updates for an invalid URL", async () => {
+  vi.mocked(updateConfigFieldSetting).mockClear();
+  vi.mocked(getGeneralSettingsCall).mockResolvedValue([
+    ...SETTINGS_FIXTURE,
+    {
+      field_name: "proxy_url",
+      field_type: "String",
+      field_value: "",
+      field_description: "outbound proxy",
+      stored_in_db: null,
+      field_default_value: null,
+    },
+  ]);
+  const user = userEvent.setup();
+  renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
+  await user.click(screen.getByRole("tab", { name: "General" }));
+
+  const card = await screen.findByRole("group", { name: "Outbound Proxy" });
+  const input = within(card).getByRole("textbox", { name: "Outbound Proxy" });
+  expect(within(card).getByRole("button", { name: "Update" })).toBeEnabled();
+
+  fireEvent.change(input, { target: { value: "ftp://127.0.0.1" } });
+  expect(within(card).getByRole("button", { name: "Update" })).toBeDisabled();
+  expect(within(card).getByText("Enter a valid http, https, socks5 or socks5h URL.")).toBeInTheDocument();
+  expect(vi.mocked(updateConfigFieldSetting).mock.calls).toEqual([]);
+});

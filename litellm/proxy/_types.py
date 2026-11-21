@@ -38,6 +38,7 @@ from litellm.litellm_core_utils.initialize_dynamic_callback_params import (
     validate_no_callback_env_reference,
 )
 from litellm.proxy.mcp_server.stdio_gate import MCP_STDIO_DISABLED_MESSAGE, is_mcp_stdio_enabled
+from litellm.proxy.outbound_proxy import validate_outbound_proxy_url
 from litellm.types.agents import (
     AgentCaller as AgentCaller,  # noqa: PLC0414  # public re-export
 )
@@ -2515,6 +2516,16 @@ class ConfigGeneralSettings(LiteLLMPydanticObjectBase):
         None,
         description="Map W3C baggage values to request tags. Exact value/tag rules take precedence over tag_prefix fallbacks.",
     )
+
+    proxy_url: str | None = Field(
+        None,
+        description="Outbound HTTP/SOCKS proxy for LLM API calls, for example http://127.0.0.1:7890. Leave empty to disable.",
+    )
+
+    @field_validator("proxy_url")
+    @classmethod
+    def validate_proxy_url(cls, value: str | None) -> str | None:
+        return validate_outbound_proxy_url(value)
 
     @field_validator("request_tag_mappings")
     @classmethod

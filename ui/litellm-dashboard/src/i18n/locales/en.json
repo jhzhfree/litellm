@@ -6913,7 +6913,14 @@
       },
       "update": "Update",
       "listPlaceholder": "Comma-separated values",
-      "selectDefault": "Default"
+      "selectDefault": "Default",
+      "proxy": {
+        "title": "Outbound Proxy",
+        "description": "Route LLM API calls through an HTTP or SOCKS5 proxy. Leave empty to connect directly.",
+        "placeholder": "http://127.0.0.1:7890",
+        "clear": "Clear",
+        "validationError": "Enter a valid http, https, socks5 or socks5h URL."
+      }
     },
     "promptCaching": {
       "title": "Prompt Caching",

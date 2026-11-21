@@ -9962,7 +9962,14 @@
       },
       "update": "更新",
       "listPlaceholder": "多个值以逗号分隔",
-      "selectDefault": "默认"
+      "selectDefault": "默认",
+      "proxy": {
+        "title": "出站代理",
+        "description": "通过 HTTP 或 SOCKS5 代理转发大模型 API 请求，留空则直连。",
+        "placeholder": "http://127.0.0.1:7890",
+        "clear": "清除",
+        "validationError": "请输入有效的 http、https、socks5 或 socks5h 地址。"
+      }
     },
     "promptCaching": {
       "title": "提示词缓存",

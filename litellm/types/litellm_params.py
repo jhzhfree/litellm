@@ -77,6 +77,7 @@ class ProviderConnection:
     client: "ProviderClient | None" = None
     shared_session: "ClientSession | None" = None
     ssl_verify: bool | str | None = None
+    proxy_url: str | None = None
     request_timeout: float | None = None
     force_timeout: float | None = None
     stream_timeout: float | str | None = None

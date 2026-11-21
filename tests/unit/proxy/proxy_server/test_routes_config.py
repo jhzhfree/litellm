@@ -23,7 +23,6 @@ from unittest.mock import AsyncMock, MagicMock
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from pydantic import JsonValue, TypeAdapter
 
 from .conftest import VOLATILE_KEYS, normalize
 
@@ -392,96 +391,6 @@ def test_config_field_update_happy_admin(client, auth_as, mock_prisma, monkeypat
         "param_value": {"max_parallel_requests": 5},
         "id": "<VOLATILE>",
     }
-
-
-def test_config_field_update_proxy_url_applies_outbound_proxy(
-    client: TestClient,
-    auth_as: Callable[..., contextlib.AbstractContextManager[object]],
-    mock_prisma: MagicMock,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    from litellm.proxy import proxy_server as ps
-    from litellm.proxy._types import LitellmUserRoles
-
-    table = _install_litellm_config(mock_prisma)
-    table.find_first = AsyncMock(return_value=None)
-    table.upsert = AsyncMock(
-        return_value={
-            "param_name": "general_settings",
-            "param_value": {"proxy_url": "http://127.0.0.1:7890"},
-            "id": "row-1",
-        }
-    )
-    monkeypatch.setattr(ps, "prisma_client", mock_prisma)
-    _seed_settings_store(monkeypatch, {})
-    applied: list[object] = []
-    monkeypatch.setattr(ps, "apply_outbound_proxy", applied.append)
-
-    with auth_as(LitellmUserRoles.PROXY_ADMIN):
-        response = client.post(
-            "/config/field/update",
-            json={
-                "field_name": "proxy_url",
-                "field_value": "http://127.0.0.1:7890",
-                "config_type": "general_settings",
-            },
-        )
-
-    assert response.status_code == 200
-    assert applied == ["http://127.0.0.1:7890"]
-
-
-def test_config_field_update_rejects_invalid_proxy_url(
-    client: TestClient,
-    auth_as: Callable[..., contextlib.AbstractContextManager[object]],
-    mock_prisma: MagicMock,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    from litellm.proxy import proxy_server as ps
-    from litellm.proxy._types import LitellmUserRoles
-
-    table = _install_litellm_config(mock_prisma)
-    table.find_first = AsyncMock(return_value=None)
-    table.upsert = AsyncMock(return_value=None)
-    monkeypatch.setattr(ps, "prisma_client", mock_prisma)
-    _seed_settings_store(monkeypatch, {})
-
-    with auth_as(LitellmUserRoles.PROXY_ADMIN):
-        response = client.post(
-            "/config/field/update",
-            json={
-                "field_name": "proxy_url",
-                "field_value": "ftp://127.0.0.1",
-                "config_type": "general_settings",
-            },
-        )
-
-    assert response.status_code == 400
-
-
-def test_config_list_exposes_proxy_url_to_the_ui(
-    client: TestClient,
-    auth_as: Callable[..., contextlib.AbstractContextManager[object]],
-    mock_prisma: MagicMock,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    from litellm.proxy import proxy_server as ps
-    from litellm.proxy._types import LitellmUserRoles
-
-    table = _install_litellm_config(mock_prisma)
-    table.find_first = AsyncMock(return_value=None)
-    monkeypatch.setattr(ps, "prisma_client", mock_prisma)
-    monkeypatch.setattr(ps, "general_settings", {"proxy_url": "http://127.0.0.1:7890"})
-    _seed_settings_store(monkeypatch, {"proxy_url": "http://127.0.0.1:7890"})
-
-    with auth_as(LitellmUserRoles.PROXY_ADMIN):
-        response = client.get("/config/list", params={"config_type": "general_settings"})
-
-    assert response.status_code == 200
-    fields: Final = TypeAdapter(list[dict[str, JsonValue]]).validate_python(response.json())
-    proxy_field: Final = next(item for item in fields if item.get("field_name") == "proxy_url")
-    assert proxy_field.get("field_type") == "String"
-    assert proxy_field.get("field_value") == "http://127.0.0.1:7890"
 
 
 def test_config_field_update_non_admin_rejected(client, auth_as, mock_prisma, monkeypatch):

@@ -590,6 +590,7 @@ class GenericLiteLLMParams(CredentialLiteLLMParams, CustomPricingLiteLLMParams):
         def __init__(self, /, **data: object) -> None: ...  # kwargs-ok: provider parameters vary by deployment
 
     custom_llm_provider: str | None = None
+    proxy_url: str | None = None
     responses_api_version: str | None = None
     tpm: int | None = None
     rpm: int | None = None

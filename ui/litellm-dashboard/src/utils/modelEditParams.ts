@@ -2,6 +2,7 @@ import { isMaskedSecret } from "./maskedSecretUtils";
 
 const FORM_PARAMS = new Set([
   "api_base",
+  "proxy_url",
   "custom_llm_provider",
   "organization",
   "tpm",

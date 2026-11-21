@@ -37,6 +37,7 @@ import {
 } from "../../utils/ptuValidation";
 import { usePtuCostAttributionEnabled } from "@/app/(dashboard)/hooks/uiSettings/usePtuCostAttributionEnabled";
 import { codeSamples } from "@/i18n/untranslated/codeSamples";
+import { isValidProxyUrl } from "@/utils/proxyUrl";
 
 interface AdvancedSettingsProps {
   showAdvancedSettings: boolean;
@@ -77,6 +78,11 @@ const usageCostRules = {
   deps: [PTU_COUNT_FIELD],
   validate: validatorRules({ validator: validateNumber }, ptuNoUsageCostRule(PTU_COUNT_FIELD)),
 };
+
+const validateProxyUrl = (_: unknown, value: unknown) =>
+  isValidProxyUrl(value)
+    ? Promise.resolve()
+    : Promise.reject(i18n.t("addModel.advancedSettings.invalidProxyUrl"));
 
 const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   showAdvancedSettings,
@@ -516,6 +522,26 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 )}
               </MountedFormField>
             )}
+            <MountedFormField
+              name="proxy_url"
+              label={labelWithHint(
+                t("addModel.advancedSettings.proxyUrl"),
+                t("addModel.advancedSettings.proxyUrlHint"),
+              )}
+              className="mb-4"
+              rules={{ validate: validatorRules({ validator: validateProxyUrl }) }}
+            >
+              {(control) => (
+                <Input
+                  id={control.id}
+                  placeholder={t("addModel.advancedSettings.proxyUrlPlaceholder")}
+                  value={(control.value as string | undefined) ?? ""}
+                  onChange={control.onChange}
+                  onBlur={control.onBlur}
+                />
+              )}
+            </MountedFormField>
+
             <MountedFormField
               name="litellm_extra_params"
               label={labelWithHint(

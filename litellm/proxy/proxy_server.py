@@ -960,7 +960,6 @@ from litellm.proxy.openai_files_endpoints.files_endpoints import (
 from litellm.proxy.openai_files_endpoints.files_endpoints import (
     set_files_config,
 )
-from litellm.proxy.outbound_proxy import apply_outbound_proxy
 from litellm.proxy.pass_through_endpoints.openai_passthrough_endpoints import (
     router as openai_passthrough_router,
 )
@@ -1248,7 +1247,6 @@ _EXTRA_SECRET_GENERAL_SETTINGS_FIELDS: Final = frozenset(
         "database_extra_connection_params",
         "pass_through_endpoints",
         "alert_to_webhook_url",
-        "proxy_url",
     }
 )
 
@@ -7470,10 +7468,6 @@ class ProxyConfig:
             ### SSRF URL VALIDATION SETTINGS ###
             _apply_ssrf_general_settings(general_settings)
 
-            apply_outbound_proxy(
-                _as_settings_mapping(general_settings).get("proxy_url")  # pyright: ignore[reportUnknownArgumentType]  # config.yaml values are untyped at this boundary
-            )
-
             ## check if user has set a premium feature in general_settings
             if general_settings.get("enforced_params") is not None and premium_user is not True:
                 raise ValueError("Trying to use `enforced_params`" + CommonProxyErrors.not_premium_user.value)
@@ -8541,7 +8535,6 @@ class ProxyConfig:
             self._apply_store_model_in_db_setting,
             partial(self._apply_retention_settings, previous_cleanup_schedule=previous_cleanup_schedule),
             self._apply_ssrf_settings,
-            self._apply_proxy_setting,
         )
         for effect in effects:
             await effect(db_values)
@@ -8690,9 +8683,6 @@ class ProxyConfig:
 
     async def _apply_ssrf_settings(self, db_values: Mapping[str, SettingsJsonValue]) -> None:
         _apply_ssrf_general_settings(db_values)
-
-    async def _apply_proxy_setting(self, _db_values: Mapping[str, SettingsJsonValue]) -> None:
-        apply_outbound_proxy(self.settings.get("proxy_url"))
 
     async def _update_config_from_db(
         self,
@@ -20714,7 +20704,6 @@ _GENERAL_SETTINGS_CONFIG_LIST_FIELD_TYPES: Final[Mapping[str, str]] = MappingPro
         "mcp_client_id_header": "String",
         "mcp_trusted_proxy_ranges": "List",
         "mcp_xff_num_trusted_hops": "Integer",
-        "proxy_url": "String",
         "mcp_prefer_client_id_metadata_document": "Boolean",
         "always_include_stream_usage": "Boolean",
         "forward_client_headers_to_llm_api": "Boolean",
@@ -20865,7 +20854,6 @@ async def update_config_general_settings(
     )
     await invalidate_config_param("general_settings")
     proxy_config.settings.apply_db_row("general_settings", general_settings)
-    apply_outbound_proxy(proxy_config.settings.get("proxy_url"))
     if is_resource_list("general_settings", data.field_name):
         stored_endpoints: Final = general_settings.get("pass_through_endpoints")
         await proxy_config.serve_pass_through_endpoints(stored_endpoints if isinstance(stored_endpoints, list) else ())
@@ -21505,7 +21493,6 @@ async def delete_config_general_settings(
     )
     await invalidate_config_param("general_settings")
     proxy_config.settings.apply_db_row("general_settings", remaining)
-    apply_outbound_proxy(proxy_config.settings.get("proxy_url"))
     if is_resource_list("general_settings", data.field_name):
         stored_endpoints: Final = remaining.get("pass_through_endpoints")
         await proxy_config.serve_pass_through_endpoints(stored_endpoints if isinstance(stored_endpoints, list) else ())

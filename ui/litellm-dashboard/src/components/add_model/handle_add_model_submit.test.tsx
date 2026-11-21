@@ -35,6 +35,18 @@ describe("prepareModelAddRequest", () => {
     expect(deployment.modelInfoObj.team_id).toBe("team-123");
   });
 
+  it("keeps the per-model proxy URL in the deployment litellm params", async () => {
+    const formValues = {
+      model_mappings: [{ public_name: "Public Model", litellm_model: "openai/gpt-4o" }],
+      model_name: "proxied-model",
+      proxy_url: "http://127.0.0.1:7890",
+    };
+
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+
+    expect(deployments?.[0]?.litellmParamsObj.proxy_url).toBe("http://127.0.0.1:7890");
+  });
+
   it("converts both cache write tiers from per-million to per-token", async () => {
     const formValues = {
       model_mappings: [{ public_name: "claude-sonnet", litellm_model: "anthropic/claude-sonnet-4-6" }],

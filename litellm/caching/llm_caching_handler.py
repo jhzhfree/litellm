@@ -53,10 +53,6 @@ class LLMClientCache(InMemoryCache):
     def _scoped_key(self, key: str, loop_bound: bool) -> str:
         return self.update_cache_key_with_event_loop(key) if loop_bound else key
 
-    def evict_all_clients(self) -> None:
-        for key in self._cache_keys():
-            self.delete_cache(key)
-
     def set_cache(self, key: str, value: object, litellm_owned_client: bool = False, loop_bound: bool = True, **kwargs):
         """``litellm_owned_client`` marks a client litellm built, so it may be closed once evicted."""
         if litellm_owned_client:

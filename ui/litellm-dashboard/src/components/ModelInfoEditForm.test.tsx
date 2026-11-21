@@ -116,6 +116,24 @@ describe("ModelInfoEditForm pricing fields", () => {
     expect(screen.getByPlaceholderText("Enter output cost")).toHaveAttribute("aria-invalid", "true");
     expect(onSubmit).not.toHaveBeenCalled();
   });
+
+  it("prefills and validates the per-model outbound proxy URL", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
+    renderForm({
+      onSubmit,
+      litellmParams: { model: "gpt-4o", proxy_url: "http://127.0.0.1:7890" },
+    });
+
+    const input = screen.getByPlaceholderText("http://127.0.0.1:7890");
+    expect(input).toHaveValue("http://127.0.0.1:7890");
+
+    fireEvent.change(input, { target: { value: "ftp://127.0.0.1" } });
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    expect(await screen.findByText("Enter a valid http, https, socks5 or socks5h URL")).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
 });
 
 describe("ModelInfoEditForm existing-credentials picker", () => {

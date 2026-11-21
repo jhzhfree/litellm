@@ -22,11 +22,8 @@ const PROMPT_CACHING_TAB = "prompt_caching";
 const ENABLE_ANTHROPIC_PROMPT_CACHING = "enable_anthropic_prompt_caching";
 const ANTHROPIC_PROMPT_CACHING_TTL = "anthropic_prompt_caching_ttl";
 const OPENAI_SYSTEM_MESSAGES_FIRST = "openai_system_messages_first";
-const PROXY_URL_FIELD = "proxy_url";
-const PROXY_URL_PATTERN = /^(https?|socks5h?):\/\/[^/\s]+/i;
 
 const isOn = (value: unknown) => value === true || value === "true";
-const isProxyUrlValid = (value: string) => value === "" || PROXY_URL_PATTERN.test(value);
 
 interface GeneralSettingsPageProps {
   accessToken: string | null;
@@ -312,10 +309,6 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
     }
   };
 
-  const proxySetting = generalSettings.find((setting) => setting.field_name === PROXY_URL_FIELD);
-  const proxyValue = typeof proxySetting?.field_value === "string" ? proxySetting.field_value : "";
-  const proxyValid = isProxyUrlValid(proxyValue);
-
   if (!accessToken) {
     return null;
   }
@@ -343,37 +336,6 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
           <PromptCachingPanel accessToken={accessToken} settings={generalSettings} onChange={handleInputChange} />
         </TabsContent>
         <TabsContent value="general" className="px-8 py-6" keepMounted>
-          {proxySetting && (
-            <Card className="mb-6" role="group" aria-label={t("routerSettings.generalSettings.proxy.title")}>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="font-medium">{t("routerSettings.generalSettings.proxy.title")}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {t("routerSettings.generalSettings.proxy.description")}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    aria-label={t("routerSettings.generalSettings.proxy.title")}
-                    placeholder={t("routerSettings.generalSettings.proxy.placeholder")}
-                    value={proxyValue}
-                    onChange={(event) => handleInputChange(PROXY_URL_FIELD, event.target.value)}
-                  />
-                  <Button disabled={!proxyValid} onClick={() => handleUpdateField(PROXY_URL_FIELD)}>
-                    {t("routerSettings.generalSettings.update")}
-                  </Button>
-                  {proxySetting.stored_in_db === true && (
-                    <Button variant="outline" onClick={() => handleResetField(PROXY_URL_FIELD)}>
-                      {t("routerSettings.generalSettings.proxy.clear")}
-                    </Button>
-                  )}
-                </div>
-                {!proxyValid && (
-                  <p className="text-xs text-destructive">{t("routerSettings.generalSettings.proxy.validationError")}</p>
-                )}
-              </CardContent>
-            </Card>
-          )}
           <Card>
             <CardContent>
               <Table>
@@ -387,12 +349,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
                 </TableHeader>
                 <TableBody>
                   {generalSettings
-                    .filter(
-                      (value) =>
-                        value.field_type !== "TypedDictionary" &&
-                        value.field_tab !== PROMPT_CACHING_TAB &&
-                        value.field_name !== PROXY_URL_FIELD,
-                    )
+                    .filter((value) => value.field_type !== "TypedDictionary" && value.field_tab !== PROMPT_CACHING_TAB)
                     .map((value, index) => (
                       <TableRow key={index}>
                         <TableCell className="whitespace-normal">

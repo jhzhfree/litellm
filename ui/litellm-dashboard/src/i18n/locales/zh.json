@@ -9962,14 +9962,7 @@
       },
       "update": "更新",
       "listPlaceholder": "多个值以逗号分隔",
-      "selectDefault": "默认",
-      "proxy": {
-        "title": "出站代理",
-        "description": "通过 HTTP 或 SOCKS5 代理转发大模型 API 请求，留空则直连。",
-        "placeholder": "http://127.0.0.1:7890",
-        "clear": "清除",
-        "validationError": "请输入有效的 http、https、socks5 或 socks5h 地址。"
-      }
+      "selectDefault": "默认"
     },
     "promptCaching": {
       "title": "提示词缓存",
@@ -18781,6 +18774,10 @@
         "perSecond": "每秒"
       },
       "invalidPositiveNumber": "请输入有效的正数",
+      "invalidProxyUrl": "请输入有效的 http、https、socks5 或 socks5h 地址",
+      "proxyUrl": "出站代理地址",
+      "proxyUrlHint": "仅该模型的请求走此代理，留空则直连。",
+      "proxyUrlPlaceholder": "http://127.0.0.1:7890",
       "title": "高级设置",
       "customPricing": "自定义定价",
       "knowledgeBases": "关联的知识库（RAG）",
@@ -19704,6 +19701,10 @@
         "label": "API Base",
         "placeholder": "输入 API Base"
       },
+      "proxyUrl": {
+        "label": "出站代理地址",
+        "placeholder": "http://127.0.0.1:7890"
+      },
       "customLlmProvider": {
         "label": "自定义 LLM 提供商",
         "placeholder": "输入自定义 LLM 提供商"
@@ -19785,6 +19786,7 @@
     "validation": {
       "priceNonNegative": "请输入 0 或更大的价格",
       "invalidJson": "请输入有效的 JSON 对象",
+      "invalidProxyUrl": "请输入有效的 http、https、socks5 或 socks5h 地址",
       "ptuCountRange": "PTU 数量必须是介于 1 和 {{max}} 之间的整数",
       "ptuRateRange": "每 PTU 每小时费用必须介于 0 和 {{max}} 之间",
       "ptuPair": "PTU 数量与每 PTU 每小时费用必须同时设置",

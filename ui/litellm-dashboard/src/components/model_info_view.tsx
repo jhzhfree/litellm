@@ -274,6 +274,7 @@ export default function ModelInfoView({
         ...editableModelExtraParams(parsedExtraParams),
         model: values.litellm_model_name,
         api_base: values.api_base,
+        proxy_url: values.proxy_url || undefined,
         custom_llm_provider: values.custom_llm_provider,
         organization: values.organization,
         tpm: values.tpm,

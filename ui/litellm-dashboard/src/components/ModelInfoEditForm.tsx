@@ -38,6 +38,7 @@ import { ModelTeamSelect } from "./view_model/ModelTeamSelect";
 import VectorStoreSelector from "./vector_store_management/VectorStoreSelector";
 import { formatPtuUtcDisplay, utcIsoToPickerValue } from "../utils/ptuDatetime";
 import { editableModelExtraParams, parseModelExtraParams } from "../utils/modelEditParams";
+import { isValidProxyUrl } from "../utils/proxyUrl";
 import {
   MAX_COST_PER_PTU_PER_HOUR,
   MAX_PTU_COUNT,
@@ -110,6 +111,7 @@ const modelEditShape = {
   model_name: textish,
   litellm_model_name: textish,
   api_base: textish,
+  proxy_url: textish,
   custom_llm_provider: textish,
   organization: textish,
   tpm: scalar,
@@ -152,6 +154,9 @@ const buildSchema = (
 
     if (parseModelExtraParams(values.litellm_extra_params) === null) {
       reject("litellm_extra_params", t("modelInfoEditForm.validation.invalidJson"));
+    }
+    if (!isValidProxyUrl(values.proxy_url)) {
+      reject("proxy_url", t("modelInfoEditForm.validation.invalidProxyUrl"));
     }
 
     // antd validates only mounted fields, and the PTU block does not render when the flag is off.
@@ -208,6 +213,7 @@ export const toModelEditFormValues = (localModelData: any, isWildcardModel: bool
   model_name: localModelData.model_name,
   litellm_model_name: localModelData.litellm_model_name,
   api_base: localModelData.litellm_params.api_base,
+  proxy_url: localModelData.litellm_params.proxy_url ?? "",
   custom_llm_provider: localModelData.litellm_params.custom_llm_provider,
   organization: localModelData.litellm_params.organization,
   tpm: localModelData.litellm_params.tpm,
@@ -542,6 +548,12 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
               t("modelInfoEditForm.fields.apiBase.label"),
               t("modelInfoEditForm.fields.apiBase.placeholder"),
               localModelData.litellm_params?.api_base,
+            )}
+            {textField(
+              "proxy_url",
+              t("modelInfoEditForm.fields.proxyUrl.label"),
+              t("modelInfoEditForm.fields.proxyUrl.placeholder"),
+              localModelData.litellm_params?.proxy_url,
             )}
             {textField(
               "custom_llm_provider",

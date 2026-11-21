@@ -6913,14 +6913,7 @@
       },
       "update": "Update",
       "listPlaceholder": "Comma-separated values",
-      "selectDefault": "Default",
-      "proxy": {
-        "title": "Outbound Proxy",
-        "description": "Route LLM API calls through an HTTP or SOCKS5 proxy. Leave empty to connect directly.",
-        "placeholder": "http://127.0.0.1:7890",
-        "clear": "Clear",
-        "validationError": "Enter a valid http, https, socks5 or socks5h URL."
-      }
+      "selectDefault": "Default"
     },
     "promptCaching": {
       "title": "Prompt Caching",
@@ -18507,6 +18500,10 @@
         "perSecond": "Per Second"
       },
       "invalidPositiveNumber": "Please enter a valid positive number",
+      "invalidProxyUrl": "Enter a valid http, https, socks5 or socks5h URL",
+      "proxyUrl": "Outbound Proxy URL",
+      "proxyUrlHint": "Only requests for this model use this proxy. Leave empty to connect directly.",
+      "proxyUrlPlaceholder": "http://127.0.0.1:7890",
       "title": "Advanced Settings",
       "customPricing": "Custom Pricing",
       "knowledgeBases": "Attached Knowledge Bases (RAG)",
@@ -19704,6 +19701,10 @@
         "label": "API Base",
         "placeholder": "Enter API base"
       },
+      "proxyUrl": {
+        "label": "Outbound Proxy URL",
+        "placeholder": "http://127.0.0.1:7890"
+      },
       "customLlmProvider": {
         "label": "Custom LLM Provider",
         "placeholder": "Enter custom LLM provider"
@@ -19785,6 +19786,7 @@
     "validation": {
       "priceNonNegative": "Enter a price of 0 or more",
       "invalidJson": "Please enter a valid JSON object",
+      "invalidProxyUrl": "Enter a valid http, https, socks5 or socks5h URL",
       "ptuCountRange": "PTU Count must be a whole number between 1 and {{max}}",
       "ptuRateRange": "Cost per PTU / Hour must be between 0 and {{max}}",
       "ptuPair": "PTU Count and Cost per PTU / Hour must be set together",

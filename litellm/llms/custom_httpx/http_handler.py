@@ -13,6 +13,7 @@ from http.cookiejar import CookieJar, DefaultCookiePolicy
 from io import BytesIO
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, ClassVar, Final, NoReturn, Optional, TypeAlias, TypedDict, TypeVar
+from urllib.parse import urlparse
 
 import certifi
 import httpx
@@ -129,6 +130,23 @@ def _environment_proxy_mounts(
             for pattern, proxy_url in get_environment_proxies().items()
         }
     )
+
+
+_EXPLICIT_PROXY_SCHEMES: Final = frozenset({"http", "https", "socks5", "socks5h"})
+
+
+def _validate_proxy_url(proxy_url: str) -> str:
+    parsed = urlparse(proxy_url)
+    if parsed.scheme not in _EXPLICIT_PROXY_SCHEMES or not parsed.hostname:
+        raise ValueError(f"Invalid proxy_url {proxy_url!r}, expected an http, https, socks5 or socks5h URL")
+    return proxy_url
+
+
+def _explicit_proxy_mounts(
+    build_proxy_transport: Callable[[str], _HttpxTransportT],
+    proxy_url: str,
+) -> Mapping[str, _HttpxTransportT]:
+    return MappingProxyType({"all://": build_proxy_transport(proxy_url)})
 
 
 class _TCPConnectorKwargs(TypedDict, total=False):
@@ -726,6 +744,7 @@ class AsyncHTTPHandler:
         transport: httpx.AsyncBaseTransport | None = None,
         follow_redirects: bool = True,
         http2: bool = False,
+        proxy_url: str | None = None,
         token_exchange_engine: JwtBearerTokenExchangeEngine = default_token_exchange_engine,
     ):
         self.timeout = timeout
@@ -733,6 +752,7 @@ class AsyncHTTPHandler:
         self.ssl_verify = ssl_verify
         self.shared_session = shared_session
         self.transport = transport
+        self.proxy_url = _validate_proxy_url(proxy_url) if proxy_url else None
         self.token_exchange_engine = token_exchange_engine
         self.follow_redirects = follow_redirects
         self.http2 = http2
@@ -808,9 +828,9 @@ class AsyncHTTPHandler:
         return httpx.AsyncClient(
             transport=transport,
             mounts=AsyncHTTPHandler.create_httpx_proxy_mounts(
-                transport, verify=ssl_config, cert=cert, http2=use_http2, limits=limits
+                transport, verify=ssl_config, cert=cert, http2=use_http2, limits=limits, proxy_url=self.proxy_url
             )
-            if trust_env
+            if trust_env or self.proxy_url
             else None,
             limits=limits,
             event_hooks=event_hooks,
@@ -1543,21 +1563,22 @@ class AsyncHTTPHandler:
         cert: CertTypes | None,
         http2: bool = False,
         limits: httpx.Limits = DEFAULT_LIMITS,
+        proxy_url: str | None = None,
     ) -> Mapping[str, httpx.AsyncBaseTransport | None] | None:
         if not isinstance(transport, (AsyncHTTPTransport, AsyncHTTP2ConnectionSpread)):
             return None
         if http2 or http2_enabled():
-            return _environment_proxy_mounts(
-                lambda proxy_url: AsyncHTTP2ConnectionSpread(
-                    lambda lane_limits: AsyncHTTPTransport(
-                        proxy=proxy_url, verify=verify, cert=cert, http2=True, limits=lane_limits
-                    ),
-                    limits,
-                )
+            build_transport: Callable[[str], httpx.AsyncBaseTransport] = lambda proxy: AsyncHTTP2ConnectionSpread(
+                lambda lane_limits: AsyncHTTPTransport(
+                    proxy=proxy, verify=verify, cert=cert, http2=True, limits=lane_limits
+                ),
+                limits,
             )
-        return _environment_proxy_mounts(
-            lambda proxy_url: AsyncHTTPTransport(proxy=proxy_url, verify=verify, cert=cert, limits=limits)
-        )
+        else:
+            build_transport = lambda proxy: AsyncHTTPTransport(proxy=proxy, verify=verify, cert=cert, limits=limits)
+        if proxy_url:
+            return _explicit_proxy_mounts(build_transport, proxy_url)
+        return _environment_proxy_mounts(build_transport)
 
     _create_httpx_proxy_mounts = create_httpx_proxy_mounts
 
@@ -1572,11 +1593,13 @@ class HTTPHandler:
         disable_default_headers: bool
         | None = False,  # arize phoenix returns different API responses when user agent header in request
         follow_redirects: bool = True,
+        proxy_url: str | None = None,
     ):
         self.timeout = timeout
         self.ssl_verify = ssl_verify
         self.disable_default_headers = disable_default_headers
         self.follow_redirects = follow_redirects
+        self.proxy_url = _validate_proxy_url(proxy_url) if proxy_url else None
         self._owns_client = client is None
         self._heal_lock = threading.Lock()
         self._client = self.create_client() if client is None else client
@@ -1598,7 +1621,9 @@ class HTTPHandler:
         # Create a client with a connection pool
         return httpx.Client(
             transport=transport,
-            mounts=self._create_sync_proxy_mounts(transport, verify=ssl_config, cert=cert, http2=use_http2),
+            mounts=self._create_sync_proxy_mounts(
+                transport, verify=ssl_config, cert=cert, http2=use_http2, proxy_url=self.proxy_url
+            ),
             timeout=self.timeout if self.timeout is not None else _DEFAULT_TIMEOUT,
             verify=ssl_config,
             cert=cert,
@@ -1924,12 +1949,16 @@ class HTTPHandler:
         verify: VerifyTypes,
         cert: CertTypes | None,
         http2: bool,
+        proxy_url: str | None = None,
     ) -> Mapping[str, httpx.BaseTransport | None] | None:
         if transport is None or transport is getattr(litellm, "sync_transport", None):
             return None
-        return _environment_proxy_mounts(
-            lambda proxy_url: HTTPTransport(proxy=proxy_url, verify=verify, cert=cert, http2=http2)
+        build_transport: Callable[[str], httpx.BaseTransport] = lambda proxy: HTTPTransport(
+            proxy=proxy, verify=verify, cert=cert, http2=http2
         )
+        if proxy_url:
+            return _explicit_proxy_mounts(build_transport, proxy_url)
+        return _environment_proxy_mounts(build_transport)
 
 
 def get_async_httpx_client(
@@ -1970,7 +1999,7 @@ def get_async_httpx_client(
         # Filter out params that are only used for cache key, not for AsyncHTTPHandler.__init__
         handler_params: Final = {k: v for k, v in params.items() if k != "disable_aiohttp_transport"}
         handler_params["shared_session"] = shared_session
-        _new_client = AsyncHTTPHandler(**handler_params)
+        _new_client = AsyncHTTPHandler(**handler_params)  # pyright: ignore[reportUnknownArgumentType]  # legacy client params are untyped
     else:
         _new_client = AsyncHTTPHandler(
             timeout=_default_cached_client_timeout(),
@@ -2019,7 +2048,7 @@ def get_httpx_client(params: dict | None = None) -> HTTPHandler:
     if params is not None:
         # Filter out params that are only used for cache key, not for HTTPHandler.__init__
         handler_params: Final = {k: v for k, v in params.items() if k != "disable_aiohttp_transport"}
-        _new_client = HTTPHandler(**handler_params)
+        _new_client = HTTPHandler(**handler_params)  # pyright: ignore[reportUnknownArgumentType]  # legacy client params are untyped
     else:
         _new_client = HTTPHandler(timeout=_default_cached_client_timeout())
 

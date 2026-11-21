@@ -158,3 +158,4 @@ coverage-rust.xml
 
 # 运行时生成的监控凭证
 deploy/metrics-token
+.build-prisma-cache

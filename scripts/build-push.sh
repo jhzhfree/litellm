@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
-# scripts/build-push.sh — 增量构建 AI-GovernanceGw 镜像并推送到本地 registry
+# scripts/build-push.sh — 智能构建 AI-GovernanceGw 镜像并推送到本地 registry
 #
 # 用法:
-#   scripts/build-push.sh             # 构建 + 推送固定标签 ai-gw/gateway:1
+#   scripts/build-push.sh             # 自动选择构建方式 + 推送 gateway:1
 #   scripts/build-push.sh --no-push   # 仅构建
+#   scripts/build-push.sh --full      # 强制全量构建(跳过快速路径)
 #   scripts/build-push.sh --tag v1.2  # 额外指定 tag
+#
+# 智能模式(根据上次构建点以来的改动自动选择):
+#   1. config-only  仅 deploy 配置/文档改动 且本地容器运行中
+#                   → 快速路径: docker cp 配置进容器 + restart, 秒级
+#                     (需要发布镜像时用 --full 或 git 提交后自然触发全量)
+#   2. full         其他情况走完整构建 — Dockerfile 精细分层保证:
+#                     仅 UI 改动 → Rust/Python 层 CACHED
+#                     仅 Python 改动 → Rust 层 CACHED
+#                     仅配置改动 → 只有 config/runtime 层重建(分钟级)
 #
 # 依赖 /root/Dockerfile.build（含 cargo/uv/npm 缓存挂载与 thin LTO 加速）。
 # 注意: 不要执行 docker builder prune —— 会清空缓存挂载数据, 导致下次全量重编。
 set -euo pipefail
-cd "$(dirname "$0")/.."
+# 脚本可能放在 /root 或仓库内, 统一定位仓库根
+REPO_DIR="${GATEWAY_REPO_DIR:-/opt/dev/litellm}"
+[[ -f "$REPO_DIR/pyproject.toml" ]] || REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_DIR"
 
 REGISTRY="192.168.22.6:5000"
 IMAGE="ai-gw/gateway"
@@ -18,17 +31,86 @@ DOCKERFILE="${DOCKERFILE:-/root/Dockerfile.build}"
 PROXY="${HTTP_PROXY:-http://192.168.24.200:7890}"
 NO_PROXY_VAL="localhost,127.0.0.1,db,.svc,.local"
 PUSH=1
+FORCE_FULL=0
 EXTRA_TAGS=()
+LAST_BUILD_COMMIT_FILE="/root/.gateway-last-build-commit"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --no-push) PUSH=0 ;;
+    --full) FORCE_FULL=1 ;;
     --tag) shift; EXTRA_TAGS+=("$REGISTRY/$IMAGE:$1") ;;
     *) echo "未知参数: $1"; exit 1 ;;
   esac
   shift
 done
 
+# ---------------------------------------------------------------------------
+# 改动分析: 与上次成功构建点比较 (含工作区未提交改动与未跟踪文件)
+# ---------------------------------------------------------------------------
+LAST_REF="HEAD"
+[[ -f "$LAST_BUILD_COMMIT_FILE" ]] && LAST_REF="$(cat "$LAST_BUILD_COMMIT_FILE")"
+
+CHANGED="$( { git diff --name-only "$LAST_REF" -- . 2>/dev/null || true;
+              git diff --name-only 2>/dev/null || true;
+              git ls-files --others --exclude-standard; } | sort -u )"
+
+SRC_CHANGED=0; UI_CHANGED=0; RUST_CHANGED=0; CONFIG_ONLY=1; PY_CHANGED=0
+if [[ -n "$CHANGED" ]]; then
+  while IFS= read -r f; do
+    case "$f" in
+      ui/litellm-dashboard/*) UI_CHANGED=1; CONFIG_ONLY=0 ;;
+      litellm-rust/*)         RUST_CHANGED=1; CONFIG_ONLY=0 ;;
+      litellm/*|enterprise/*|litellm_cli/*|litellm-proxy-extras/*|packaging/*) PY_CHANGED=1; CONFIG_ONLY=0 ;;
+      deploy/*|*.md|docs/*)   : ;;  # 配置/文档: 不破坏 config-only
+      *)                      CONFIG_ONLY=0 ;;  # 未知文件: 保守走全量
+    esac
+  done <<< "$CHANGED"
+  SRC_CHANGED=1
+fi
+
+# ---------------------------------------------------------------------------
+# 模式选择
+# ---------------------------------------------------------------------------
+if [[ $FORCE_FULL -eq 1 ]]; then
+  MODE="full(--full 强制)"
+elif [[ $CONFIG_ONLY -eq 1 && $PUSH -eq 0 ]] && docker ps --format '{{.Names}}' | grep -q '^ai-tokengw-core$'; then
+  MODE="config-quick"
+else
+  MODE="full"
+fi
+
+echo "== 改动分析 (基点: $LAST_REF)"
+if [[ -z "$CHANGED" ]]; then
+  echo "   无改动; 将使用全缓存构建"
+elif [[ $CONFIG_ONLY -eq 1 ]]; then
+  echo "   仅配置/文档改动(分层优化下 config/runtime 层重建):"
+  echo "$CHANGED" | sed 's/^/     /'
+else
+  [[ $UI_CHANGED -eq 1 ]] && echo "   UI 改动 → next build 重跑 (~6-8 分钟)"
+  [[ $RUST_CHANGED -eq 1 ]] && echo "   Rust 改动 → cargo 重编译 (~10-15 分钟)"
+  [[ $PY_CHANGED -eq 1 ]] && echo "   Python 改动 → wheel/prisma 层重建 (~3-5 分钟)"
+  [[ $UI_CHANGED -eq 0 && $RUST_CHANGED -eq 0 && $PY_CHANGED -eq 0 ]] && echo "   其他改动 → 触发依赖层之后的重建"
+fi
+echo "== 构建模式: $MODE"
+
+# ---------------------------------------------------------------------------
+# 快速路径: 仅配置改动且只做本地验证 → docker cp + restart
+# ---------------------------------------------------------------------------
+if [[ "$MODE" == "config-quick" ]]; then
+  echo "== 快速路径: 更新本地容器配置"
+  if [[ -f deploy/proxy_config.yaml ]]; then
+    docker cp deploy/proxy_config.yaml ai-tokengw-core:/app/proxy_config.yaml
+    docker restart ai-tokengw-core >/dev/null
+    echo "   proxy_config.yaml 已更新并重启 ai-tokengw-core"
+  fi
+  echo "   (此模式不构建/不推送镜像; 需要发布 22.6 时加 --full)"
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# 完整构建
+# ---------------------------------------------------------------------------
 # 只推固定标签（不打时间戳/别名标签，避免 registry 堆积旧版本）
 TAGS=("$REGISTRY/$IMAGE:1" "${EXTRA_TAGS[@]}")
 T_ARGS=()
@@ -49,6 +131,9 @@ if [[ $PUSH -eq 1 ]]; then
     docker push "$t" | tail -1
   done
 fi
+
+# 记录本次构建点 (供下次改动分析)
+git rev-parse HEAD > "$LAST_BUILD_COMMIT_FILE"
 
 echo "== 完成。服务器拉取:"
 echo "   docker pull $REGISTRY/$IMAGE:latest"

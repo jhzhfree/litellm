@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import React from "react";
 import type { ParseKeys } from "i18next";
 import { useTranslation } from "react-i18next";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 
 export interface BudgetWindowEntry {
   budget_duration: string;
@@ -77,28 +78,12 @@ export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProp
                   ))}
                 </SelectContent>
               </Select>
-              <InputGroup className="w-40">
-                <InputGroupAddon>
-                  <InputGroupText>$</InputGroupText>
-                </InputGroupAddon>
-                <InputGroupInput
-                  type="number"
-                  step={0.01}
-                  min={0}
-                  value={window.max_budget ?? ""}
-                  onChange={(event) => {
-                    const typed = event.target.valueAsNumber;
-                    updateWindow(idx, "max_budget", Number.isNaN(typed) ? null : typed);
-                  }}
-                  onBlur={(event) => {
-                    const typed = event.target.valueAsNumber;
-                    if (!Number.isNaN(typed)) {
-                      updateWindow(idx, "max_budget", Number(typed.toFixed(2)));
-                    }
-                  }}
-                  placeholder={t("keyTeamHelpers.budgetWindowsEditor.maxSpend")}
-                />
-              </InputGroup>
+              <MoneyInput
+                className="w-40"
+                value={window.max_budget ?? null}
+                onChange={(next) => updateWindow(idx, "max_budget", next)}
+                placeholder={t("keyTeamHelpers.budgetWindowsEditor.maxSpend")}
+              />
               <Button
                 variant="ghost"
                 size="sm"

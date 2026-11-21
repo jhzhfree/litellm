@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { formatMoneyRate } from "@/lib/currency";
+import { currentCurrencySymbol, currentDisplayAmount, readStoredCurrency } from "@/lib/currency";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { CredentialIdentity } from "@/components/shared/CredentialIdentity";
@@ -235,6 +235,7 @@ function CostsCell({ model }: { model: ModelData }) {
   const { t } = useTranslation();
   const { input_cost: inputCost, output_cost: outputCost, output_cost_per_second: perSecond } = model;
   const hasPerSecond = perSecond != null;
+  const isUsd = readStoredCurrency() === "USD";
   const showInput = inputCost != null && (!hasPerSecond || Number(inputCost) > 0);
   const showOutput = outputCost != null && (!hasPerSecond || Number(outputCost) > 0);
 
@@ -254,13 +255,13 @@ function CostsCell({ model }: { model: ModelData }) {
           {showInput && (
             <CostRow
               label={t("modelsAndEndpoints.modelsTableColumns.costs.input")}
-              value={formatMoneyRate(Number(inputCost), 10)}
+              value={`${currentCurrencySymbol()}${isUsd ? inputCost : currentDisplayAmount(Number(inputCost))}`}
             />
           )}
           {showOutput && (
             <CostRow
               label={t("modelsAndEndpoints.modelsTableColumns.costs.output")}
-              value={formatMoneyRate(Number(outputCost), 10)}
+              value={`${currentCurrencySymbol()}${isUsd ? outputCost : currentDisplayAmount(Number(outputCost))}`}
             />
           )}
           {hasPerSecond && (

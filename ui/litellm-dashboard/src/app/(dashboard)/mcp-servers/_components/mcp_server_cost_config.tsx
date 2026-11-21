@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { formatMoneyRate } from "@/lib/currency";
+import { currentMoney } from "@/lib/currency";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 import { useTranslation } from "react-i18next";
 import { Info, DollarSign, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -25,37 +26,18 @@ interface CostInputProps {
 }
 
 /**
- * Costs are shown to four decimal places when idle, but the field keeps the raw
- * keystrokes while it is being edited so partial input like "0." survives.
+ * Money input with live currency conversion: the form value stays in USD while
+ * the field shows and accepts the currently selected display currency.
  */
-const CostInput: React.FC<CostInputProps> = ({ value, placeholder, disabled, className, onChange }) => {
-  const [draft, setDraft] = useState<string | null>(null);
-  const display = draft ?? (value === null || value === undefined ? "" : value.toFixed(4));
-
-  const handleChange = (next: string) => {
-    setDraft(next);
-    const parsed = Number(next);
-    onChange(next.trim() === "" || Number.isNaN(parsed) ? null : parsed);
-  };
-
-  return (
-    <InputGroup className={className}>
-      <InputGroupAddon>
-        <InputGroupText>$</InputGroupText>
-      </InputGroupAddon>
-      <InputGroupInput
-        type="text"
-        inputMode="decimal"
-        placeholder={placeholder}
-        disabled={disabled}
-        value={display}
-        onFocus={() => setDraft(value === null || value === undefined ? "" : String(value))}
-        onBlur={() => setDraft(null)}
-        onChange={(e) => handleChange(e.target.value)}
-      />
-    </InputGroup>
-  );
-};
+const CostInput: React.FC<CostInputProps> = ({ value, placeholder, disabled, className, onChange }) => (
+  <MoneyInput
+    value={value ?? null}
+    onChange={onChange}
+    placeholder={placeholder}
+    disabled={disabled}
+    className={className}
+  />
+);
 
 const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
   value = {},
@@ -193,7 +175,7 @@ const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
                 {value.default_cost_per_query && (
                   <p className="text-sm text-muted-foreground">
                     {t("mcpServers.serverCostConfig.summary.defaultCost", {
-                      cost: formatMoneyRate(value.default_cost_per_query, 4),
+                      cost: currentMoney(value.default_cost_per_query, 4),
                     })}
                   </p>
                 )}
@@ -203,7 +185,7 @@ const MCPServerCostConfig: React.FC<MCPServerCostConfigProps> = ({
                       cost !== null &&
                       cost !== undefined && (
                         <p key={toolName} className="text-sm text-muted-foreground">
-                          {t("mcpServers.serverCostConfig.summary.toolCost", { toolName, cost: formatMoneyRate(cost, 4) })}
+                          {t("mcpServers.serverCostConfig.summary.toolCost", { toolName, cost: currentMoney(cost, 4) })}
                         </p>
                       ),
                   )}

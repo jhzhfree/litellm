@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { useStartShadowEval, type ShadowEvalJob } from "./useShadowEval";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 
 type ShadowEvalDirection = ShadowEvalJob["direction"];
 
@@ -418,15 +419,13 @@ export const StartForm: React.FC = () => {
           </Field>
           <Field label={t("costOptimization.shadowEval.start.budget.label")}>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">$</span>
-              <Input
-                type="number"
+              <MoneyInput
+                className="w-24"
                 min={0.01}
                 max={10000}
                 step={0.01}
-                className="w-24"
-                value={maxBudget}
-                onChange={(e) => setMaxBudget(e.target.value)}
+                value={maxBudget.trim() === "" ? null : Number(maxBudget)}
+                onChange={(next) => setMaxBudget(next == null ? "" : String(next))}
               />
               <span className="text-sm text-muted-foreground">
                 {t("costOptimization.shadowEval.start.budget.suffix")}

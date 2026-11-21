@@ -30,6 +30,7 @@ import { toast } from "@/lib/toast";
 import { ModelSelect } from "./ModelSelect/ModelSelect";
 import AccessGroupSelector from "./common_components/AccessGroupSelector";
 import OrganizationDropdown from "./common_components/OrganizationDropdown";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 
 interface TeamSSOSettingsProps {
   accessToken: string | null;
@@ -250,20 +251,13 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
                 values.max_budget != null ? <span>{currentMoney(Number(values.max_budget), 2)}</span> : <NotSet />
               }
               editContent={
-                <InputGroup className="max-w-80">
-                  <InputGroupAddon>$</InputGroupAddon>
-                  <InputGroupInput
-                    type="number"
-                    step="any"
-                    min={0}
-                    value={editedValues.max_budget ?? ""}
-                    onChange={(event) =>
-                      update("max_budget", event.target.value === "" ? null : Number(event.target.value))
-                    }
-                    placeholder={t("teams.ssoSettings.notSet")}
-                    aria-label={t("teams.ssoSettings.fields.maxBudget.label")}
-                  />
-                </InputGroup>
+                <MoneyInput
+                  className="max-w-80"
+                  value={editedValues.max_budget ?? null}
+                  onChange={(next) => update("max_budget", next)}
+                  placeholder={t("teams.ssoSettings.notSet")}
+                  aria-label={t("teams.ssoSettings.fields.maxBudget.label")}
+                />
               }
             />
 

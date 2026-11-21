@@ -12605,7 +12605,7 @@
         "help": "Set a default cost for all tool calls to this server"
       },
       "toolCosts": {
-        "label": "Tool-Specific Costs ($)",
+        "label": "Tool-Specific Costs",
         "tooltipLabel": "About per-tool costs",
         "tooltip": "Override the default cost for specific tools. Leave blank to use the default rate.",
         "availableTools": "Available Tools",
@@ -12613,8 +12613,8 @@
       },
       "summary": {
         "title": "Cost Summary:",
-        "defaultCost": "• Default cost: ${{cost}} per query",
-        "toolCost": "• {{toolName}}: ${{cost}} per query"
+        "defaultCost": "• Default cost: {{cost}} per query",
+        "toolCost": "• {{toolName}}: {{cost}} per query"
       }
     },
     "connectionStatus": {
@@ -14001,12 +14001,12 @@
       }
     },
     "serverCostDisplay": {
-      "noConfig": "No cost configuration set for this server. Tool calls will be charged at $0.00 per tool call.",
+      "noConfig": "No cost configuration set for this server. Tool calls will be charged at {{amount}} per tool call.",
       "defaultCostTitle": "Default Cost per Query",
       "toolCostsTitle": "Tool-Specific Costs",
-      "costPerQuery": "${{cost}} per query",
+      "costPerQuery": "{{cost}} per query",
       "summaryTitle": "Cost Summary:",
-      "summaryDefaultCost": "• Default cost: ${{cost}} per query",
+      "summaryDefaultCost": "• Default cost: {{cost}} per query",
       "summaryToolCount": "• {{toolCount}} tool(s) with custom pricing"
     },
     "toolCallArguments": {

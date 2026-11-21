@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { MarginConfig } from "./types";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 
 interface AddMarginFormProps {
   marginConfig: MarginConfig;
@@ -170,16 +171,13 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
             <FieldLabel htmlFor="margin-fixed-amount">
               {labelWithHint(t("costTracking.addMarginForm.fixed.label"), t("costTracking.addMarginForm.fixed.hint"))}
             </FieldLabel>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">$</span>
-              <Input
-                id="margin-fixed-amount"
-                placeholder="0.001"
-                value={fixedAmountValue}
-                onChange={(event) => onFixedAmountChange(event.target.value)}
-                className="rounded-lg flex-1"
-              />
-            </div>
+            <MoneyInput
+              id="margin-fixed-amount"
+              placeholder="0.001"
+              className="rounded-lg flex-1"
+              value={fixedAmountValue.trim() === "" ? null : Number(fixedAmountValue)}
+              onChange={(next) => onFixedAmountChange(next == null ? "" : String(next))}
+            />
           </Field>
         )}
 

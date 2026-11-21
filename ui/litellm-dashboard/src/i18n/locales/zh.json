@@ -13894,13 +13894,13 @@
       "titleTooltipLabel": "关于成本配置",
       "titleTooltip": "配置此 MCP 服务器工具调用的成本。可设置默认费率以及针对单个工具的覆盖值。",
       "defaultCost": {
-        "label": "每次查询的默认成本（$）",
+        "label": "每次查询的默认成本",
         "tooltipLabel": "关于默认成本",
         "tooltip": "对此服务器每次工具调用所收取的默认成本。",
         "help": "为此服务器的所有工具调用设置默认成本"
       },
       "toolCosts": {
-        "label": "工具专属成本（$）",
+        "label": "工具专属成本",
         "tooltipLabel": "关于按工具计费",
         "tooltip": "为特定工具覆盖默认成本。留空则使用默认费率。",
         "availableTools": "可用工具",
@@ -13908,8 +13908,8 @@
       },
       "summary": {
         "title": "成本摘要：",
-        "defaultCost": "• 默认成本：每次查询 ${{cost}}",
-        "toolCost": "• {{toolName}}：每次查询 ${{cost}}"
+        "defaultCost": "• 默认成本：每次查询 {{cost}}",
+        "toolCost": "• {{toolName}}：每次查询 {{cost}}"
       }
     },
     "connectionStatus": {
@@ -15296,12 +15296,12 @@
       }
     },
     "serverCostDisplay": {
-      "noConfig": "此服务器未设置成本配置。工具调用将按每次 $0.00 计费。",
+      "noConfig": "此服务器未设置成本配置。工具调用将按每次 {{amount}} 计费。",
       "defaultCostTitle": "每次查询的默认成本",
       "toolCostsTitle": "工具专属成本",
-      "costPerQuery": "每次查询 ${{cost}}",
+      "costPerQuery": "每次查询 {{cost}}",
       "summaryTitle": "成本摘要：",
-      "summaryDefaultCost": "• 默认成本：每次查询 ${{cost}}",
+      "summaryDefaultCost": "• 默认成本：每次查询 {{cost}}",
       "summaryToolCount": "• {{toolCount}} 个工具采用自定义定价"
     },
     "toolCallArguments": {

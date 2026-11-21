@@ -17,6 +17,7 @@ import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { EditProjectModal } from "./ProjectModals/EditProjectModal";
 import { ProjectKeysSection } from "./ProjectKeysSection";
+import { currentMoney } from "@/lib/currency";
 
 interface ProjectDetailProps {
   projectId: string;
@@ -184,7 +185,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                 categories={["spend"]}
                 colors={["cyan"]}
                 layout="vertical"
-                valueFormatter={(value) => `$${value.toFixed(4)}`}
+                valueFormatter={(value) => currentMoney(value, 4)}
                 yAxisWidth={140}
                 showLegend={false}
                 style={{ height: Math.max(modelSpendData.length * 40, 120) }}

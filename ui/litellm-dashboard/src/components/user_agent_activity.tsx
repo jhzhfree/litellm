@@ -21,6 +21,7 @@ import { ChartSkeleton, Panel, Segmented } from "@/app/(dashboard)/usage/_compon
 import { userAgentSummaryCall, tagDauCall, tagWauCall, tagMauCall, tagDistinctCall } from "./networking";
 import PerUserUsage from "./per_user_usage";
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
+import { currentCurrencySymbol, currentDisplayAmount } from "@/lib/currency";
 
 type ActivityView = "active-users" | "per-user";
 type ActivePeriod = "dau" | "wau" | "mau";
@@ -530,7 +531,7 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({
                   }
                   successRequests={formatAbbreviatedNumber(tag.successful_requests)}
                   totalTokens={formatAbbreviatedNumber(tag.total_tokens)}
-                  totalCost={`$${formatAbbreviatedNumber(tag.total_spend, 4)}`}
+                  totalCost={`${currentCurrencySymbol()}${formatAbbreviatedNumber(currentDisplayAmount(tag.total_spend), 4)}`}
                 />
               );
             })}

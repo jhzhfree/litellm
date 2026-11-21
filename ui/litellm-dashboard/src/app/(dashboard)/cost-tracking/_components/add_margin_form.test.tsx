@@ -118,7 +118,8 @@ describe("AddMarginForm", () => {
       />,
     );
 
-    await user.type(screen.getByPlaceholderText("0.001"), "1");
+    await user.clear(screen.getByPlaceholderText("0.001"));
+    await user.type(screen.getByPlaceholderText("0.001"), "0.001");
     expect(onFixedAmountChange).toHaveBeenCalledWith("0.001");
   });
 

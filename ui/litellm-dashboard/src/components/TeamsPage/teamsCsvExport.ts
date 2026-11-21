@@ -4,6 +4,7 @@ import { TeamListCallOptions, TeamsResponse, teamListCall } from "@/app/(dashboa
 
 import { Team } from "../key_team_helpers/key_list";
 import { apiClient } from "../networking";
+import { currentDisplayAmount, readStoredCurrency } from "@/lib/currency";
 
 export interface TeamMemberBudget {
   budget_id: string;
@@ -42,6 +43,7 @@ export const buildTeamsCsvRows = (
   teams: Team[],
   budgets: TeamMemberBudget[],
 ): Record<string, string | number | boolean>[] => {
+  const currencyCode = readStoredCurrency();
   const budgetsById = new Map(budgets.map((budget) => [budget.budget_id, budget]));
   return teams.map((team) => {
     const budgetId = teamMemberBudgetId(team);
@@ -51,13 +53,13 @@ export const buildTeamsCsvRows = (
       "Team ID": cell(team.team_id),
       "Organization ID": cell(team.organization_id),
       Models: (team.models ?? []).join(", "),
-      "Max Budget (USD)": cell(team.max_budget),
+      [`Max Budget (${currencyCode})`]: cell(team.max_budget == null ? null : currentDisplayAmount(team.max_budget)),
       "Budget Duration": cell(team.budget_duration),
       "Budget Reset At": cell(team.budget_reset_at),
-      "Spend (USD)": cell(team.spend),
+      [`Spend (${currencyCode})`]: cell(team.spend == null ? null : currentDisplayAmount(team.spend)),
       "TPM Limit": cell(team.tpm_limit),
       "RPM Limit": cell(team.rpm_limit),
-      "Team Member Budget (USD)": cell(memberBudget?.max_budget),
+      [`Team Member Budget (${currencyCode})`]: cell(memberBudget?.max_budget == null ? null : currentDisplayAmount(memberBudget.max_budget)),
       "Team Member Budget Duration": cell(memberBudget?.budget_duration),
       "Team Member TPM Limit": cell(memberBudget?.tpm_limit),
       "Team Member RPM Limit": cell(memberBudget?.rpm_limit),

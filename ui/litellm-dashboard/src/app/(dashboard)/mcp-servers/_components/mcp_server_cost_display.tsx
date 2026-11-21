@@ -1,5 +1,5 @@
 import React from "react";
-import { formatMoneyRate } from "@/lib/currency";
+import { currentMoney } from "@/lib/currency";
 import { useTranslation } from "react-i18next";
 import { MCPServerCostInfo } from "@/components/mcp_tools/types";
 
@@ -20,7 +20,9 @@ const MCPServerCostDisplay: React.FC<MCPServerCostDisplayProps> = ({ costConfig 
       <div className="mt-6 border-t border-border pt-6">
         <div className="space-y-4">
           <div className="rounded-lg border border-border bg-muted p-4">
-            <p className="text-sm text-muted-foreground">{t("mcpServers.serverCostDisplay.noConfig")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("mcpServers.serverCostDisplay.noConfig", { amount: currentMoney(0, 2) })}
+            </p>
           </div>
         </div>
       </div>
@@ -35,7 +37,7 @@ const MCPServerCostDisplay: React.FC<MCPServerCostDisplayProps> = ({ costConfig 
           costConfig?.default_cost_per_query !== null && (
             <div>
               <p className="text-sm font-medium">{t("mcpServers.serverCostDisplay.defaultCostTitle")}</p>
-              <div className="font-mono text-sm">{formatMoneyRate(costConfig.default_cost_per_query, 4)}</div>
+              <div className="font-mono text-sm">{currentMoney(costConfig.default_cost_per_query, 4)}</div>
             </div>
           )}
 
@@ -50,7 +52,7 @@ const MCPServerCostDisplay: React.FC<MCPServerCostDisplayProps> = ({ costConfig 
                     <div key={toolName} className="flex items-center justify-between rounded-lg bg-muted p-3">
                       <p className="text-sm font-medium">{toolName}</p>
                       <p className="font-mono text-sm">
-                        {t("mcpServers.serverCostDisplay.costPerQuery", { cost: formatMoneyRate(cost, 4) })}
+                        {t("mcpServers.serverCostDisplay.costPerQuery", { cost: currentMoney(cost, 4) })}
                       </p>
                     </div>
                   ),
@@ -67,7 +69,7 @@ const MCPServerCostDisplay: React.FC<MCPServerCostDisplayProps> = ({ costConfig 
               costConfig?.default_cost_per_query !== null && (
                 <p className="text-sm text-muted-foreground">
                   {t("mcpServers.serverCostDisplay.summaryDefaultCost", {
-                    cost: formatMoneyRate(costConfig.default_cost_per_query, 4),
+                    cost: currentMoney(costConfig.default_cost_per_query, 4),
                   })}
                 </p>
               )}

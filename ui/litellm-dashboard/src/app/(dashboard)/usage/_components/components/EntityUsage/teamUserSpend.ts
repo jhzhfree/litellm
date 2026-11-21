@@ -3,6 +3,7 @@ import Papa from "papaparse";
 
 import type { TeamUserSpendResponse } from "@/components/networking";
 import i18n from "@/i18n/i18n";
+import { currentDisplayAmount, readStoredCurrency } from "@/lib/currency";
 
 export type TeamUserSpendRow = TeamUserSpendResponse["results"][number];
 
@@ -20,8 +21,9 @@ export const teamUserSpendRowId = (row: TeamUserSpendRow): string => `${row.team
 export const sortBySpendDesc = (rows: readonly TeamUserSpendRow[]): TeamUserSpendRow[] =>
   [...rows].sort((a, b) => b.spend - a.spend || teamLabel(a).localeCompare(teamLabel(b)));
 
-export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse): string =>
-  Papa.unparse(
+export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse): string => {
+  const currencyCode = readStoredCurrency();
+  return Papa.unparse(
     sortBySpendDesc(response.results).map((row) => ({
       "Start Date": response.start_date,
       "End Date": response.end_date,
@@ -30,7 +32,7 @@ export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse): string =
       User: userLabel(row),
       "User ID": row.user_id,
       "User Email": row.user_email ?? "",
-      "Spend (USD)": row.spend,
+      [`Spend (${currencyCode})`]: currentDisplayAmount(row.spend),
       Requests: row.api_requests,
       Successful: row.successful_requests,
       Failed: row.failed_requests,
@@ -40,6 +42,7 @@ export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse): string =
     })),
     { escapeFormulae: true },
   );
+};
 
 export const teamUserSpendCsvFileName = (response: TeamUserSpendResponse): string =>
   `team_user_spend_${response.start_date}_to_${response.end_date}.csv`;

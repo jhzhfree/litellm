@@ -13,7 +13,7 @@ describe("MCPServerCostConfig", () => {
     render(<MCPServerCostConfig value={{ default_cost_per_query: 0.02 }} tools={[]} />);
 
     expect(screen.getByText("Cost Configuration")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("0.0000")).toHaveValue("0.0200");
+    expect(screen.getByPlaceholderText("0.0000")).toHaveValue(0.02);
   });
 
   it("reports the edited default cost as a number", async () => {

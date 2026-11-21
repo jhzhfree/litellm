@@ -1,12 +1,13 @@
 import type { TFunction } from "i18next";
 import i18n from "@/i18n/i18n";
 import { formatNumberWithCommas, getSpendString } from "@/utils/dataUtils";
+import { currentCurrencySymbol, currentDisplayAmount, currentMoney } from "@/lib/currency";
 
 export type UsageUnits = Readonly<Record<string, number>>;
 
 export const formatCost = (cost: number | null | undefined): string => {
   if (cost == null) return "—";
-  return cost === 0 ? `$${formatNumberWithCommas(0, 4)}` : getSpendString(cost, 4);
+  return cost === 0 ? currentMoney(0, 4) : getSpendString(cost, 4);
 };
 
 export const totalUnits = (units: UsageUnits): number => Object.values(units).reduce((sum, n) => sum + n, 0);
@@ -40,8 +41,10 @@ export const unitPrice = (row: CounterMath): number | null => {
 };
 
 export const formatUnitPrice = (price: number): string => {
-  const fixed = price.toFixed(6).replace(/\.?0+$/, "");
-  return price > 0 && Number(fixed) === 0 ? "< $0.000001" : `$${fixed}`;
+  const fixed = currentDisplayAmount(price).toFixed(6).replace(/\.?0+$/, "");
+  return price > 0 && Number(fixed) === 0
+    ? `< ${currentCurrencySymbol()}0.000001`
+    : `${currentCurrencySymbol()}${fixed}`;
 };
 
 export interface MathRow {
@@ -87,5 +90,5 @@ export const pricingIssueUrl = (unpriced: UsageUnits, provider?: string): string
     title: `[Feature]: add ${subject} pricing to the cost map`,
     "the-feature": `AI-GovernanceGw has no price for these ${subject} usage units, so the Guardrails Monitor leaves them out of the cost: ${Object.keys(unpriced).join(", ")}`,
   });
-  return `/docs)}`;
+  return `https://github.com/BerriAI/litellm/issues/new?${params.toString()}`;
 };

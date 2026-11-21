@@ -26,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { teamsUserCanAssign } from "@/utils/roles";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 
 const toOptionalNumber = (raw: string): number | undefined => {
   if (raw.trim() === "") return undefined;
@@ -204,32 +205,13 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <FormField control={form.control} name="max_budget" label={t("projects.form.maxBudget")}>
-            {({ ref, value, onChange, ...field }) => (
-              <InputGroup>
-                <InputGroupAddon>
-                  <InputGroupText>$</InputGroupText>
-                </InputGroupAddon>
-                <InputGroupInput
-                  {...field}
-                  ref={ref}
-                  type="number"
-                  min={0}
-                  placeholder="0.00"
-                  value={Number.isNaN(value) ? "" : value ?? ""}
-                  onInput={(event) => {
-                    if (event.currentTarget.validity.badInput || Number.isNaN(value)) {
-                      onChange(
-                        event.currentTarget.validity.badInput
-                          ? Number.NaN
-                          : toOptionalNumber(event.currentTarget.value) ?? null,
-                      );
-                    }
-                  }}
-                  onChange={(event) =>
-                    onChange(event.target.validity.badInput ? Number.NaN : toOptionalNumber(event.target.value) ?? null)
-                  }
-                />
-              </InputGroup>
+            {({ value, onChange, ...field }) => (
+              <MoneyInput
+                {...field}
+                placeholder="0.00"
+                value={typeof value === "number" && Number.isFinite(value) ? value : null}
+                onChange={(next) => onChange(next ?? null)}
+              />
             )}
           </FormField>
         </div>

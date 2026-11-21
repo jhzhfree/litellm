@@ -253,8 +253,8 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      // max_budget displayed with $
-      expect(screen.getByText("$1,000")).toBeInTheDocument();
+      // max_budget displayed with the current currency
+      expect(screen.getByText("$1,000.00")).toBeInTheDocument();
       // budget_duration through getBudgetDurationLabel
       expect(screen.getByText("monthly")).toBeInTheDocument();
       // tpm_limit formatted

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchToolTester } from "./SearchToolTester";
+import { currentCurrencySymbol, currentDisplayAmount } from "@/lib/currency";
 import { AvailableSearchProvider, SearchTool } from "./types";
 
 interface SearchToolViewProps {
@@ -99,7 +100,7 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
             <p className="text-sm text-muted-foreground">{t("searchTools.view.cost")}</p>
             <p className="mt-2 text-foreground">
               {typeof searchTool.litellm_params.input_cost_per_query === "number"
-                ? `$${searchTool.litellm_params.input_cost_per_query}`
+                ? `${currentCurrencySymbol()}${currentDisplayAmount(searchTool.litellm_params.input_cost_per_query)}`
                 : t("searchTools.view.costDefault")}
             </p>
           </CardContent>

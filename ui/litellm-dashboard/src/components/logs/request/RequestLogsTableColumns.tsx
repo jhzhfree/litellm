@@ -15,6 +15,7 @@ import { getBatchIdFromRequestId, getBatchRequestCounts, isBatchCallType } from 
 import type { LogEntry } from "../types";
 import { AGENT_CALL_TYPES, MCP_CALL_TYPES } from "../constants";
 import { AgentBadge, AgentIcon, BatchBadge, LlmBadge, McpBadge, SparkleIcon, WrenchIcon } from "./TypeBadges";
+import { currentCurrencySymbol, currentDisplayAmount } from "@/lib/currency";
 
 export interface RequestLogsTableColumnsDeps {
   onKeyHashClick: (keyHash: string) => void;
@@ -233,7 +234,11 @@ export const getRequestLogsTableColumns = (
 
       return (
         <div className="flex flex-col items-end">
-          {spend ? <CellTooltip content={`$${String(spend)}`} trigger={money} /> : money}
+          {spend ? (
+            <CellTooltip content={`${currentCurrencySymbol()}${String(currentDisplayAmount(spend))}`} trigger={money} />
+          ) : (
+            money
+          )}
           {sessionTotalSpend != null && (
             <span className="text-[10px] text-muted-foreground">{t("logs.request.columns.sessionTotal")}</span>
           )}

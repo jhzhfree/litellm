@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import i18n from "@/i18n/i18n";
 import { ApiError } from "@/lib/http/client";
+import { currentMoney } from "@/lib/currency";
 
 import { BUDGET_TABLE_HIDDEN_COLUMNS, getBudgetTableColumns } from "./BudgetTableColumns";
 
@@ -57,8 +58,8 @@ const formatFilterValue = (columnId: string, value: unknown): string => {
     return unlimitedOnly === true
       ? i18n.t("budgets.table.filterChips.unlimitedOnly")
       : i18n.t("budgets.table.filterChips.maxBudgetRange", {
-          min: min ? `$${min}` : i18n.t("budgets.table.filterChips.any"),
-          max: max ? `$${max}` : i18n.t("budgets.table.filterChips.any"),
+          min: min ? currentMoney(Number(min), 2) : i18n.t("budgets.table.filterChips.any"),
+          max: max ? currentMoney(Number(max), 2) : i18n.t("budgets.table.filterChips.any"),
         });
   }
   if (columnId === "created_at") {

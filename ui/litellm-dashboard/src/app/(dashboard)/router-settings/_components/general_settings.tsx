@@ -16,6 +16,7 @@ import RouterSettings from "@/components/router_settings";
 import Fallbacks from "@/components/Settings/RouterSettings/Fallbacks/Fallbacks";
 import RoutingGroups from "@/components/routing_groups";
 import { RequestTagMappingsEditor, requestTagMappingsAreValid } from "./RequestTagMappings";
+import { MoneyInput } from "@/components/shared/MoneyInput";
 
 const PROMPT_CACHING_TAB = "prompt_caching";
 const ENABLE_ANTHROPIC_PROMPT_CACHING = "enable_anthropic_prompt_caching";
@@ -113,16 +114,13 @@ const SettingValueEditor: React.FC<{
   }
   if (setting.field_type === "Dollar") {
     return (
-      <InputGroup className={NUMERIC_INPUT_WIDTH}>
-        <InputGroupAddon>$</InputGroupAddon>
-        <InputGroupInput
-          type="number"
-          min={0.01}
-          step={0.25}
-          value={setting.field_value ?? ""}
-          onChange={(event) => onChange(setting.field_name, toNumericValue(event.target.value))}
-        />
-      </InputGroup>
+      <MoneyInput
+        className={NUMERIC_INPUT_WIDTH}
+        min={0.01}
+        step={0.25}
+        value={typeof setting.field_value === "number" ? setting.field_value : null}
+        onChange={(next) => onChange(setting.field_name, next)}
+      />
     );
   }
   if (setting.field_type === "List") {

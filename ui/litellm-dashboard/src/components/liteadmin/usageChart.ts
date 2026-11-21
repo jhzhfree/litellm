@@ -1,5 +1,6 @@
 import { z } from "zod";
 import i18n from "@/i18n/i18n";
+import { formatMoneyRate } from "@/lib/currency";
 import type { AriaAccess } from "./operations";
 
 export const usageChartRequestSchema = z.strictObject({
@@ -144,6 +145,6 @@ export function buildUsageChart(source: UsageChartSource, view: UsageChartView):
 export function formatUsageChartValue(value: number | null, unit: UsageChart["unit"]): string {
   if (value == null) return i18n.t("aria.chart.unavailable");
   return unit === "usd"
-    ? value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 6 })
+    ? formatMoneyRate(value, 6)
     : value.toLocaleString("en-US");
 }

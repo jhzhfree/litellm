@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import i18n from "@/i18n/i18n";
 import { codeSamples } from "@/i18n/untranslated/codeSamples";
+import { currentCurrencySymbol, currentDisplayAmount, currentToUsd } from "@/lib/currency";
 
 const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
 const HTTP_METHOD_OPTIONS = HTTP_METHODS.map((method) => ({ label: method, value: method }));
@@ -487,9 +488,11 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
                           step={0.01}
                           precision={2}
                           placeholder="0.00"
-                          prefix="$"
-                          value={value}
-                          onValueChange={onChange}
+                          prefix={currentCurrencySymbol()}
+                          value={value === undefined ? undefined : currentDisplayAmount(value)}
+                          onValueChange={(display) =>
+                            onChange(display === undefined ? undefined : currentToUsd(display))
+                          }
                         />
                       )}
                     </FormField>

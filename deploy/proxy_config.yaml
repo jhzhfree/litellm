@@ -12,11 +12,11 @@
 # 也可不改本文件，直接在 UI「模型与端点」页添加（store_model_in_db: true）。
 # ─────────────────────────────────────────────────────────
 
-model_list:
-  - model_name: deepseek-chat # 调用时使用的模型名
-    litellm_params:
-      model: deepseek/deepseek-chat
-      api_key: os.environ/DEEPSEEK_API_KEY # 从环境变量读取（deploy/.env）
+# model_list:
+#   - model_name: deepseek-chat # 调用时使用的模型名
+#     litellm_params:
+#       model: deepseek/deepseek-chat
+#       api_key: os.environ/DEEPSEEK_API_KEY # 从环境变量读取（deploy/.env）
 
 guardrails:
   - guardrail_name: "financial-data-guard"

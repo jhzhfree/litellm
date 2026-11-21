@@ -29,7 +29,9 @@ IMAGE="ai-gw/gateway"
 STAMP="$(date +%Y%m%d-%H%M)"
 DOCKERFILE="${DOCKERFILE:-/root/Dockerfile.build}"
 PROXY="${HTTP_PROXY:-http://192.168.24.200:7890}"
-NO_PROXY_VAL="localhost,127.0.0.1,db,.svc,.local"
+# 国内镜像源直连(pypi tuna/npmmirror/crates.io), 不走代理 —— 代理出口对
+    # TLS 长连接不稳, 直连镜像更可靠
+    NO_PROXY_VAL="localhost,127.0.0.1,db,.svc,.local,.tsinghua.edu.cn,.npmmirror.com,crates.io,index.crates.io,static.crates.io,.crates.io"
 PUSH=1
 FORCE_FULL=0
 EXTRA_TAGS=()
@@ -63,7 +65,8 @@ if [[ -n "$CHANGED" ]]; then
       ui/litellm-dashboard/*) UI_CHANGED=1; CONFIG_ONLY=0 ;;
       litellm-rust/*)         RUST_CHANGED=1; CONFIG_ONLY=0 ;;
       litellm/*|enterprise/*|litellm_cli/*|litellm-proxy-extras/*|packaging/*) PY_CHANGED=1; CONFIG_ONLY=0 ;;
-      deploy/*|*.md|docs/*)   : ;;  # 配置/文档: 不破坏 config-only
+      # 不参与镜像构建的文件(配置/文档/构建脚本自身), 不破坏 config-only 判定
+      deploy/*|*.md|docs/*|.gitignore|.dockerignore|scripts/*|.build-prisma-cache/*|*.log) : ;;
       *)                      CONFIG_ONLY=0 ;;  # 未知文件: 保守走全量
     esac
   done <<< "$CHANGED"

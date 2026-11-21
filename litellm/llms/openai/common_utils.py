@@ -412,6 +412,7 @@ class BaseOpenAILLM:
             "max_retries",
             "organization",
             "api_base",
+            "proxy_url",
             "workload_identity_config",
         )
         openai_client_fields: Final = (
@@ -438,6 +439,7 @@ class BaseOpenAILLM:
     @staticmethod
     def _get_async_http_client(
         shared_session: Optional["ClientSession"] = None,
+        proxy_url: str | None = None,
     ) -> httpx.AsyncClient | DefaultAsyncHttpxClient | None:
         if litellm.aclient_session is not None:
             return litellm.aclient_session
@@ -449,6 +451,14 @@ class BaseOpenAILLM:
 
         # Get unified SSL configuration
         ssl_config: Final = get_ssl_configuration()
+        if proxy_url:
+            return httpx.AsyncClient(
+                verify=ssl_config,
+                proxy=proxy_url,
+                follow_redirects=True,
+                http2=http2_enabled(),
+            )
+
         transport: Final = AsyncHTTPHandler.create_async_transport(
             ssl_context=(ssl_config if isinstance(ssl_config, ssl.SSLContext) else None),
             ssl_verify=ssl_config if isinstance(ssl_config, bool) else None,
@@ -467,11 +477,12 @@ class BaseOpenAILLM:
     def get_async_http_client(
         cls,
         shared_session: Optional["ClientSession"] = None,
+        proxy_url: str | None = None,
     ) -> httpx.AsyncClient | None:
-        return cls._get_async_http_client(shared_session)
+        return cls._get_async_http_client(shared_session, proxy_url)
 
     @staticmethod
-    def _get_sync_http_client() -> httpx.Client | DefaultHttpxClient | None:
+    def _get_sync_http_client(proxy_url: str | None = None) -> httpx.Client | DefaultHttpxClient | None:
         if litellm.client_session is not None:
             return litellm.client_session
 
@@ -482,6 +493,14 @@ class BaseOpenAILLM:
 
         # Get unified SSL configuration
         ssl_config: Final = get_ssl_configuration()
+
+        if proxy_url:
+            return httpx.Client(
+                verify=ssl_config,
+                follow_redirects=True,
+                http2=http2_enabled(),
+                proxy=proxy_url,
+            )
 
         return httpx.Client(
             verify=ssl_config,

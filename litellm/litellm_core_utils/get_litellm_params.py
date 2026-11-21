@@ -57,6 +57,7 @@ OPTIONAL_KWARGS_KEYS: Final = (
             "azure_password",
             "azure_scope",
             "timeout",
+            "proxy_url",
             "client_side_timeout",
             "gcs_bucket_name",
             "bucket_name",

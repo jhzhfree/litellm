@@ -440,6 +440,7 @@ class OpenAIChatCompletion(BaseLLM, BaseOpenAILLM):
         workload_identity_config: Final = resolve_openai_workload_identity_config(
             api_key=api_key, api_base=api_base, litellm_params=litellm_params
         )
+        proxy_url: Final = str(litellm_params["proxy_url"]) if litellm_params and litellm_params.get("proxy_url") else None
         client_initialization_params: Final[dict] = locals()
         if client is None:
             if not isinstance(max_retries, int):
@@ -456,7 +457,9 @@ class OpenAIChatCompletion(BaseLLM, BaseOpenAILLM):
                 if isinstance(cached_client, OpenAI) or isinstance(cached_client, AsyncOpenAI):
                     return cached_client
             if is_async:
-                async_http_client: Final = OpenAIChatCompletion._get_async_http_client(shared_session=shared_session)
+                async_http_client: Final = OpenAIChatCompletion._get_async_http_client(
+                    shared_session=shared_session, proxy_url=proxy_url
+                )
                 http_client: httpx.Client | httpx.AsyncClient | None = async_http_client
                 _new_client: OpenAI | AsyncOpenAI = (
                     AsyncOpenAI(
@@ -478,7 +481,7 @@ class OpenAIChatCompletion(BaseLLM, BaseOpenAILLM):
                     )
                 )
             else:
-                sync_http_client: Final = OpenAIChatCompletion._get_sync_http_client()
+                sync_http_client: Final = OpenAIChatCompletion._get_sync_http_client(proxy_url=proxy_url)
                 http_client = sync_http_client
                 _new_client = (
                     OpenAI(

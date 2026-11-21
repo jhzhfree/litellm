@@ -6200,6 +6200,7 @@ def completion(
             azure_scope=kwargs.get("azure_scope"),
             max_retries=max_retries,
             timeout=timeout,
+            proxy_url=kwargs.get("proxy_url"),
             litellm_request_debug=kwargs.get("litellm_request_debug", False),
             tpm=kwargs.get("tpm"),
             rpm=kwargs.get("rpm"),

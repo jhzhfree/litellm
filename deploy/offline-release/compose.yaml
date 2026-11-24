@@ -5,6 +5,8 @@ services:
     environment:
       DATABASE_URL: postgresql://gateway:${DB_PASSWORD:?Run init-env.py}@db:5432/gateway
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?Run init-env.py}
+      LITELLM_UI_IDENTITY_ADMIN_URL: ${LITELLM_UI_IDENTITY_ADMIN_URL:-}
+      LITELLM_UI_PROMETHEUS_URL: ${LITELLM_UI_PROMETHEUS_URL:-}
       UI_USERNAME: ${UI_USERNAME:?Run init-env.py}
       UI_PASSWORD: ${UI_PASSWORD:?Run init-env.py}
       LITELLM_TELEMETRY_DISABLED: 'true'

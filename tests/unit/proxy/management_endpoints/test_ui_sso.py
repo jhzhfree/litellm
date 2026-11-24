@@ -5388,10 +5388,11 @@ class TestProcessSSOJWTAccessToken:
 
 
 @pytest.mark.asyncio
-async def test_get_ui_settings_includes_api_doc_base_url():
-    """Ensure the UI settings endpoint surfaces the optional API doc override."""
+@pytest.mark.parametrize("role", ["proxy_admin", "proxy_admin_viewer", "internal_user"])
+async def test_get_ui_settings_limits_management_console_urls_to_proxy_admins(role):
     from fastapi import Request
 
+    from litellm.proxy._types import UserAPIKeyAuth
     from litellm.proxy.management_endpoints.ui_sso import get_ui_settings
 
     mock_request = Request(
@@ -5410,10 +5411,36 @@ async def test_get_ui_settings_includes_api_doc_base_url():
         os.environ,
         {
             "LITELLM_UI_API_DOC_BASE_URL": "https://custom.docs",
+            "LITELLM_UI_IDENTITY_ADMIN_URL": "https://identity.example/admin/",
+            "LITELLM_UI_PROMETHEUS_URL": "http://127.0.0.1:9090/query",
         },
     ):
-        response = await get_ui_settings(mock_request)
+        response = await get_ui_settings(mock_request, UserAPIKeyAuth(user_role=role))
         assert response["LITELLM_UI_API_DOC_BASE_URL"] == "https://custom.docs"
+        if role == "proxy_admin":
+            assert response["LITELLM_UI_IDENTITY_ADMIN_URL"] == "https://identity.example/admin/"
+            assert response["LITELLM_UI_PROMETHEUS_URL"] == "http://127.0.0.1:9090/query"
+        else:
+            assert "LITELLM_UI_IDENTITY_ADMIN_URL" not in response
+            assert "LITELLM_UI_PROMETHEUS_URL" not in response
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "",
+        "//identity.example/admin/",
+        "javascript:alert(1)",
+        "https://user:password@identity.example/admin/",
+        "https://identity.example/admin/?token=secret",
+        "https://identity.example/admin/#token",
+    ],
+)
+def test_admin_console_url_rejects_unsafe_or_unset_values(monkeypatch, value):
+    from litellm.proxy.management_endpoints.ui_sso import _admin_console_url
+
+    monkeypatch.setenv("LITELLM_UI_IDENTITY_ADMIN_URL", value)
+    assert _admin_console_url("LITELLM_UI_IDENTITY_ADMIN_URL") is None
 
 
 class TestGenericResponseConvertorNestedAttributes:

@@ -9,7 +9,7 @@ vi.mock("../utils/roles", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../utils/roles")>();
   return {
     ...actual,
-    all_admin_roles: ["admin", "admin_viewer"],
+    all_admin_roles: ["admin", "Admin", "admin_viewer"],
     old_admin_roles: ["admin", "admin_viewer"],
     internalUserRoles: ["internal"],
     rolesWithWriteAccess: ["admin", "internal"],
@@ -92,6 +92,11 @@ vi.mock("@/contexts/ThemeContext", () => ({
   useTheme: () => mockUseThemeImpl(),
 }));
 
+const { mockUseProxySettings } = vi.hoisted(() => ({ mockUseProxySettings: vi.fn(() => ({})) }));
+vi.mock("@/app/(dashboard)/hooks/proxySettings/useProxySettings", () => ({
+  default: mockUseProxySettings,
+}));
+
 // Version tag + logout target come from network hooks; keep them inert in unit tests.
 vi.mock("@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails", () => ({
   useHealthReadinessDetails: () => ({ data: undefined }),
@@ -144,6 +149,7 @@ describe("Sidebar (leftnav)", () => {
 
   afterEach(() => {
     mockUseAuthorized.mockReset();
+    mockUseProxySettings.mockReset();
     mockUseOrganizations.mockReset();
     mockUseTeams.mockReset();
     mockUseTeams.mockReturnValue({
@@ -154,6 +160,36 @@ describe("Sidebar (leftnav)", () => {
     mockUseThemeImpl = unbrandedTheme;
     navState.pathname = "/ui/api-keys";
     uiConfig.data = { admin_ui_disabled: false, use_si_terminology: false };
+  });
+
+  it("shows configured management consoles under Settings for proxy admins", async () => {
+    mockUseAuthorized.mockReturnValue({ ...mockUseAuthorized(), userRole: "Admin" });
+    mockUseProxySettings.mockReturnValue({
+      LITELLM_UI_IDENTITY_ADMIN_URL: "https://identity.example/admin/",
+      LITELLM_UI_PROMETHEUS_URL: "https://monitor.example/query",
+    });
+    const user = userEvent.setup();
+    renderWithProviders(<Sidebar {...defaultProps} />);
+
+    await user.click(screen.getByRole("button", { name: "Settings" }));
+    const identity = screen.getByRole("link", { name: "Identity Platform" });
+    expect(identity).toHaveAttribute("href", "https://identity.example/admin/");
+    expect(identity).toHaveAttribute("target", "_blank");
+    expect(identity).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.getByRole("link", { name: "Prometheus" })).toHaveAttribute("href", "https://monitor.example/query");
+  });
+
+  it("hides management consoles from view-only administrators", async () => {
+    mockUseAuthorized.mockReturnValue({ ...mockUseAuthorized(), userRole: "admin_viewer", isViewOnly: true });
+    mockUseProxySettings.mockReturnValue({
+      LITELLM_UI_IDENTITY_ADMIN_URL: "https://identity.example/admin/",
+      LITELLM_UI_PROMETHEUS_URL: "https://monitor.example/query",
+    });
+    renderWithProviders(<Sidebar {...defaultProps} />);
+
+    await userEvent.setup().click(screen.getByRole("button", { name: "Settings" }));
+    expect(screen.queryByRole("link", { name: "Identity Platform" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Prometheus" })).not.toBeInTheDocument();
   });
 
   it("uses SI terminology in section and page labels when the proxy asks for it", () => {

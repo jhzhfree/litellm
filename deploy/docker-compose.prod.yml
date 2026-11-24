@@ -7,6 +7,8 @@ services:
       DATABASE_URL: postgresql://llmproxy:${DB_PASSWORD:-dbpassword9090}@db:5432/litellm
       STORE_MODEL_IN_DB: 'True'
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-ai-gw-default}
+      LITELLM_UI_IDENTITY_ADMIN_URL: ${LITELLM_UI_IDENTITY_ADMIN_URL:-}
+      LITELLM_UI_PROMETHEUS_URL: ${LITELLM_UI_PROMETHEUS_URL:-}
       UI_USERNAME: ${UI_USERNAME:-admin}
       UI_PASSWORD: ${UI_PASSWORD:-AI-GovernanceGw@2026}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}

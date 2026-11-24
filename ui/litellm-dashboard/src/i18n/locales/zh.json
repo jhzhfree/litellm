@@ -60,6 +60,8 @@
         "routerSettings": "路由设置",
         "loggingAndAlerts": "日志与告警",
         "adminSettings": "管理员设置",
+        "identityPlatform": "身份平台",
+        "prometheus": "Prometheus",
         "costTracking": "成本追踪",
         "uiTheme": "界面主题",
         "telemetry": "遥测"

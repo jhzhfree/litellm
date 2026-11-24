@@ -22,6 +22,7 @@ from html import escape
 from types import MappingProxyType, TracebackType
 from typing import (
     TYPE_CHECKING,
+    Annotated,
     Final,
     Literal,
     NoReturn,
@@ -42,7 +43,7 @@ if TYPE_CHECKING:
 import jwt
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
-from pydantic import AliasPath, BaseModel, ConfigDict, Field, TypeAdapter, ValidationError, field_validator
+from pydantic import AliasPath, BaseModel, ConfigDict, Field, HttpUrl, TypeAdapter, ValidationError, field_validator
 
 import litellm
 from litellm._internal_context import with_service_target
@@ -2989,13 +2990,28 @@ async def _insert_sso_user_or_find_concurrent_insert(
         return await users.find_by_id(concurrent_insert.user_id) or concurrent_insert
 
 
+def _admin_console_url(env_name: str) -> str | None:
+    configured: Final = os.getenv(env_name, "").strip()
+    if not configured:
+        return None
+    try:
+        url: Final = HttpUrl(configured)
+    except ValidationError:
+        return None
+    if url.username is not None or url.password is not None or url.query is not None or url.fragment is not None:
+        return None
+    return str(url)
+
+
 @router.get(
     "/sso/get/ui_settings",
     tags=["experimental"],
     include_in_schema=False,
-    dependencies=[Depends(user_api_key_auth)],
 )
-async def get_ui_settings(request: Request):
+async def get_ui_settings(
+    request: Request,
+    user_api_key_dict: Annotated[UserAPIKeyAuth | None, Depends(user_api_key_auth)] = None,
+):
     from litellm.proxy.proxy_server import general_settings, proxy_state
 
     _proxy_base_url: Final = os.getenv("PROXY_BASE_URL", None)
@@ -3014,6 +3030,14 @@ async def get_ui_settings(request: Request):
         "PROXY_BASE_URL": _proxy_base_url,
         "PROXY_LOGOUT_URL": _logout_url,
         "LITELLM_UI_API_DOC_BASE_URL": _api_doc_base_url,
+        **(
+            {
+                "LITELLM_UI_IDENTITY_ADMIN_URL": _admin_console_url("LITELLM_UI_IDENTITY_ADMIN_URL"),
+                "LITELLM_UI_PROMETHEUS_URL": _admin_console_url("LITELLM_UI_PROMETHEUS_URL"),
+            }
+            if user_api_key_dict is not None and user_api_key_dict.user_role == LitellmUserRoles.PROXY_ADMIN
+            else {}
+        ),
         "DEFAULT_TEAM_DISABLED": default_team_disabled,
         "SSO_ENABLED": _is_sso_enabled,
         "NUM_SPEND_LOGS_ROWS": proxy_state.get_proxy_state_variable("spend_logs_row_count"),

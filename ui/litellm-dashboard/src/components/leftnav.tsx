@@ -1,6 +1,7 @@
 import { SidebarBrand } from "@/components/shared/SidebarBrand";
 import { canViewProjectsPage, projectReaderRoles } from "@/app/(dashboard)/hooks/projects/projectAccess";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
+import useProxySettings from "@/app/(dashboard)/hooks/proxySettings/useProxySettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useIsOrgAdmin from "@/app/(dashboard)/hooks/useIsOrgAdmin";
 import { useLogout } from "@/app/(dashboard)/hooks/useLogout";
@@ -74,6 +75,7 @@ import {
   formatUserRole,
   internalUserRoles,
   isAdminRole,
+  isProxyAdminRole,
   isUserTeamAdminForAnyTeam,
   rolesAllowedToViewWriteScopedPages,
   rolesWithWriteAccess,
@@ -603,6 +605,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
 }) => {
   const { userId, accessToken, userRole, isViewOnly } = useAuthorized();
   const enterpriseEnabled = useEnterpriseFeatures();
+  const canManageSystems = isProxyAdminRole(userRole) && !isViewOnly;
+  const { LITELLM_UI_IDENTITY_ADMIN_URL: identityAdminUrl, LITELLM_UI_PROMETHEUS_URL: prometheusUrl } =
+    useProxySettings(canManageSystems ? accessToken : null);
   const { t } = useTranslation();
   const term = useTerminology();
   const labelOf = (item: MenuItem) => (typeof item.label === "string" ? term(labelText(item)) : item.label);
@@ -646,7 +651,34 @@ const Sidebar_: React.FC<SidebarProps> = ({
       allowVectorStoresForTeamAdmins,
       enterpriseEnabled,
     };
-    return visibleMenuGroups(menuGroups, context);
+    const groups = visibleMenuGroups(menuGroups, context);
+    if (!canManageSystems) return groups;
+    const managementLinks: MenuItem[] = [
+      {
+        key: "identity-platform-console",
+        page: "identity-platform-console",
+        label: "shell.nav.items.identityPlatform",
+        icon: <ShieldCheck {...ICON} />,
+        external_url: identityAdminUrl ?? undefined,
+      },
+      {
+        key: "prometheus-console",
+        page: "prometheus-console",
+        label: "shell.nav.items.prometheus",
+        icon: <Activity {...ICON} />,
+        external_url: prometheusUrl ?? undefined,
+      },
+    ].filter((item) => item.external_url);
+    return groups.map((group) =>
+      group.groupLabel === "SETTINGS"
+        ? {
+            ...group,
+            items: group.items.map((item) =>
+              item.key === "settings" ? { ...item, children: [...(item.children ?? []), ...managementLinks] } : item,
+            ),
+          }
+        : group,
+    );
   }, [
     allowAgentsForTeamAdmins,
     allowVectorStoresForTeamAdmins,
@@ -655,6 +687,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
     enableProjectsUI,
     enabledPagesInternalUsers,
     enterpriseEnabled,
+    canManageSystems,
+    identityAdminUrl,
+    prometheusUrl,
     isOrgAdmin,
     isTeamAdmin,
     isViewOnly,

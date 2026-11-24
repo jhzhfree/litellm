@@ -8160,6 +8160,8 @@
         "routerSettings": "Router Settings",
         "loggingAndAlerts": "Logging & Alerts",
         "adminSettings": "Admin Settings",
+        "identityPlatform": "Identity Platform",
+        "prometheus": "Prometheus",
         "costTracking": "Cost Tracking",
         "uiTheme": "UI Theme",
         "telemetry": "Telemetry"

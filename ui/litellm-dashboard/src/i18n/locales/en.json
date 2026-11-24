@@ -20192,6 +20192,31 @@
       }
     },
     "createUser": {
+      "guest": {
+        "title": "Invite a guest",
+        "email": "Guest email",
+        "prepare": "Prepare guest",
+        "status": "Check status",
+        "send": "Send activation email",
+        "error": "Unable to confirm the guest operation. Check status before retrying.",
+        "operation": "Operation ID {{id}}",
+        "states": {
+          "not_started": "Guest enrollment has not started.",
+          "identity_created": "Identity created. Gateway linking is pending.",
+          "awaiting_activation": "Gateway account linked. Guest activation is pending.",
+          "activation_requested": "The identity platform accepted the activation email request.",
+          "active": "Guest activation completed."
+        }
+      },
+      "employeeLink": {
+        "title": "Link existing employee",
+        "local": "Use existing invitation flow",
+        "submit": "Confirm employee link",
+        "subject": "Keycloak user ID",
+        "help": "Use the employee ID from the configured realm. Assign gateway permissions after linking.",
+        "success": "Employee identity linked.",
+        "error": "Could not link this employee. Check the realm user ID and directory configuration."
+      },
       "openButton": "+ Invite User",
       "title": "Invite User",
       "subtitle": "Create a User who can own keys",

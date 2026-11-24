@@ -1,5 +1,6 @@
 """Exercise the gateway's generic SSO adapter against the local identity platform."""
 
+import argparse
 import asyncio
 import logging
 import os
@@ -35,7 +36,7 @@ def callback_request(location, cookie):
     )
 
 
-async def verify_login(client_id, secret, username, password, subject):
+async def verify_login(client_id, secret, username, password, subject, *, unified_oidc=False):
     from fastapi_sso.sso.generic import create_provider
 
     from litellm.proxy import proxy_server
@@ -61,6 +62,9 @@ async def verify_login(client_id, secret, username, password, subject):
         "GENERIC_TOKEN_ENDPOINT": ISSUER + "/protocol/openid-connect/token",
         "GENERIC_USERINFO_ENDPOINT": ISSUER + "/protocol/openid-connect/userinfo",
     }
+    if unified_oidc:
+        settings["LITELLM_UNIFIED_OIDC_ISSUER"] = ISSUER
+        settings["LITELLM_UNIFIED_OIDC_JWKS_URL"] = ISSUER + "/protocol/openid-connect/certs"
     os.environ.update(settings)
     provider = create_provider(
         name="oidc",
@@ -120,24 +124,33 @@ async def verify_login(client_id, secret, username, password, subject):
     try:
         await exchange("litellm_oauth_state=" + state, missing_state_url)
     except ProxyException as exc:
-        assert str(exc.code) == "400" and exc.param == "state"
+        assert str(exc.code) == ("403" if unified_oidc else "400")
+        if not unified_oidc:
+            assert exc.param == "state"
     else:
         raise AssertionError("PKCE callback without state was accepted")
     try:
         await exchange("litellm_oauth_state=incorrect")
     except ProxyException as exc:
-        assert str(exc.code) == "400"
+        assert str(exc.code) == ("403" if unified_oidc else "400")
     else:
         raise AssertionError("Mismatched browser state was accepted")
     result, _, _, _ = await exchange("litellm_oauth_state=" + state)
-    assert result.id == subject and result.email == username + "@example.com"
+    if unified_oidc:
+        from litellm.proxy.management_endpoints.sso.unified_oidc import UnifiedOIDCUser, binding_key
+
+        assert isinstance(result, UnifiedOIDCUser)
+        assert result.identity_subject == subject
+        assert result.id == binding_key(ISSUER, subject)
+    else:
+        assert result.id == subject and result.email == username + "@example.com"
     sys.stdout.write(
         "PASS real authorization-code login through gateway generic SSO with PKCE and stable subject mapping\n"
     )
     try:
         await exchange("litellm_oauth_state=" + state)
     except ProxyException as exc:
-        assert str(exc.code) == "401"
+        assert str(exc.code) == ("403" if unified_oidc else "401")
         sys.stdout.write("PASS missing state, mismatched browser state and callback replay are rejected\n")
     else:
         raise AssertionError("Callback replay was accepted")
@@ -145,7 +158,11 @@ async def verify_login(client_id, secret, username, password, subject):
 
 def main():
     logging.disable(logging.CRITICAL)
-    env = dict(line.split("=", 1) for line in Path(__file__).with_name(".env").read_text().splitlines() if "=" in line)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--env-file", type=Path, default=Path(__file__).with_name(".env"))
+    parser.add_argument("--unified-oidc", action="store_true")
+    args = parser.parse_args()
+    env = dict(line.split("=", 1) for line in args.env_file.read_text().splitlines() if "=" in line)
     token = request(
         "/realms/master/protocol/openid-connect/token",
         {
@@ -193,7 +210,7 @@ def main():
         client = request(root + "/clients?clientId=" + name, token=token)[0]
         cleanup.callback(request, root + "/clients/" + client["id"], token=token, method="DELETE")
         secret = request(root + "/clients/" + client["id"] + "/client-secret", token=token)["value"]
-        asyncio.run(verify_login(name, secret, name, password, user["id"]))
+        asyncio.run(verify_login(name, secret, name, password, user["id"], unified_oidc=args.unified_oidc))
 
 
 if __name__ == "__main__":

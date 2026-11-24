@@ -20,6 +20,7 @@ import TeamDropdown from "./common_components/team_dropdown";
 import { getModelDisplayName } from "./key_team_helpers/fetch_available_models_team_key";
 import { toast } from "@/lib/toast";
 import {
+  apiClient,
   getProxyBaseUrl,
   getProxyUISettings,
   invitationCreateCall,
@@ -27,6 +28,7 @@ import {
   userCreateCall,
 } from "./networking";
 import OnboardingModal, { InvitationLink } from "./onboarding_link";
+import { GuestEnrollmentForm } from "./GuestEnrollmentForm";
 
 // Helper function to generate UUID compatible across all environments
 const generateUUID = (): string => {
@@ -55,6 +57,8 @@ interface UISettings {
   PROXY_LOGOUT_URL: string | null;
   DEFAULT_TEAM_DISABLED: boolean;
   SSO_ENABLED: boolean;
+  UNIFIED_OIDC_EMPLOYEE_ENROLLMENT?: boolean;
+  UNIFIED_OIDC_GUEST_ENROLLMENT?: boolean;
 }
 
 interface CreateUserFormValues {
@@ -173,6 +177,11 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
   const form = useForm<CreateUserFormValues>({ defaultValues });
   const supplyUserId = useWatch({ control: form.control, name: "supply_user_id" });
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [invitationMode, setInvitationMode] = useState<"employee" | "guest" | "legacy">("legacy");
+  const [guestBusy, setGuestBusy] = useState(false);
+  const linkEmployee = invitationMode === "employee";
+  const [employeeSubject, setEmployeeSubject] = useState("");
+  const [linkingEmployee, setLinkingEmployee] = useState(false);
   const [apiuser, setApiuser] = useState<boolean>(false);
   const [userModels, setUserModels] = useState<string[]>([]);
   const [isPersonalKeyOpen, setIsPersonalKeyOpen] = useState(false);
@@ -210,7 +219,26 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
   const handleCancel = () => {
     setIsModalVisible(false);
     setApiuser(false);
+    setInvitationMode("legacy");
+    setEmployeeSubject("");
     form.reset(defaultValues);
+  };
+
+  const handleLinkEmployee = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const subject = employeeSubject.trim();
+    if (!subject || linkingEmployee) return;
+    setLinkingEmployee(true);
+    try {
+      await apiClient.post<{ user_id: string }>("/sso/users/link", { accessToken, body: { subject } });
+      await queryClient.invalidateQueries({ queryKey: ["userList"] });
+      handleCancel();
+      toast.success(t("users.createUser.employeeLink.success"));
+    } catch {
+      toast.error(t("users.createUser.employeeLink.error"));
+    } finally {
+      setLinkingEmployee(false);
+    }
   };
 
   const handleCreate = async (formValues: CreateUserFormValues) => {
@@ -392,110 +420,182 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
   // Original return for standalone mode
   return (
     <>
-      <Button type="button" onClick={() => setIsModalVisible(true)}>
+      <Button
+        type="button"
+        onClick={() => {
+          setInvitationMode(uiSettings?.UNIFIED_OIDC_EMPLOYEE_ENROLLMENT ? "employee" : "legacy");
+          setIsModalVisible(true);
+        }}
+      >
         {t("users.createUser.openButton")}
       </Button>
-      <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
+      <Dialog open={isModalVisible} onOpenChange={(open) => !open && !linkingEmployee && !guestBusy && handleCancel()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
             <DialogTitle>{t("users.createUser.title")}</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col gap-3">
-            <p className="mb-1 text-sm text-foreground">{t("users.createUser.subtitle")}</p>
-            <EmailInvitationsNotice />
-          </div>
-          <TooltipProvider>
-            <form onSubmit={form.handleSubmit(handleCreate)}>
-              <FieldGroup>
-                {userEmailField}
-                {userIdField}
-                {roleField(
-                  labelWithHint(t("users.createUser.fields.globalRole"), t("users.createUser.fields.globalRoleHint")),
-                )}
-                {teamField}
-
-                <FormField
-                  control={form.control}
-                  name="organization_ids"
-                  label={t("users.createUser.fields.organization")}
-                  description={t("users.createUser.fields.organizationDescription")}
+          {(uiSettings?.UNIFIED_OIDC_EMPLOYEE_ENROLLMENT || uiSettings?.UNIFIED_OIDC_GUEST_ENROLLMENT) && (
+            <div className="flex flex-wrap gap-2">
+              {uiSettings.UNIFIED_OIDC_EMPLOYEE_ENROLLMENT && (
+                <Button
+                  type="button"
+                  variant={linkEmployee ? "default" : "outline"}
+                  aria-pressed={linkEmployee}
+                  disabled={linkingEmployee || guestBusy}
+                  onClick={() => setInvitationMode("employee")}
                 >
-                  {({ id, value, onChange }) => (
-                    <Select
-                      multiple
-                      items={organizationOptions}
-                      value={value ?? []}
-                      onValueChange={(selected: string[]) => onChange(selected.length === 0 ? undefined : selected)}
-                    >
-                      <SelectTrigger id={id} className="w-full">
-                        <SelectValue placeholder={t("users.createUser.fields.organizationPlaceholder")}>
-                          {(selected: string[]) =>
-                            selected.length === 0
-                              ? t("users.createUser.fields.organizationPlaceholder")
-                              : organizationOptions
-                                  .filter((option) => selected.includes(option.value))
-                                  .map((option) => option.label)
-                                  .join(", ")
-                          }
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {organizationOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </FormField>
+                  {t("users.createUser.employeeLink.title")}
+                </Button>
+              )}
+              {uiSettings.UNIFIED_OIDC_GUEST_ENROLLMENT && (
+                <Button
+                  type="button"
+                  variant={invitationMode === "guest" ? "default" : "outline"}
+                  aria-pressed={invitationMode === "guest"}
+                  disabled={linkingEmployee || guestBusy}
+                  onClick={() => setInvitationMode("guest")}
+                >
+                  {t("users.createUser.guest.title")}
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant={invitationMode === "legacy" ? "default" : "outline"}
+                aria-pressed={invitationMode === "legacy"}
+                disabled={linkingEmployee || guestBusy}
+                onClick={() => setInvitationMode("legacy")}
+              >
+                {t("users.createUser.employeeLink.local")}
+              </Button>
+            </div>
+          )}
+          {invitationMode === "guest" && uiSettings?.UNIFIED_OIDC_GUEST_ENROLLMENT ? (
+            <GuestEnrollmentForm accessToken={accessToken} busy={guestBusy} onBusyChange={setGuestBusy} />
+          ) : linkEmployee && uiSettings?.UNIFIED_OIDC_EMPLOYEE_ENROLLMENT ? (
+            <form onSubmit={handleLinkEmployee} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="employee-oidc-subject" className="text-sm font-medium">
+                  {t("users.createUser.employeeLink.subject")}
+                </label>
+                <Input
+                  id="employee-oidc-subject"
+                  value={employeeSubject}
+                  onChange={(event) => setEmployeeSubject(event.target.value)}
+                  required
+                  maxLength={255}
+                  aria-describedby="employee-oidc-help"
+                />
+                <p id="employee-oidc-help" className="text-sm text-muted-foreground">
+                  {t("users.createUser.employeeLink.help")}
+                </p>
+              </div>
+              <Button type="submit" disabled={linkingEmployee || !employeeSubject.trim()}>
+                {t("users.createUser.employeeLink.submit")}
+              </Button>
+            </form>
+          ) : (
+            <>
+              <div className="flex flex-col gap-3">
+                <p className="mb-1 text-sm text-foreground">{t("users.createUser.subtitle")}</p>
+                <EmailInvitationsNotice />
+              </div>
+              <TooltipProvider>
+                <form onSubmit={form.handleSubmit(handleCreate)}>
+                  <FieldGroup>
+                    {userEmailField}
+                    {userIdField}
+                    {roleField(
+                      labelWithHint(
+                        t("users.createUser.fields.globalRole"),
+                        t("users.createUser.fields.globalRoleHint"),
+                      ),
+                    )}
+                    {teamField}
 
-                {metadataField}
-                {sendInviteEmailField}
-
-                <Collapsible open={isPersonalKeyOpen} onOpenChange={setIsPersonalKeyOpen}>
-                  <CollapsibleTrigger className="flex w-full items-center gap-2 rounded-md border border-border px-3 py-2 text-left text-sm font-semibold text-foreground">
-                    <ChevronRight
-                      className={`size-4 transition-transform ${isPersonalKeyOpen ? "rotate-90" : ""}`}
-                      aria-hidden
-                    />
-                    {t("users.createUser.fields.personalKeyCreation")}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pt-4">
                     <FormField
                       control={form.control}
-                      name="models"
-                      label={labelWithHint(
-                        t("users.createUser.fields.models"),
-                        t("users.createUser.fields.modelsHint"),
-                      )}
-                      description={t("users.createUser.fields.modelsDescription")}
+                      name="organization_ids"
+                      label={t("users.createUser.fields.organization")}
+                      description={t("users.createUser.fields.organizationDescription")}
                     >
-                      {({ value, onChange }) => (
-                        <MultiSelect
-                          options={[
-                            { label: t("users.createUser.fields.allProxyModels"), value: "all-proxy-models" },
-                            { label: t("users.createUser.fields.noDefaultModels"), value: "no-default-models" },
-                            ...userModels.map((model) => ({ label: getModelDisplayName(model), value: model })),
-                          ]}
+                      {({ id, value, onChange }) => (
+                        <Select
+                          multiple
+                          items={organizationOptions}
                           value={value ?? []}
-                          onValueChange={onChange}
-                          placeholder={t("users.createUser.fields.modelsPlaceholder")}
-                        />
+                          onValueChange={(selected: string[]) => onChange(selected.length === 0 ? undefined : selected)}
+                        >
+                          <SelectTrigger id={id} className="w-full">
+                            <SelectValue placeholder={t("users.createUser.fields.organizationPlaceholder")}>
+                              {(selected: string[]) =>
+                                selected.length === 0
+                                  ? t("users.createUser.fields.organizationPlaceholder")
+                                  : organizationOptions
+                                      .filter((option) => selected.includes(option.value))
+                                      .map((option) => option.label)
+                                      .join(", ")
+                              }
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {organizationOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       )}
                     </FormField>
-                  </CollapsibleContent>
-                </Collapsible>
-              </FieldGroup>
 
-              <div className="sticky bottom-0 -mx-6 mt-4 -mb-6 flex justify-end border-t bg-popover px-6 py-4">
-                <Button type="submit">
-                  <UserPlus />
-                  {t("users.createUser.submitButton")}
-                </Button>
-              </div>
-            </form>
-          </TooltipProvider>
+                    {metadataField}
+                    {sendInviteEmailField}
+
+                    <Collapsible open={isPersonalKeyOpen} onOpenChange={setIsPersonalKeyOpen}>
+                      <CollapsibleTrigger className="flex w-full items-center gap-2 rounded-md border border-border px-3 py-2 text-left text-sm font-semibold text-foreground">
+                        <ChevronRight
+                          className={`size-4 transition-transform ${isPersonalKeyOpen ? "rotate-90" : ""}`}
+                          aria-hidden
+                        />
+                        {t("users.createUser.fields.personalKeyCreation")}
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="pt-4">
+                        <FormField
+                          control={form.control}
+                          name="models"
+                          label={labelWithHint(
+                            t("users.createUser.fields.models"),
+                            t("users.createUser.fields.modelsHint"),
+                          )}
+                          description={t("users.createUser.fields.modelsDescription")}
+                        >
+                          {({ value, onChange }) => (
+                            <MultiSelect
+                              options={[
+                                { label: t("users.createUser.fields.allProxyModels"), value: "all-proxy-models" },
+                                { label: t("users.createUser.fields.noDefaultModels"), value: "no-default-models" },
+                                ...userModels.map((model) => ({ label: getModelDisplayName(model), value: model })),
+                              ]}
+                              value={value ?? []}
+                              onValueChange={onChange}
+                              placeholder={t("users.createUser.fields.modelsPlaceholder")}
+                            />
+                          )}
+                        </FormField>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </FieldGroup>
+
+                  <div className="sticky bottom-0 -mx-6 mt-4 -mb-6 flex justify-end border-t bg-popover px-6 py-4">
+                    <Button type="submit">
+                      <UserPlus />
+                      {t("users.createUser.submitButton")}
+                    </Button>
+                  </div>
+                </form>
+              </TooltipProvider>
+            </>
+          )}
         </DialogContent>
       </Dialog>
       {apiuser && (

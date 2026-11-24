@@ -20192,6 +20192,31 @@
       }
     },
     "createUser": {
+      "guest": {
+        "title": "邀请访客",
+        "email": "访客邮箱",
+        "prepare": "准备访客账号",
+        "status": "查询状态",
+        "send": "发送激活邮件",
+        "error": "无法确认访客操作结果。重试前请查询状态。",
+        "operation": "操作 ID {{id}}",
+        "states": {
+          "not_started": "访客开户尚未开始。",
+          "identity_created": "身份已创建，网关关联待完成。",
+          "awaiting_activation": "网关账号已关联，访客待激活。",
+          "activation_requested": "身份平台已受理激活邮件请求。",
+          "active": "访客已完成激活。"
+        }
+      },
+      "employeeLink": {
+        "title": "关联已有员工",
+        "local": "使用现有邀请流程",
+        "submit": "确认关联",
+        "subject": "Keycloak 用户 ID",
+        "help": "填写已配置 realm 中的员工用户 ID。关联后可分配网关权限。",
+        "success": "已关联员工身份。",
+        "error": "无法关联员工。请核对 realm 用户 ID 和目录配置。"
+      },
       "openButton": "+ 邀请用户",
       "title": "邀请用户",
       "subtitle": "创建一个可以拥有密钥的用户",

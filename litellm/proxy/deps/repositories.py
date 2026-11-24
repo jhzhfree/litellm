@@ -3,6 +3,7 @@ from typing import Annotated, TypeAlias
 from fastapi import Depends
 
 from litellm.models.deployment_warning import DeploymentWarningIgnoreStore
+from litellm.models.employee_enrollment import EmployeeEnrollmentStore
 from litellm.models.gateway_activity import GatewayActivityStore
 from litellm.models.plugin_upload import PluginUploadStore
 from litellm.models.skill_submission import SkillSubmissionStore
@@ -13,6 +14,7 @@ from litellm.repositories.gateway_activity_repository import GatewayActivityRepo
 from litellm.repositories.plugin_upload_repository import PluginUploadRepository
 from litellm.repositories.skill_submission_repository import SkillSubmissionRepository
 from litellm.repositories.user_banner_repository import UserBannerRepository
+from litellm.repositories.user_repository import UserRepository
 
 
 async def get_user_banner_repository(database: DatabaseDep) -> UserBannerStore | None:
@@ -53,4 +55,13 @@ async def get_skill_submission_repository(database: DatabaseDep) -> SkillSubmiss
 
 SkillSubmissionRepositoryDep: TypeAlias = Annotated[
     SkillSubmissionStore | None, Depends(get_skill_submission_repository)
+]
+
+
+async def get_employee_enrollment_repository(database: DatabaseDep) -> EmployeeEnrollmentStore | None:
+    return None if database is None else UserRepository(database.prisma, use_writer=True)
+
+
+EmployeeEnrollmentRepositoryDep: TypeAlias = Annotated[
+    EmployeeEnrollmentStore | None, Depends(get_employee_enrollment_repository)
 ]

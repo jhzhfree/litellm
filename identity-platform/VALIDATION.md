@@ -45,3 +45,64 @@ PYTHONPATH=. .venv/bin/python identity-platform/smoke.py --gateway-jwt
 - 通过 Keycloak 管理 API 创建临时客户端、服务账号和调用 scope。Octop 验收进程以 Client Credentials 向实际身份平台换取 Bearer 令牌。禁用客户端后，新签发请求被拒绝。
 - 网关 JWT 组件从实际 JWKS 验签，核对 issuer、audience 以及与 Keycloak 管理 API 一致的客户端和服务账号主体。错误 audience、错误主体和缺失所需 scope 被拒绝。
 - 完整 HTTP 用例已加入，覆盖未绑定拒绝、持久化绑定后放行、认证时间记录和禁用后拒绝。本环境未配置网关 JWT 授权，且访问 Prisma 官方引擎域名返回 403，本轮未运行完整网关 HTTP 用例。
+
+## 预批准员工统一 OIDC
+
+以隔离 Keycloak 26.4.7 和 PostgreSQL 运行 `smoke_sso.py --unified-oidc --env-file <测试环境文件>`。真实 Chromium 登录后验证网关 Generic SSO 组件的授权码、state、PKCE、nonce、ID Token 签名和 realm 主体。缺少 state、state 不匹配及回调重放均被拒绝。该测试在浏览器端截获回调，再调用网关认证组件。
+
+SSO 与 PKCE 定向回归通过 49 项。员工绑定测试覆盖精确主体、不存在、停用和其他来源拒绝。使用模拟网关 HTTP 响应验证运维工具重复运行只提交一次创建，并拒绝冲突绑定。实际网关数据库开户及最终浏览器控制台会话仍需验收。
+
+## 网关页面关联已有员工
+
+在隔离 Keycloak 环境创建临时员工和仅授予 `realm-management/view-users` 的服务账号。网关目录客户端使用 Client Credentials 获得访问令牌，读取并校验真实员工主体。测试结束后清理临时员工及客户端。
+
+网关路由测试覆盖代理管理员授权、拒绝其他角色和目录拒绝，仓储测试覆盖已有绑定、并发唯一约束和冲突。仪表盘集成测试验证表单提交精确 realm 用户 ID，并保留旧邀请方式。本轮的数据库写入验证使用替身，尚需实际网关数据库联调。
+
+## 访客开户和激活
+
+在隔离 Keycloak realm 配置管理员专用访客标记和用户管理客户端，实测创建身份、读取要求动作、同邮箱重试及状态查询。网关数据库绑定使用替身。定向测试覆盖绑定前不发送、部分成功后的状态和恢复、Keycloak 接收激活请求，以及已激活账号不重复请求。前端集成测试覆盖准备和发信分步操作。尚未在真实 SMTP 或网关数据库上验收。
+
+## agentctl 注册与凭证交付
+
+在隔离 Keycloak 26.4.7 realm 和真实 SQLite 中验证。网关 HTTP 边界使用模拟响应。模拟网关建档第一次失败后，身份保持禁用，同一操作编号恢复到 `active` 且只建立一条绑定。跨操作员读取及领取被拒绝，失效网关绑定阻止领取，凭证只能交付一次。真实令牌通过 realm JWKS 验签，包含预期的 audience、工作负载标记、客户端、服务账号主体和 `gateway.invoke`。模拟身份平台在停用期间失联时，网关禁用先执行，重试完成 Keycloak 停用，旧凭证再次申请令牌返回 401。
+
+真实 Keycloak 操作员 Access Token 通过注册 API 的 JWKS 校验。缺少 scope、错误 audience 或错误授权客户端均被拒绝。隔离测试使用临时客户端直接签发操作员令牌，生产授权码与 PKCE 登录、运行中的网关 HTTP 和 Prisma 持久化仍需部署联调。
+
+### agentctl HTTP 验收脚本
+
+`smoke_agentctl.py` 已用实际 CLI 子进程、本地 HTTP 注册服务和独立 Keycloak 跑通，网关使用 HTTP 替身。验证了重复注册、凭证文件权限、令牌签发、绑定认证时间检查，以及停用后同一枚 JWT 被替身拒绝和真实 Keycloak 拒绝新令牌。
+
+本次重新运行 `prisma generate --schema=schema.prisma`，Prisma 官方 query-engine 校验文件仍返回 HTTP 403。真实 LiteLLM 网关的请求授权、持久化绑定和停用结果仍待验收。
+
+停用操作增加了网关响应核对。模拟网关 HTTP 200 但返回错误 Agent ID 或仍为启用时，操作保留在 `disabling`，真实 Keycloak 继续签发令牌。恢复网关正常响应后，使用原操作编号重试成功，Keycloak 随后拒绝签发。网关托管 Agent 授权单元测试通过 270 项。Prisma 官方校验地址复查仍被网络代理拒绝，真实网关数据库验收尚未运行。
+
+注册复用与创建响应现共用同一套绑定校验。隔离测试使用真实 Keycloak 和模拟网关，模拟网关已建档但 HTTP 200 响应返回错误 issuer。注册保持在 `identity_created`，Keycloak 客户端依旧禁用。原操作编号重试后复用正确绑定，只保留一条网关记录。凭证领取、停用异常和 CLI 验收流程同步复测通过。
+
+## 发布验收记录
+
+2026-11-24 对三个工程执行了定向回归。
+
+| 工程 | 结果 |
+| --- | --- |
+| LiteLLM | 网关 SSO 与托管 Agent 授权合计 714 项通过，4 项 SSO 测试因 Prisma 客户端未生成而失败。邀请用户页面 6 项集成测试通过，仪表盘类型检查通过。 |
+| Octop | 用户认证、OIDC 集成和 Agent 身份管理合计 244 项通过。SQLite 升级测试从版本 42 执行至当前最新迁移并检查已有用户及续期功能。 |
+| AKB | 主体生命周期、工作负载身份服务和授权合计 23 项通过。 |
+| 独立注册服务 | 真实 Keycloak、注册 API 和 CLI 回归通过，网关使用 HTTP 替身。新增 systemd 服务单元和环境模板，当前沙箱的 `/run/systemd` 只读，尚未完成 systemd 服务启动验收。 |
+
+生产发布前需在具备 Prisma 引擎及校验文件访问权限的预发布环境，用项目正常构建流程生成客户端并重新运行上述 SSO 测试。使用真实数据库检验网关 SSO 会话和企业员工绑定，使用测试邮箱检验访客激活，再运行 `smoke_agentctl.py` 验证真实网关绑定、认证记录及停用。同一预发布环境还需验证部署单元重启后保留注册状态，以及原有认证方式仍可登录。Prisma 官方校验地址本轮复查仍返回 403，真实网关验收尚未完成。
+
+独立注册服务的进程重启验收通过。三次启动全新的 Uvicorn 进程，共用同一份实际 SQLite 文件，连接真实 Keycloak 和网关 HTTP 替身。重启后保留原绑定 ID 和已领取标记，同一操作重试复用原绑定，重复领取返回 409。停用后再次重启，停用状态仍保留。本次验证覆盖应用进程及状态文件，systemd 单元和真实网关数据库仍待预发布验收。
+
+发布预检已接入 `smoke_agentctl.py`。隔离测试以真实 Keycloak 验证 OIDC discovery，以网关 HTTP 替身验证健康探针和管理员可见的受信任 issuer。即使探针返回 HTTP 200，数据库状态为 `disconnected` 也会中止；网关未配置预期 issuer 同样中止。通过预检后的注册和停用验收已复测。Prisma 校验下载仍被网络代理以 403 拒绝，正式发布验收尚未完成。
+
+## 身份平台功能复测
+
+2026-11-24 在独立 Keycloak 26.4.7 和 PostgreSQL 环境复测。
+
+- Chromium 完成真实 Keycloak 授权码登录。网关 SSO 组件完成 PKCE 换码和主体映射，拒绝缺失 state、错误 state 和重放。
+- 员工目录只读服务账号可查询真实 realm 用户。访客可创建并保留待激活状态，重复准备复用原身份。网关开户使用替身，未验证 SMTP 投递。
+- Octop 工作负载从真实 Keycloak 取得令牌。网关 JWT 组件通过实时 JWKS 验签，并拒绝错误 audience、主体或 scope。
+- 实际 `agentctl` 与注册 API 完成注册、领取、重复领取拒绝和停用。网关使用 HTTP 替身，Keycloak 使用真实服务。
+- LiteLLM 的 PKCE、统一 OIDC 与开户定向回归 57 项通过。Octop 的 OIDC、SSO 和 Agent 身份定向回归 70 项通过。
+
+真实 LiteLLM 数据库用户绑定、控制台会话、访客邮件和 Agent 完整 HTTP 授权仍需联调。企业 IdP 联邦使用部署方的真实上游客户端另行验收。

@@ -1,0 +1,24 @@
+[Unit]
+Description=Identity Platform Agent Registration API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=identity-agent-registration
+StateDirectoryMode=0700
+UMask=0077
+WorkingDirectory=/opt/identity-agent-registration
+EnvironmentFile=/etc/identity-agent-registration.env
+Environment=AGENT_ADMIN_DB=/var/lib/identity-agent-registration/registrations.sqlite3
+ExecStart=/opt/identity-agent-registration/venv/bin/python -m uvicorn agent_registration:app --host 127.0.0.1 --port 18081 --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

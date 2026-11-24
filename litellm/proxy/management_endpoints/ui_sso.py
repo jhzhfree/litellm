@@ -110,12 +110,23 @@ from litellm.proxy.common_utils.html_forms.native_client_consent import team_sel
 from litellm.proxy.common_utils.html_forms.ui_login import build_ui_login_form
 from litellm.proxy.common_utils.user_api_key_cache import AUTH_OBJECTS_TARGET, UserApiKeyCache
 from litellm.proxy.db.exception_handler import PrismaDBExceptionHandler
+from litellm.proxy.deps.repositories import EmployeeEnrollmentRepositoryDep
 from litellm.proxy.management_endpoints.internal_user_endpoints import (
     add_new_user_to_default_team,
     check_if_default_team_set,
     new_user,
 )
 from litellm.proxy.management_endpoints.sso import CustomMicrosoftSSO, LiteLLMGoogleSSO, create_generic_sso_provider
+from litellm.proxy.management_endpoints.sso.employee_enrollment import (
+    EmployeeEnrollment,
+    employee_enrollment_enabled,
+    enroll_employee,
+)
+from litellm.proxy.management_endpoints.sso.guest_enrollment import (
+    GuestEnrollment,
+    enroll_guest,
+    guest_enrollment_enabled,
+)
 from litellm.proxy.management_endpoints.sso.id_jag_assertion_capture import (
     id_jag_assertion_capture_gap,
 )
@@ -1138,6 +1149,15 @@ class _SSOUserAdmissionError(ProxyException):
     pass
 
 
+def _unified_oidc_error() -> _SSOUserAdmissionError:
+    return _SSOUserAdmissionError(
+        message="Unified OIDC login requires a valid, pre-approved account binding",
+        type=ProxyErrorTypes.auth_error,
+        param=None,
+        code=status.HTTP_403_FORBIDDEN,
+    )
+
+
 @router.get("/sso/key/generate", tags=["experimental"], include_in_schema=False)
 async def google_login(
     request: Request,
@@ -1624,6 +1644,9 @@ async def get_generic_sso_response(
 ) -> tuple[
     OpenID | dict, dict | None, dict | None, SSOIdentityAssertion | None
 ]:  # (result, received_response, access_token_payload, sso_assertion)
+    from litellm.proxy.management_endpoints.sso.unified_oidc import trusted_endpoint, verify_identity
+
+    unified_issuer: Final = os.getenv("LITELLM_UNIFIED_OIDC_ISSUER", "").strip()
     # make generic sso provider
     from fastapi_sso.sso.base import DiscoveryDocument
 
@@ -1711,6 +1734,9 @@ async def get_generic_sso_response(
         code_verifier = token_exchange_params.pop("code_verifier", None)
         pkce_cache_key: Final = token_exchange_params.pop("_pkce_cache_key", None)
 
+        if unified_issuer and not code_verifier:
+            raise _unified_oidc_error()
+
         # Get authorization code from query params (only used in the PKCE path below;
         # the non-PKCE path delegates to verify_and_process which handles OAuth error
         # callbacks — user-denied, CSRF mismatch — internally).
@@ -1764,17 +1790,35 @@ async def get_generic_sso_response(
                     param="code",
                     code=status.HTTP_400_BAD_REQUEST,
                 )
+            if unified_issuer:
+                trusted_endpoint(unified_issuer)
+                trusted_endpoint(generic_token_endpoint)
             combined_response: Final = await SSOAuthenticationHandler.pkce_token_exchange(
                 authorization_code=authorization_code,
                 code_verifier=code_verifier,
                 client_id=generic_client_id,
                 client_secret=generic_client_secret,
                 token_endpoint=generic_token_endpoint,
-                userinfo_endpoint=generic_userinfo_endpoint,
+                userinfo_endpoint=None if unified_issuer else generic_userinfo_endpoint,
                 include_client_id=generic_include_client_id,
                 redirect_url=redirect_url,
                 additional_headers=additional_generic_sso_headers_dict,
             )
+            if unified_issuer:
+                jwks_url: Final = trusted_endpoint(os.getenv("LITELLM_UNIFIED_OIDC_JWKS_URL", "").strip())
+                try:
+                    client: Final = get_async_httpx_client(llm_provider=httpxSpecialProvider.SSO_HANDLER)
+                    keys: Final = await client.get(url=jwks_url)
+                    keys.raise_for_status()
+                    identity: Final = verify_identity(
+                        combined_response.get("id_token"), keys.json(), issuer=unified_issuer,
+                        client_id=generic_client_id, verifier=code_verifier,
+                    )
+                except Exception:
+                    raise _unified_oidc_error() from None
+                if pkce_cache_key:
+                    await SSOAuthenticationHandler.delete_pkce_verifier(pkce_cache_key)
+                return identity, None, None, None
             # Pass the full response so custom response_convertor implementations
             # can access all fields (including id_token for claim extraction).
             result = response_convertor(combined_response, generic_sso)
@@ -1808,6 +1852,8 @@ async def get_generic_sso_response(
             await SSOAuthenticationHandler.delete_pkce_verifier(pkce_cache_key)
 
     except Exception as e:
+        if unified_issuer:
+            raise _unified_oidc_error() from None
         _handle_generic_sso_error(
             e,
             generic_authorization_endpoint,
@@ -2013,6 +2059,18 @@ async def get_user_info_from_db(
     user_defined_values: SSOUserDefinedValues | None,
     alternate_user_id: str | None = None,
 ) -> LiteLLM_UserTable | NewUserResponse | None:
+    from litellm.proxy.management_endpoints.sso.unified_oidc import UnifiedOIDCUser, binding_key
+
+    unified_issuer: Final = os.getenv("LITELLM_UNIFIED_OIDC_ISSUER", "").strip()
+    if unified_issuer:
+        if not isinstance(result, UnifiedOIDCUser) or result.identity_issuer != unified_issuer:
+            raise _unified_oidc_error()
+        users: Final = UserRepository(prisma_client)
+        bound: Final = await users.find_by_sso_id(binding_key(result.identity_issuer, result.identity_subject))
+        if bound is None or (bound.metadata or {}).get("scim_active") is False:
+            raise _unified_oidc_error()
+        return bound
+
     mapped_user_id: Final = None if user_defined_values is None else user_defined_values.get("user_id")
     resolved_by_database_only: Final = user_defined_values is not None and (
         not isinstance(mapped_user_id, str) or _is_blank_sso_user_id(mapped_user_id)
@@ -2990,6 +3048,46 @@ async def _insert_sso_user_or_find_concurrent_insert(
         return await users.find_by_id(concurrent_insert.user_id) or concurrent_insert
 
 
+@router.post("/sso/users/link", tags=["UI Settings"], include_in_schema=False)
+async def link_employee_account(
+    data: EmployeeEnrollment,
+    user_api_key_dict: Annotated[UserAPIKeyAuth, Depends(user_api_key_auth)],
+    users: EmployeeEnrollmentRepositoryDep,
+) -> dict[str, str]:
+    if user_api_key_dict.user_role != LitellmUserRoles.PROXY_ADMIN:
+        raise HTTPException(403, "Only proxy administrators can link employee identities")
+    if not employee_enrollment_enabled():
+        raise HTTPException(503, "Employee enrollment is not configured")
+    if users is None:
+        raise HTTPException(503, "Employee enrollment requires the gateway database")
+    issuer: Final = os.environ["LITELLM_UNIFIED_OIDC_ISSUER"].strip()
+    user_id: Final = await enroll_employee(users, issuer, data.subject)
+    verbose_proxy_logger.info("Gateway employee account linked: actor=%s user_id=%s", user_api_key_dict.user_id, user_id)
+    return {"user_id": user_id}
+
+
+@router.post("/sso/users/guest", tags=["UI Settings"], include_in_schema=False)
+async def manage_guest_enrollment(
+    data: GuestEnrollment,
+    user_api_key_dict: Annotated[UserAPIKeyAuth, Depends(user_api_key_auth)],
+    users: EmployeeEnrollmentRepositoryDep,
+) -> dict[str, str]:
+    if user_api_key_dict.user_role != LitellmUserRoles.PROXY_ADMIN:
+        raise HTTPException(403, "Only proxy administrators can manage guest enrollment")
+    if not guest_enrollment_enabled():
+        raise HTTPException(503, "Guest enrollment is not configured")
+    if users is None:
+        raise HTTPException(503, "Guest enrollment requires the gateway database")
+    issuer: Final = os.environ["LITELLM_UNIFIED_OIDC_ISSUER"].strip()
+    result: Final = await enroll_guest(users, issuer, data)
+    if data.action != "status":
+        verbose_proxy_logger.info(
+            "Gateway guest enrollment: actor=%s action=%s operation_id=%s state=%s",
+            user_api_key_dict.user_id, data.action, result["operation_id"], result["state"],
+        )
+    return result
+
+
 def _admin_console_url(env_name: str) -> str | None:
     configured: Final = os.getenv(env_name, "").strip()
     if not configured:
@@ -3032,6 +3130,8 @@ async def get_ui_settings(
         "LITELLM_UI_API_DOC_BASE_URL": _api_doc_base_url,
         **(
             {
+                "UNIFIED_OIDC_EMPLOYEE_ENROLLMENT": employee_enrollment_enabled(),
+                "UNIFIED_OIDC_GUEST_ENROLLMENT": guest_enrollment_enabled(),
                 "LITELLM_UI_IDENTITY_ADMIN_URL": _admin_console_url("LITELLM_UI_IDENTITY_ADMIN_URL"),
                 "LITELLM_UI_PROMETHEUS_URL": _admin_console_url("LITELLM_UI_PROMETHEUS_URL"),
             }
@@ -3538,6 +3638,11 @@ class SSOAuthenticationHandler:
                     for key, value in pkce_params.items():
                         query_params[key] = [value]
 
+                    if os.getenv("LITELLM_UNIFIED_OIDC_ISSUER", "").strip():
+                        from litellm.proxy.management_endpoints.sso.unified_oidc import login_nonce
+
+                        query_params["nonce"] = [login_nonce(code_verifier)]
+
                     # Reconstruct the URL with PKCE parameters
                     new_query: Final = urlencode(query_params, doseq=True)
                     new_url: Final = urlunparse(
@@ -3995,6 +4100,8 @@ class SSOAuthenticationHandler:
         user_defined_values: SSOUserDefinedValues | None = None
 
         custom_sso_handler: Final = _configured_custom_sso()
+        if custom_sso_handler is not None and os.getenv("LITELLM_UNIFIED_OIDC_ISSUER", "").strip():
+            raise _unified_oidc_error()
         if custom_sso_handler is not None:
             if inspect.iscoroutinefunction(custom_sso_handler):
                 user_defined_values = await custom_sso_handler(result)
@@ -4529,6 +4636,8 @@ class SSOAuthenticationHandler:
                 code=status.HTTP_401_UNAUTHORIZED,
             ) from exc
         if response.status_code != 200:
+            if os.getenv("LITELLM_UNIFIED_OIDC_ISSUER", "").strip():
+                raise _unified_oidc_error()
             verbose_proxy_logger.error(
                 "PKCE token exchange failed. status=%s body=%s",
                 response.status_code,
@@ -4540,6 +4649,12 @@ class SSOAuthenticationHandler:
                 param="token_exchange",
                 code=status.HTTP_401_UNAUTHORIZED,
             )
+
+        if os.getenv("LITELLM_UNIFIED_OIDC_ISSUER", "").strip():
+            raw_response: Final = response.json()
+            if not isinstance(raw_response, dict) or not isinstance(raw_response.get("id_token"), str):
+                raise _unified_oidc_error()
+            return {"id_token": raw_response["id_token"]}
 
         token_response: Final = SSOAuthenticationHandler._validate_token_response(response)
 

@@ -11507,3 +11507,242 @@ async def test_strict_pkce_rejects_missing_browser_state(monkeypatch: pytest.Mon
         await SSOAuthenticationHandler.prepare_token_exchange_parameters(request, False)
     assert str(exc.value.code) == "400"
     assert exc.value.param == "state"
+
+
+@pytest.mark.parametrize("overrides", [{}, {"iss": "https://wrong.example"}, {"aud": "another-client"},
+                                       {"nonce": "other-transaction"}, {"azp": "another-client"},
+                                       {"aud": ["gateway-console", "another-client"]}])
+def test_unified_oidc_verifies_signature_and_browser_transaction(overrides):
+    import time
+
+    import jwt
+
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    from litellm.proxy.management_endpoints.sso.unified_oidc import binding_key, login_nonce, verify_identity
+
+    issuer = "https://identity.example/realms/company"
+    verifier = "test-pkce-verifier"
+    client_id = "gateway-console"
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    jwk = json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(private_key.public_key()))
+    keys = {"keys": [{**jwk, "kid": "test"}]}
+    now = int(time.time())
+    token = jwt.encode(
+        {"iss": issuer, "sub": "employee", "aud": client_id, "iat": now, "exp": now + 120,
+         "nonce": login_nonce(verifier), "role": "proxy_admin", **overrides},
+        private_key, algorithm="RS256", headers={"kid": "test"},
+    )
+
+    if overrides:
+        with pytest.raises(jwt.InvalidTokenError):
+            verify_identity(token, keys, issuer=issuer, client_id=client_id, verifier=verifier)
+    else:
+        result = verify_identity(token, keys, issuer=issuer, client_id=client_id, verifier=verifier)
+        assert result.id == binding_key(issuer, "employee")
+        assert result.id != binding_key("https://other.example", "employee")
+        assert result.user_role is None
+        with pytest.raises(jwt.InvalidTokenError):
+            verify_identity(token, {"keys": [{**jwk, "kid": "other"}]}, issuer=issuer,
+                            client_id=client_id, verifier=verifier)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("admission", ["approved", "unbound", "inactive", "other_provider"])
+async def test_unified_oidc_requires_exact_approved_binding(monkeypatch, admission):
+    from types import SimpleNamespace
+
+    from litellm.proxy.management_endpoints import ui_sso
+    from litellm.proxy.management_endpoints.sso.unified_oidc import UnifiedOIDCUser, binding_key
+
+    issuer = "https://identity.example/realms/company"
+    subject = "employee"
+    key = binding_key(issuer, subject)
+    monkeypatch.setenv("LITELLM_UNIFIED_OIDC_ISSUER", issuer)
+    row = SimpleNamespace(user_id="gateway-user", metadata={"scim_active": admission != "inactive"})
+    repo = SimpleNamespace(find_by_sso_id=AsyncMock(return_value=None if admission == "unbound" else row))
+    monkeypatch.setattr(ui_sso, "UserRepository", lambda _: repo)
+    user = UnifiedOIDCUser(id=key, provider="oidc", team_ids=[], identity_issuer=issuer, identity_subject=subject)
+    args = {
+        "result": {"id": key, "email": "employee@example.com"} if admission == "other_provider" else user,
+        "prisma_client": MagicMock(),
+        "user_api_key_cache": MagicMock(),
+        "proxy_logging_obj": MagicMock(),
+        "user_email": "employee@example.com",
+        "user_defined_values": None,
+    }
+    if admission == "approved":
+        assert await ui_sso.get_user_info_from_db(**args) is row
+    else:
+        with pytest.raises(ui_sso._SSOUserAdmissionError):
+            await ui_sso.get_user_info_from_db(**args)
+    if admission == "other_provider":
+        repo.find_by_sso_id.assert_not_called()
+    else:
+        repo.find_by_sso_id.assert_awaited_once_with(key)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("role", ["proxy_admin", "internal_user"])
+async def test_link_employee_route_limits_enrollment_to_proxy_admins(monkeypatch, role):
+    from fastapi import FastAPI
+
+    from litellm.models.employee_enrollment import EmployeeGatewayAccount
+    from litellm.proxy._types import UserAPIKeyAuth
+    from litellm.proxy.deps.repositories import get_employee_enrollment_repository
+    from litellm.proxy.management_endpoints import ui_sso
+    from litellm.proxy.management_endpoints.sso import employee_enrollment
+    from litellm.proxy.management_endpoints.sso.unified_oidc import binding_key
+
+    issuer = "https://identity.example/realms/company"
+    monkeypatch.setenv("LITELLM_UNIFIED_OIDC_ISSUER", issuer)
+    monkeypatch.setenv("LITELLM_UNIFIED_OIDC_JWKS_URL", issuer + "/certs")
+    monkeypatch.setenv("LITELLM_IDENTITY_DIRECTORY_CLIENT_ID", "directory-reader")
+    monkeypatch.setenv("LITELLM_IDENTITY_DIRECTORY_CLIENT_SECRET", "test-secret")
+    verify = AsyncMock()
+    monkeypatch.setattr(employee_enrollment, "verify_employee", verify)
+    users = SimpleNamespace(ensure_employee_account=AsyncMock(return_value=EmployeeGatewayAccount("staff-1", True)))
+    app = FastAPI()
+    app.include_router(ui_sso.router)
+    app.dependency_overrides[ui_sso.user_api_key_auth] = lambda: UserAPIKeyAuth(user_role=role)
+    app.dependency_overrides[get_employee_enrollment_repository] = lambda: users
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://gateway.test") as client:
+        response = await client.post("/sso/users/link", json={"subject": "realm-user-1"})
+    if role == "proxy_admin":
+        assert response.status_code == 200
+        assert response.json() == {"user_id": "staff-1"}
+        verify.assert_awaited_once_with(issuer, "realm-user-1")
+        users.ensure_employee_account.assert_awaited_once_with(binding_key(issuer, "realm-user-1"))
+    else:
+        assert response.status_code == 403
+        verify.assert_not_awaited()
+        users.ensure_employee_account.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("account", ["employee", "disabled", "service", "mismatch", "absent"])
+async def test_directory_enrollment_checks_the_exact_enabled_human(monkeypatch, account):
+    from litellm.proxy.management_endpoints.sso import employee_enrollment
+
+    issuer = "https://identity.example/realms/company"
+    monkeypatch.setenv("LITELLM_IDENTITY_DIRECTORY_CLIENT_ID", "client")
+    monkeypatch.setenv("LITELLM_IDENTITY_DIRECTORY_CLIENT_SECRET", "test-secret")
+    token = httpx.Response(200, request=httpx.Request("POST", issuer + "/token"), json={"access_token": "test"})
+    user = httpx.Response(
+        404 if account == "absent" else 200,
+        request=httpx.Request("GET", "https://identity.example/admin/realms/company/users/staff-1"),
+        json={
+            "id": "wrong" if account == "mismatch" else "staff-1",
+            "username": "service-account-app" if account == "service" else "employee-one",
+            "enabled": account != "disabled",
+        },
+    )
+    requester = SimpleNamespace(post=AsyncMock(return_value=token), get=AsyncMock(return_value=user))
+    monkeypatch.setattr(employee_enrollment, "get_async_httpx_client", lambda **_: SimpleNamespace(client=requester))
+    if account == "employee":
+        await employee_enrollment.verify_employee(issuer, "staff-1")
+        assert requester.get.await_args.args[0] == "https://identity.example/admin/realms/company/users/staff-1"
+    else:
+        with pytest.raises(HTTPException) as error:
+            await employee_enrollment.verify_employee(issuer, "staff-1")
+        assert error.value.status_code == (404 if account == "absent" else 409)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("case", ["same_binding", "concurrent_create", "conflicting_account"])
+async def test_employee_account_creation_converges_on_exact_binding(monkeypatch, case):
+    from litellm.models.employee_enrollment import EmployeeGatewayAccount
+    from litellm.repositories.user_repository import UserRepository
+
+    class UniqueConflict(Exception):
+        code = "P2002"
+
+    existing = SimpleNamespace(user_id="already-approved", metadata={})
+    repo = UserRepository(MagicMock(), use_writer=True)
+    lookup = AsyncMock(side_effect=[existing if case == "same_binding" else None, None if case == "conflicting_account" else existing])
+    create = AsyncMock(side_effect=UniqueConflict("unique constraint"))
+    monkeypatch.setattr(repo, "find_by_sso_id", lookup)
+    monkeypatch.setattr(repo, "create_user", create)
+    account = await repo.ensure_employee_account("oidc:v1:binding")
+    if case == "conflicting_account":
+        assert account is None
+    else:
+        assert account == EmployeeGatewayAccount("already-approved", True)
+    if case == "same_binding":
+        create.assert_not_awaited()
+    else:
+        create.assert_awaited_once_with(
+            user_id="oidc:v1:binding",
+            sso_user_id="oidc:v1:binding",
+            user_role="internal_user_viewer",
+            models=["no-default-models"],
+        )
+
+
+@pytest.mark.asyncio
+async def test_guest_onboarding_reuses_identity_and_sends_only_after_binding(monkeypatch):
+    from litellm.models.employee_enrollment import EmployeeGatewayAccount
+    from litellm.proxy.management_endpoints.sso import guest_enrollment as guests
+    from litellm.proxy.management_endpoints.sso.employee_enrollment import DirectoryClient
+    from litellm.proxy.management_endpoints.sso.unified_oidc import binding_key
+
+    issuer = "https://identity.example/realms/company"
+    email = "guest@example.test"
+    subject = "keycloak-guest-id"
+    identity = None
+    account = None
+    creates = 0
+    mail_requests = 0
+    url = "https://identity.example/admin/realms/company/users"
+
+    def keycloak(request):
+        nonlocal identity, creates, mail_requests
+        if request.method == "POST":
+            creates += 1
+            identity = {**json.loads(request.content), "id": subject}
+            assert "credentials" not in identity
+            return httpx.Response(201)
+        if request.method == "PUT":
+            assert request.url.path.endswith(f"/{subject}/execute-actions-email")
+            assert json.loads(request.content) == ["VERIFY_EMAIL", "UPDATE_PASSWORD"]
+            mail_requests += 1
+            return httpx.Response(204)
+        return httpx.Response(200, json=[identity] if identity else [])
+
+    async def lookup(binding):
+        assert binding == binding_key(issuer, subject)
+        return account
+
+    async def ensure(binding):
+        nonlocal account
+        assert binding == binding_key(issuer, subject)
+        account = EmployeeGatewayAccount("gateway-guest-id", True)
+        return account
+
+    repo = SimpleNamespace(find_enrolled_account=lookup, ensure_employee_account=ensure)
+    monkeypatch.setenv("LITELLM_IDENTITY_GUEST_CLIENT_ID", "test-guest")
+    monkeypatch.setenv("LITELLM_IDENTITY_GUEST_CLIENT_SECRET", "test-secret")
+    async with httpx.AsyncClient(transport=httpx.MockTransport(keycloak)) as client:
+        monkeypatch.setattr(guests, "directory_client", AsyncMock(return_value=DirectoryClient(client, url, "test")))
+        data = guests.GuestEnrollment(email=email, action="prepare")
+        initial = await guests.enroll_guest(repo, issuer, data.model_copy(update={"action": "status"}))
+        assert initial["state"] == "not_started"
+        prepared = await guests.enroll_guest(repo, issuer, data)
+        assert prepared["state"] == "awaiting_activation"
+        assert creates == 1 and mail_requests == 0
+        account = None
+        partial = await guests.enroll_guest(repo, issuer, data.model_copy(update={"action": "status"}))
+        assert partial["state"] == "identity_created"
+        await guests.enroll_guest(repo, issuer, data)
+        assert creates == 1
+        sent = await guests.enroll_guest(repo, issuer, data.model_copy(update={"action": "send"}))
+        assert sent["state"] == "activation_requested" and mail_requests == 1
+        assert sent["operation_id"] == initial["operation_id"]
+        identity.update(emailVerified=True, requiredActions=[])
+        active = await guests.enroll_guest(repo, issuer, data.model_copy(update={"action": "send"}))
+        assert active["state"] == "active" and mail_requests == 1
+        identity["attributes"] = {}
+        with pytest.raises(HTTPException) as conflict:
+            await guests.enroll_guest(repo, issuer, data)
+        assert conflict.value.status_code == 409

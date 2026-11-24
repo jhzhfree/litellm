@@ -13,8 +13,9 @@ from typing import TYPE_CHECKING, Final, Protocol
 from pydantic import TypeAdapter
 
 from litellm.litellm_core_utils.core_helpers import require_attributes
+from litellm.models.employee_enrollment import EmployeeGatewayAccount
 from litellm.models.user import LiteLLM_UserTable, SCIMPlaceholder
-from litellm.repositories.base_repository import BaseRepository, DbRecord, record_to_dict
+from litellm.repositories.base_repository import BaseRepository, DbRecord, is_unique_violation, record_to_dict
 from litellm.repositories.chunked_in import IN_LIST_CHUNK_SIZE
 from litellm.repositories.prisma_protocols import TableActions
 from litellm.repositories.table_repositories import PrismaTableRepository
@@ -142,6 +143,28 @@ class UserRepository(BaseRepository[LiteLLM_UserTable]):
     async def find_by_sso_id(self, sso_user_id: str) -> LiteLLM_UserTable | None:
         """Find a user by SSO ID."""
         return await self.find_by_id(sso_user_id, id_field="sso_user_id")
+
+    async def find_enrolled_account(self, binding: str) -> EmployeeGatewayAccount | None:
+        row: Final = await self.find_by_sso_id(binding)
+        return (
+            None
+            if row is None
+            else EmployeeGatewayAccount(row.user_id, (row.metadata or {}).get("scim_active") is not False)
+        )
+
+    async def ensure_employee_account(self, binding: str) -> EmployeeGatewayAccount | None:
+        existing: Final = await self.find_enrolled_account(binding)
+        if existing is not None:
+            return existing
+        try:
+            created: Final = await self.create_user(
+                user_id=binding, sso_user_id=binding, user_role="internal_user_viewer", models=["no-default-models"]
+            )
+            return EmployeeGatewayAccount(created.user_id, True)
+        except Exception as exc:
+            if not is_unique_violation(exc):
+                raise
+            return await self.find_enrolled_account(binding)
 
     async def find_by_organization_id(self, organization_id: str) -> list[LiteLLM_UserTable]:
         """Find all users in an organization."""

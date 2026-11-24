@@ -1,8 +1,9 @@
 # 独立身份平台开发部署
 
+首次使用请参阅[配图操作手册](USER_MANUAL.md)。
 整体认证改造主方案见 [统一认证解决方案](SOLUTION.md)，覆盖 LiteLLM、Octop、AKB 的认证选择，企业 OIDC 联邦、企业目录同步、工作负载身份、SDK 和 DPoP。历史详细设计见 [设计说明书](DESIGN.md)，实施状态以主方案第二节与 [验证记录](VALIDATION.md) 为准。当前代码下的对接原理、配置字段与验证步骤见 [对接实操说明](INTEGRATION.md)。
 
-此目录可单独使用 Docker Compose 运行，不依赖网关进程。当前交付是本地开发环境，使用 Keycloak 管理页面及原生管理 REST API。网关已增加外部自主 Agent 身份适配和管理表单。统一产品管理 API、同步消费者与数据库端到端验收尚未完成。
+此目录可单独使用 Docker Compose 运行，不依赖网关进程。本地 Compose 提供 Keycloak 管理台和管理 REST API。工作负载注册另由独立注册服务处理，可通过 `agentctl` 创建身份、建立网关绑定、领取凭证和停用。企业目录同步和真实网关数据库端到端验收仍待完成。
 
 复制 `.env.example` 为 `.env`，为两个密码生成独立随机值，然后运行。
 
@@ -41,3 +42,28 @@ PYTHONPATH=. .venv/bin/python identity-platform/smoke_sso.py
 脚本创建临时用户和授权码客户端，浏览器登录本地 Keycloak，使用网关真实通用 SSO 适配器换取令牌及映射用户，并检查缺少 state、错误 Cookie state、回调重放被拒绝。退出时删除临时用户和客户端，不发送邮件，不打印密码或令牌。引导管理员仅用于测试对象的创建和清理。
 
 浏览器回调由测试拦截，再在进程内调用网关适配器；测试不会启动网关监听端口，也不会写入网关数据库或创建控制台会话。不能用此测试替代完整产品登录验收。
+
+## 配置和日常使用
+
+使用同一个业务 realm issuer。上生产时填写浏览器和各服务都能访问的 HTTPS 地址，例如 `https://identity.example.internal/realms/company`。每个产品使用独立客户端和自己的精确回调 URL，将密钥交由部署环境注入。由 Keycloak 发布的 realm 用户 ID（`sub`）用于关联账号，产品各自维护角色、团队和资源权限。
+
+| 场景 | 设置和用法 |
+| --- | --- |
+| 复用企业员工登录 | 在业务 realm 的 **Identity providers** 中配置企业 OIDC IdP，向企业 IdP 登记 Keycloak 显示的回调地址。先用测试员工验证上游登录和 realm 主体，再让产品关联该主体。企业微信通讯录同步尚未交付。 |
+| LiteLLM 员工 SSO | 为 `gateway-console` 配置授权码、S256 PKCE 和网关实际回调。设置 [SSO 环境变量](gateway-sso.env.example)，再按文档配置 `LITELLM_UNIFIED_OIDC_ISSUER` 和 JWKS。先关联一名管理员并验证登录。关联员工时在「用户 → 邀请用户 → 关联已有员工」输入 Keycloak realm 用户 ID。[网关 SSO 与员工绑定](GATEWAY_INTEGRATION.md#网关预批准员工身份接入) |
+| LiteLLM 访客邀请 | 单独配置 Keycloak SMTP、访客管理客户端及受限用户属性。在「用户 → 邀请用户 → 邀请访客」先准备账号，再发送激活邮件。先用测试邮箱验收收信、验证邮箱、设置密码和登录。[访客配置](GATEWAY_INTEGRATION.md#从网关邀请访客) |
+| Octop 登录 | 创建独立 Octop OIDC 客户端，填入 Octop 返回的回调地址，管理员先绑定并验证。再配置 `OCTOP_UNIFIED_OIDC_ISSUER` 和 `OCTOP_USER_AUTHENTICATION_MODE=unified_oidc`。需恢复旧模式时将认证模式设为 `legacy` 并重启。[Octop 配置与回滚](INTEGRATION.md#octop-启用与回滚) |
+| Agent 注册和认证 | 配置独立注册服务、专用操作员客户端、Keycloak 管理客户端、网关管理凭证和 `gateway.invoke` scope。运行 `agentctl register`、`status` 和 `credential`。将私有凭证文件交给 Agent 运行时，运行时用 Client Credentials 换取短期 Bearer 令牌。下线时用原操作编号执行 `disable`。[部署变量、命令和验收](GATEWAY_INTEGRATION.md#通过-agentctl-注册工作负载) |
+| AKB 委托访问 | 为 AKB 配置独立 audience、受信任 issuer 和 JWKS，并预先绑定用户主体。启用后知识库调用同时校验 Agent Service Key 和用户令牌。AKB 控制台统一 OIDC 登录尚未交付。[委托配置](INTEGRATION.md#45-octop-与-akb-使用同一签发者) |
+
+## 验收命令
+
+在 LiteLLM 仓库根目录运行。身份平台 Compose 保持启动，以下默认使用 `identity-platform/.env` 中的本地引导账号配置。
+
+```bash
+PYTHONPATH=. .venv/bin/python identity-platform/smoke_sso.py --unified-oidc
+PYTHONPATH=. .venv/bin/python identity-platform/smoke.py \
+  --gateway-jwt --octop-smoke ../Octop/scripts/smoke_gateway_identity.py
+```
+
+第一条用 Chromium 完成真实 Keycloak 授权码登录并验证网关 SSO 组件。第二条验证身份生命周期、Octop 取令牌和网关 JWT 组件。真实网关启动并连上数据库后，继续运行 [agentctl 网关验收](GATEWAY_INTEGRATION.md#验收注册与停用)，并从产品界面验证员工控制台会话和访客邮件激活。本轮测试结果见 [验证记录](VALIDATION.md)。

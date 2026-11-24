@@ -49,7 +49,7 @@ PYTHONPATH=. .venv/bin/python identity-platform/smoke_sso.py
 
 | 场景 | 设置和用法 |
 | --- | --- |
-| 复用企业员工登录 | 在业务 realm 的 **Identity providers** 中配置企业 OIDC IdP，向企业 IdP 登记 Keycloak 显示的回调地址。先用测试员工验证上游登录和 realm 主体，再让产品关联该主体。企业微信通讯录同步尚未交付。 |
+| 复用企业员工登录 | 在业务 realm 的 **Identity providers** 中配置企业 OIDC IdP，或按 [企业微信接入指南](WECOM.md) 安装可选扫码登录插件。先用测试员工验证上游登录和 realm 主体，再让产品关联该主体。企业微信通讯录同步尚未交付。 |
 | LiteLLM 员工 SSO | 为 `gateway-console` 配置授权码、S256 PKCE 和网关实际回调。设置 [SSO 环境变量](gateway-sso.env.example)，再按文档配置 `LITELLM_UNIFIED_OIDC_ISSUER` 和 JWKS。先关联一名管理员并验证登录。关联员工时在「用户 → 邀请用户 → 关联已有员工」输入 Keycloak realm 用户 ID。[网关 SSO 与员工绑定](GATEWAY_INTEGRATION.md#网关预批准员工身份接入) |
 | LiteLLM 访客邀请 | 单独配置 Keycloak SMTP、访客管理客户端及受限用户属性。在「用户 → 邀请用户 → 邀请访客」先准备账号，再发送激活邮件。先用测试邮箱验收收信、验证邮箱、设置密码和登录。[访客配置](GATEWAY_INTEGRATION.md#从网关邀请访客) |
 | Octop 登录 | 创建独立 Octop OIDC 客户端，填入 Octop 返回的回调地址，管理员先绑定并验证。再配置 `OCTOP_UNIFIED_OIDC_ISSUER` 和 `OCTOP_USER_AUTHENTICATION_MODE=unified_oidc`。需恢复旧模式时将认证模式设为 `legacy` 并重启。[Octop 配置与回滚](INTEGRATION.md#octop-启用与回滚) |

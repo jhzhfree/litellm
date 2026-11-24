@@ -106,3 +106,14 @@ SSO 与 PKCE 定向回归通过 49 项。员工绑定测试覆盖精确主体、
 - LiteLLM 的 PKCE、统一 OIDC 与开户定向回归 57 项通过。Octop 的 OIDC、SSO 和 Agent 身份定向回归 70 项通过。
 
 真实 LiteLLM 数据库用户绑定、控制台会话、访客邮件和 Agent 完整 HTTP 授权仍需联调。企业 IdP 联邦使用部署方的真实上游客户端另行验收。
+# 企业微信身份提供方验证，2026-11-24
+
+新增 `keycloak-wecom` 原生 SPI，固定 Keycloak 26.4.7。`mvn -B verify` 的 11 项测试通过，覆盖成员校验、企业与成员身份隔离、外部联系人与禁用成员拒绝、API 错误和网络异常脱敏、会话校验、state 缺失、过期、串 realm/provider 及重放拒绝。将允许的成员状态从 1 故意改为 2 后，测试出现 1 项失败和 1 项错误；恢复后全部通过。
+
+使用已校验 digest 的官方 Maven 3.9.9 / JDK 21 镜像取得构建工具。容器内 Maven 首次因 DNS 无法解析 Maven Central 而失败，随后在工作区使用相同工具和环境已有代理成功构建，没有替换镜像源或绕过域名策略。
+
+实际启动临时 Keycloak 26.4.7，JAR 挂载到 `/opt/keycloak/providers/`，只绑定 `127.0.0.1:18082`，使用独立临时 H2 数据和临时管理员。Admin API 成功配置 provider，Chromium 通过登录页点击企业微信后生成扫码地址。企业微信浏览器跳转由 Playwright 拦截，没有使用真实企业凭据。`keycloak-wecom/src/test/browser_smoke.py` 精确验证取消、重放和缺少 state 均返回 HTTP 400。验证过程中曾发现未注册 JAX-RS 资源造成 405，补充 `META-INF/beans.xml` 并改为静态回调资源后重新通过，不将任意 4xx/5xx 视为认证拒绝成功。
+
+可选 Compose 通过 `docker compose -f compose.yaml -f compose.wecom.yaml config --quiet`。没有启动现有 company realm，没有修改现有身份数据库。Dockerfile 的 Maven 构建阶段未在当前容器网络下完成端到端镜像构建，实际运行验证采用本地构建 JAR 加官方 Keycloak 镜像。
+
+企业微信官方文档站本次返回 403。真实企业扫码、可信域名与可信 IP、应用权限、企业员工范围及禁用状态需要部署方用测试企业完成验收。网关最终 SSO 会话、企业目录同步、离职事件同步和单点退出不在本轮验证范围内。此记录不宣称完整生产联调通过。

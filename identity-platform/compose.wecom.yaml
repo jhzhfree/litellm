@@ -1,0 +1,5 @@
+services:
+  identity:
+    image: ai-identity/keycloak-wecom:26.4.7-1
+    build:
+      context: ./keycloak-wecom

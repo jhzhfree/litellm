@@ -178,7 +178,7 @@ describe("CreatedKeyDisplay", () => {
     await user.click(screen.getByRole("button", { name: "Copy instructions" }));
 
     expect(mockCopy).toHaveBeenLastCalledWith(buildAgentInstructions("http://gw.test:4000", "sk-test-123"));
-    expect(mockCopy.mock.calls.at(-1)?.[0]).toContain("Use this AOIDC AI gateway for model inference.");
+    expect(mockCopy.mock.calls.at(-1)?.[0]).toContain("Use this AI-GovernanceGw AI gateway for model inference.");
   });
 });
 
@@ -186,12 +186,12 @@ describe("buildAgentInstructions", () => {
   it("builds shared instructions with both agent settings and a normalized URL", () => {
     expect(buildAgentInstructions("http://gw.test:4000/", "sk-test-123")).toBe(
       [
-        "Use this AOIDC AI gateway for model inference.",
+        "Use this AI-GovernanceGw AI gateway for model inference.",
         "",
         "Gateway URL: http://gw.test:4000",
         "Virtual key: sk-test-123",
         "",
-        "AOIDC is a gateway that exposes OpenAI and Anthropic compatible APIs. Send the virtual key as a Bearer token (Authorization: Bearer sk-test-123) to:",
+        "AI-GovernanceGw is a gateway that exposes OpenAI and Anthropic compatible APIs. Send the virtual key as a Bearer token (Authorization: Bearer sk-test-123) to:",
         "- POST http://gw.test:4000/v1/chat/completions (OpenAI Chat Completions)",
         "- POST http://gw.test:4000/v1/responses (OpenAI Responses)",
         "- POST http://gw.test:4000/v1/messages (Anthropic Messages)",
@@ -200,7 +200,7 @@ describe("buildAgentInstructions", () => {
         "To run Claude Code through this gateway, set ANTHROPIC_BASE_URL=http://gw.test:4000 and ANTHROPIC_AUTH_TOKEN=sk-test-123.",
         "To run Codex through this gateway, set OPENAI_BASE_URL=http://gw.test:4000/v1 and OPENAI_API_KEY=sk-test-123.",
         "",
-        "AOIDC API documentation: /docs",
+        "AI-GovernanceGw API documentation: /docs",
       ].join("\n"),
     );
   });

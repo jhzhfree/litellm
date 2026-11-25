@@ -649,7 +649,7 @@ describe("LogDetailContent", () => {
     expect(screen.queryByText("Cache Key")).not.toBeInTheDocument();
   });
 
-  it("should display AOIDC Overhead when litellm_overhead_time_ms is in metadata", () => {
+  it("should display AI-GovernanceGw Overhead when litellm_overhead_time_ms is in metadata", () => {
     render(
       <LogDetailContent
         logEntry={createLogEntry({
@@ -661,14 +661,14 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("AOIDC Overhead")).toBeInTheDocument();
+    expect(screen.getByText("AI-GovernanceGw Overhead")).toBeInTheDocument();
     expect(screen.getByText("42.50 ms")).toBeInTheDocument();
   });
 
-  it("should not display AOIDC Overhead when litellm_overhead_time_ms is absent from metadata", () => {
+  it("should not display AI-GovernanceGw Overhead when litellm_overhead_time_ms is absent from metadata", () => {
     render(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
 
-    expect(screen.queryByText("AOIDC Overhead")).not.toBeInTheDocument();
+    expect(screen.queryByText("AI-GovernanceGw Overhead")).not.toBeInTheDocument();
   });
 
   const retriesItem = () => screen.getByText("Retries").parentElement as HTMLElement;

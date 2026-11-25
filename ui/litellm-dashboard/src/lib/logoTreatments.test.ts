@@ -6,7 +6,7 @@ describe("logoTreatmentFor", () => {
     expect(logoTreatmentFor("/ui/assets/logos/github.svg")).toBe("invert");
   });
 
-  it("inverts the bundled AOIDC monogram into the white brand mark on dark", () => {
+  it("inverts the bundled AI-GovernanceGw monogram into the white brand mark on dark", () => {
     expect(logoTreatmentFor("/ai-gateway-assets/_next/static/media/ai_gw_logo.16r2_rdj4dq8r.svg")).toBe(
       "plate",
     );

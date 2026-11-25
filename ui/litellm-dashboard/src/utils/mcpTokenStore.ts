@@ -1,6 +1,6 @@
 /**
  * Session-storage-backed OAuth token store for MCP servers.
- * Tokens are keyed by AOIDC user id + server_id and cleared when the browser
+ * Tokens are keyed by AI-GovernanceGw user id + server_id and cleared when the browser
  * session ends (tab/window close). Never written to localStorage.
  */
 

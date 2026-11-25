@@ -124,7 +124,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
     render(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
-    const allowAllKeys = await switchFor("Allow All AOIDC Keys");
+    const allowAllKeys = await switchFor("Allow All AI-GovernanceGw Keys");
     await act(async () => {
       fireEvent.click(allowAllKeys);
     });
@@ -155,7 +155,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
     render(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
-    expect(screen.getByText("Allow All AOIDC Keys")).toBeInTheDocument();
+    expect(screen.getByText("Allow All AI-GovernanceGw Keys")).toBeInTheDocument();
     expect(screen.queryByText("Delegate auth to upstream (PKCE passthrough)")).not.toBeInTheDocument();
 
     const payload = await submitAndReadPayload();

@@ -251,7 +251,7 @@ describe("PublicAiHub", () => {
       "href",
       "https://docs.example.com",
     );
-    expect(screen.getByText("AOIDC v1.90.0")).toBeInTheDocument();
+    expect(screen.getByText("AI-GovernanceGw v1.90.0")).toBeInTheDocument();
   });
 
   it("keeps skills reachable when only the models call fails", async () => {

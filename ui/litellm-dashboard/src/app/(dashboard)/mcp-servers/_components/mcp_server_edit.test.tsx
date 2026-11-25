@@ -406,11 +406,11 @@ describe("MCPServerEdit (true passthrough warning)", () => {
       />,
     );
 
-  it("warns that AOIDC auth is disabled for a true_passthrough server", async () => {
+  it("warns that AI-GovernanceGw auth is disabled for a true_passthrough server", async () => {
     renderWithAuthType("true_passthrough");
 
     await waitFor(() => {
-      expect(screen.getByText("True Passthrough disables AOIDC authentication for this server")).toBeInTheDocument();
+      expect(screen.getByText("True Passthrough disables AI-GovernanceGw authentication for this server")).toBeInTheDocument();
     });
   });
 
@@ -421,7 +421,7 @@ describe("MCPServerEdit (true passthrough warning)", () => {
       expect(screen.getAllByRole("button", { name: "Save Changes" }).length).toBeGreaterThan(0);
     });
     expect(
-      screen.queryByText("True Passthrough disables AOIDC authentication for this server"),
+      screen.queryByText("True Passthrough disables AI-GovernanceGw authentication for this server"),
     ).not.toBeInTheDocument();
   });
 
@@ -439,7 +439,7 @@ describe("MCPServerEdit (true passthrough warning)", () => {
       />,
     );
 
-    await selectOption("Authentication", "True Passthrough (no AOIDC auth)");
+    await selectOption("Authentication", "True Passthrough (no AI-GovernanceGw auth)");
 
     await waitFor(() => {
       expect(mockOauth.getTemporaryPayload).toBeTruthy();
@@ -1921,7 +1921,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
 
     await selectOption("Authentication", "OAuth Delegate (client-supplied upstream token)");
     mockOauth.tokenResponse = { access_token: "fresh-tok", token_type: "bearer" };
-    await selectOption("Authentication", "True Passthrough (no AOIDC auth)");
+    await selectOption("Authentication", "True Passthrough (no AI-GovernanceGw auth)");
 
     await waitFor(() => {
       const withHeaders = vi

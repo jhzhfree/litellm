@@ -1,8 +1,8 @@
 export const productNames = {
-  liteLLM: "AOIDC",
-  liteLLMWithLogo: "AOIDC",
-  liteLLMProxy: "AOIDC Proxy",
-  liteLLMMcpOAuth: "AOIDC MCP OAuth",
+  liteLLM: "AI-GovernanceGw",
+  liteLLMWithLogo: "AI-GovernanceGw",
+  liteLLMProxy: "AI-GovernanceGw Proxy",
+  liteLLMMcpOAuth: "AI-GovernanceGw MCP OAuth",
   moyai: "Moyai",
   moyaiRepository: "github.com/BerriAI/moyai",
   switchyard: "Switchyard",

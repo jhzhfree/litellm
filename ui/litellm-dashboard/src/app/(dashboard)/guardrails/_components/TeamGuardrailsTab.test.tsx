@@ -114,7 +114,7 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
     expect(screen.getByRole("switch")).toBeDisabled();
 
     fireEvent.click(screen.getByRole("button", { name: "Review" }));
-    await screen.findByText("Forward AOIDC API Key");
+    await screen.findByText("Forward AI-GovernanceGw API Key");
 
     expect(screen.queryByRole("button", { name: /approve/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /reject/i })).not.toBeInTheDocument();
@@ -131,7 +131,7 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
     await screen.findByText("test-pending-guardrail");
 
     fireEvent.click(screen.getByRole("button", { name: "Review" }));
-    await screen.findByText("Forward AOIDC API Key");
+    await screen.findByText("Forward AI-GovernanceGw API Key");
 
     expect(screen.getAllByRole("button", { name: /approve/i }).length).toBeGreaterThanOrEqual(2);
     screen.getAllByRole("switch").forEach((toggle) => expect(toggle).toBeEnabled());

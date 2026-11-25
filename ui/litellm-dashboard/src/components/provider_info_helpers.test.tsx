@@ -21,7 +21,7 @@ const BUNDLED_MODEL_MAP: Record<string, { litellm_provider?: string }> = JSON.pa
 );
 
 describe("provider_info_helpers", () => {
-  it("should identify the upstream AOIDC Gateway consistently with provider metadata", () => {
+  it("should identify the upstream AI-GovernanceGw Gateway consistently with provider metadata", () => {
     const metadata = PROVIDER_CREATE_FIELDS.find((provider) => provider.provider === "LITELLM_PROXY");
     expect(resolveLitellmProviderSlug("LITELLM_PROXY")).toBe(metadata?.litellm_provider);
     expect(Providers.LITELLM_PROXY).toBe(metadata?.provider_display_name);

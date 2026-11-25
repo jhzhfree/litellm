@@ -1,7 +1,7 @@
 {
   "shell": {
     "brand": {
-      "name": "AOIDC"
+      "name": "AI治理网关"
     },
     "nav": {
       "groups": {
@@ -66,7 +66,7 @@
         "uiTheme": "界面主题",
         "telemetry": "遥测"
       },
-      "homeLink": "AOIDC 首页"
+      "homeLink": "AI治理网关 首页"
     },
     "footer": {
       "copyright": "© {{year}} {{brand}} 版权所有"
@@ -136,7 +136,7 @@
       "triggerLabel": "账户菜单 — {{role}} — 当前登录：{{identity}}",
       "unknownRole": "未知角色",
       "unknownIdentity": "未知",
-      "thanks": "感谢使用 AOIDC！",
+      "thanks": "感谢使用 AI治理网关！",
       "tier": "版本",
       "premium": "高级版",
       "upgradeHint": "升级到高级版以使用更多功能",
@@ -167,8 +167,8 @@
     "navbar": {
       "expandSidebar": "展开侧边栏",
       "collapseSidebar": "收起侧边栏",
-      "logoAlt": "AOIDC 品牌",
-      "thanks": "感谢使用 AOIDC！",
+      "logoAlt": "AI治理网关 品牌",
+      "thanks": "感谢使用 AI治理网关！",
       "productDocs": "产品文档"
     },
     "viewSwitcher": {
@@ -210,7 +210,7 @@
     },
     "notifications": {
       "autoRouter": {
-        "title": "AOIDC 自动路由",
+        "title": "AI治理网关 自动路由",
         "description": "将每个请求路由到能胜任的最便宜模型，无需修改提示词。",
         "link": "阅读文档"
       },
@@ -223,7 +223,7 @@
         "otherUpdates_one": "以及 {{count}} 项其他更新"
       },
       "upgrade": {
-        "title": "AOIDC v{{version}} 已发布",
+        "title": "AI治理网关 v{{version}} 已发布",
         "description": "{{summary}}。当前版本为 v{{current}}",
         "link": "查看发布说明"
       },
@@ -247,7 +247,7 @@
       "label": "社区链接",
       "joinSlack": "加入 Slack",
       "joinDiscord": "加入 Discord",
-      "github": "GitHub 上的 AOIDC"
+      "github": "GitHub 上的 AI治理网关"
     },
     "dashboardResources": {
       "links": {
@@ -271,9 +271,9 @@
     "communityButtons": {
       "label": "社区链接",
       "slackLabel": "加入 Slack",
-      "slackTooltip": "AOIDC Slack 社区",
-      "githubLabel": "GitHub 上的 AOIDC",
-      "githubTooltip": "GitHub 上的 AOIDC"
+      "slackTooltip": "AI治理网关 Slack 社区",
+      "githubLabel": "GitHub 上的 AI治理网关",
+      "githubTooltip": "GitHub 上的 AI治理网关"
     },
     "workerDropdown": {
       "trigger": "切换 worker，当前：{{worker}}",
@@ -365,9 +365,9 @@
       "license": {
         "expiresToday": "今天到期",
         "expiresIn_other": "{{count}} 天后到期",
-        "expiredTitle": "您的 AOIDC 企业版许可证已于 {{date}} 过期",
+        "expiredTitle": "您的 AI治理网关 企业版许可证已于 {{date}} 过期",
         "expiredFix": "企业版功能现已停用。联系 <sales/> 恢复访问",
-        "expiringTitle": "您的 AOIDC 企业版许可证 {{countdown}}（{{date}}）",
+        "expiringTitle": "您的 AI治理网关 企业版许可证 {{countdown}}（{{date}}）",
         "expiringFix": "请在到期前续订以保留企业版功能。联系 <sales/>",
         "expiresIn_one": "{{count}} 天后到期"
       }
@@ -647,7 +647,7 @@
         "expires": "过期时间",
         "spendBudget": "消费额 / 预算",
         "lifetimeSpend": "累计消费",
-        "lifetimeSpendTooltip": "跨所有预算周期的累计消费。预算重置不影响此值。累计消费统计始于 2026 年 9 月 19 日发布的 AOIDC v1.103.0，因此更早创建的密钥仅统计此次升级之后的消费。",
+        "lifetimeSpendTooltip": "跨所有预算周期的累计消费。预算重置不影响此值。累计消费统计始于 2026 年 9 月 19 日发布的 AI治理网关 v1.103.0，因此更早创建的密钥仅统计此次升级之后的消费。",
         "budgetReset": "预算重置",
         "models": "模型",
         "rateLimits": "速率限制"
@@ -853,11 +853,11 @@
         "name": "名称",
         "apiBase": {
           "label": "Headroom API 基础地址",
-          "hint": "Headroom 压缩服务的基础 URL（AOIDC 会调用其 /v1/compress 端点）",
+          "hint": "Headroom 压缩服务的基础 URL（AI治理网关 会调用其 /v1/compress 端点）",
           "description": "Headroom 压缩服务托管所在的 URL"
         },
         "defaultOn": "应用于所有请求",
-        "enterpriseNotice": "对全部请求应用压缩对所有用户开放。按 Key 或团队选择性启用为 AOIDC Enterprise 功能。<pricing>在此</pricing>获取试用密钥",
+        "enterpriseNotice": "对全部请求应用压缩对所有用户开放。按 Key 或团队选择性启用为 AI治理网关 Enterprise 功能。<pricing>在此</pricing>获取试用密钥",
         "submit": "添加护栏"
       },
       "toasts": {
@@ -867,7 +867,7 @@
       },
       "overview": {
         "title": "Headroom 提示词压缩",
-        "description": "Headroom 是 AOIDC 原生护栏，在提示词到达模型前进行压缩，从而减少输入 token 付费。其移除的 token 会按价格计量，并在 Usage 标签页中显示为压缩节省。<docs>Headroom 配置文档</docs>",
+        "description": "Headroom 是 AI治理网关 原生护栏，在提示词到达模型前进行压缩，从而减少输入 token 付费。其移除的 token 会按价格计量，并在 Usage 标签页中显示为压缩节省。<docs>Headroom 配置文档</docs>",
         "loading": "加载中…",
         "empty": "尚未配置任何提示词压缩护栏。在下方添加一个即可开始节省输入 token",
         "alwaysOn": "始终开启",
@@ -876,12 +876,12 @@
     },
     "promptCachingRequests": {
       "title": "提示词缓存请求",
-      "description": "记录了 AOIDC 注入或供应商缓存读写的请求。仅有缓存命中并不能说明存在 AOIDC 注入；较早的日志可能未记录该信息。",
+      "description": "记录了 AI治理网关 注入或供应商缓存读写的请求。仅有缓存命中并不能说明存在 AI治理网关 注入；较早的日志可能未记录该信息。",
       "savingsNote": "净节省基于已记录的用量和当前配置的价格估算，并扣除缓存写入溢价。负值表示缓存反而增加了成本；“不可用”表示该请求无法计价。",
       "filters": {
         "label": "提示词缓存请求筛选",
         "all": "全部缓存",
-        "injected": "AOIDC 注入",
+        "injected": "AI治理网关 注入",
         "hits": "缓存命中"
       },
       "selectDateRange": "选择日期范围以查看请求",
@@ -892,7 +892,7 @@
       "columns": {
         "request": "请求",
         "model": "模型",
-        "injection": "AOIDC 注入",
+        "injection": "AI治理网关 注入",
         "cacheReads": "缓存读取",
         "cacheWrites": "缓存写入",
         "actualCost": "实际成本",
@@ -1265,7 +1265,7 @@
     "usageBreakdown": {
       "ariaLabel": "用量与成本",
       "title": "用量与成本",
-      "description": "提供商为此防护护栏报告的计费用量单位，以及 AOIDC 对其的定价",
+      "description": "提供商为此防护护栏报告的计费用量单位，以及 AI治理网关 对其的定价",
       "empty": "该时间段内未记录任何计费用量单位。",
       "metrics": {
         "cost": "成本",
@@ -1291,7 +1291,7 @@
       "costMath": {
         "title": "此成本的计算方式",
         "formula": "计价单位 × 单价 = 成本（按计数器）",
-        "explanation": "单价来自 AOIDC 内置的成本映射表。"
+        "explanation": "单价来自 AI治理网关 内置的成本映射表。"
       },
       "unitsMath": {
         "title": "用量单位的计算方式",
@@ -1371,7 +1371,7 @@
       "usageAria": "用量（最近 {{days}} 天）",
       "usageFailed": "用量加载失败",
       "retry": "重试",
-      "whatsNew": "AOIDC 有哪些新变化？",
+      "whatsNew": "AI治理网关 有哪些新变化？",
       "leaderboard": {
         "title": "排行榜",
         "subtitle": "最近 {{days}} 天的 Token 占比，以及前后半段时间之间的变化"
@@ -1709,7 +1709,7 @@
         },
         "codeInterpreterSuggestions": {
           "salesChart": "生成示例销售数据 CSV 并创建图表",
-          "providersChart": "创建一张 PNG 柱状图，比较包括 AOIDC 在内的 AI 网关提供商",
+          "providersChart": "创建一张 PNG 柱状图，比较包括 AI治理网关 在内的 AI 网关提供商",
           "pricingChart": "生成 LLM 定价数据 CSV 并以折线图可视化"
         }
       }
@@ -2068,13 +2068,13 @@
         "uiReady": "UI 会话：就绪",
         "responseIdPrefix": "响应 ID",
         "uiSessionPrefix": "UI 会话",
-        "apiPending": "AOIDC 将使用 previous_response_id 管理会话",
+        "apiPending": "AI治理网关 将使用 previous_response_id 管理会话",
         "uiPending": "UI 将使用对话历史管理会话",
-        "apiActive": "AOIDC API 会话已激活 - 上下文在服务端维护",
+        "apiActive": "AI治理网关 API 会话已激活 - 上下文在服务端维护",
         "uiActive": "UI 会话已激活 - 上下文在客户端维护",
         "title": "会话管理",
         "about": "关于会话管理",
-        "description": "在 AOIDC API 会话管理（使用 previous_response_id）与基于 UI 的会话管理（使用对话历史）之间选择",
+        "description": "在 AI治理网关 API 会话管理（使用 previous_response_id）与基于 UI 的会话管理（使用对话历史）之间选择",
         "uiLabel": "UI",
         "toggle": "使用 API 会话管理",
         "apiLabel": "API",
@@ -2221,7 +2221,7 @@
         },
         "codeInterpreterPrompts": {
           "salesChart": "生成示例销售数据 CSV 并创建图表",
-          "gatewayChart": "创建一个 PNG 柱状图，对比包括 AOIDC 在内的 AI 网关提供商",
+          "gatewayChart": "创建一个 PNG 柱状图，对比包括 AI治理网关 在内的 AI 网关提供商",
           "pricingChart": "生成 LLM 定价数据 CSV 并以折线图展示"
         },
         "suggestions": {
@@ -2835,7 +2835,7 @@
         "loadFailed": "加载团队信息失败",
         "memberAdded": "团队成员添加成功",
         "memberAddFailed": "添加团队成员失败",
-        "adminsEnterpriseOnly": "指定管理员仅在企业版中可用。请升级您的 AOIDC 套餐以启用此功能。",
+        "adminsEnterpriseOnly": "指定管理员仅在企业版中可用。请升级您的 AI治理网关 套餐以启用此功能。",
         "memberUpdated": "团队成员更新成功",
         "memberUpdateFailed": "更新团队成员失败",
         "memberRemoved": "团队成员移除成功",
@@ -3585,12 +3585,12 @@
     "destinationText": {
       "every": "每 {{seconds}} 秒",
       "http": "每个 worker 每 {{every}} 发送一份 JSON 报告，并在关闭时发送一次，通过 HTTP POST 发送至 AI_GATEWAY_TELEMETRY_ENDPOINT。发送失败将在下一个窗口重试",
-      "localTable_one": "每个 worker 每 {{every}} 生成一份报告并在关闭时生成一次，存储在本代理的 AOIDC_TelemetryReport 表中，保留 {{count}} 天。数据不会离开该代理。管理员可通过 GET /telemetry/reports 导出",
-      "localTable_other": "每个 worker 每 {{every}} 生成一份报告并在关闭时生成一次，存储在本代理的 AOIDC_TelemetryReport 表中，保留 {{count}} 天。数据不会离开该代理。管理员可通过 GET /telemetry/reports 导出",
+      "localTable_one": "每个 worker 每 {{every}} 生成一份报告并在关闭时生成一次，存储在本代理的 AI治理网关_TelemetryReport 表中，保留 {{count}} 天。数据不会离开该代理。管理员可通过 GET /telemetry/reports 导出",
+      "localTable_other": "每个 worker 每 {{every}} 生成一份报告并在关闭时生成一次，存储在本代理的 AI治理网关_TelemetryReport 表中，保留 {{count}} 天。数据不会离开该代理。管理员可通过 GET /telemetry/reports 导出",
       "none": "未选择目标，因此不会记录任何数据"
     },
     "destination": {
-      "localTable": "本地表（本代理数据库中的 AOIDC_TelemetryReport）",
+      "localTable": "本地表（本代理数据库中的 AI治理网关_TelemetryReport）",
       "http": "HTTP（POST 至 AI_GATEWAY_TELEMETRY_ENDPOINT）",
       "title": "目标",
       "missing": "遥测已开启但未选择目标，因此不会记录任何数据",
@@ -3621,18 +3621,18 @@
     "enterpriseDialog": {
       "premiumTitle": "联系您的企业代表",
       "title": "遥测是企业版专属功能",
-      "premiumDescription": "无法从此页面开启遥测。请联系您的 AOIDC 企业代表为本代理开启该功能。",
-      "description": "遥测仅面向 AOIDC Enterprise 提供，而此代理未使用企业版许可证。"
+      "premiumDescription": "无法从此页面开启遥测。请联系您的 AI治理网关 企业代表为本代理开启该功能。",
+      "description": "遥测仅面向 AI治理网关 Enterprise 提供，而此代理未使用企业版许可证。"
     },
     "groups": {
       "heartbeat": {
         "title": "心跳",
-        "counts": "随机实例 ID、AOIDC 版本、报告窗口、启用的分组",
+        "counts": "随机实例 ID、AI治理网关 版本、报告窗口、启用的分组",
         "helps": "正在运行的版本"
       },
       "requestSuccess": {
         "title": "请求成功",
-        "slices": "端点、AOIDC 状态、提供商状态、是否流式、是否由 Rust 处理、AOIDC 缓存命中",
+        "slices": "端点、AI治理网关 状态、提供商状态、是否流式、是否由 Rust 处理、AI治理网关 缓存命中",
         "counts": "请求数、提供商尝试次数、响应头耗时和首字节延迟",
         "helps": "错误率和延迟回归、Rust 与 Python 对比"
       },
@@ -3908,7 +3908,7 @@
     },
     "scim": {
       "title": "SCIM 配置",
-      "description": "跨域身份管理系统（SCIM）可用于在 AOIDC 中自动预配并管理用户和组。",
+      "description": "跨域身份管理系统（SCIM）可用于在 AI治理网关 中自动预配并管理用户和组。",
       "tenantUrl": {
         "title": "SCIM 租户 URL",
         "description": "请在身份提供商的 SCIM 集成设置中使用此 URL。",
@@ -4126,7 +4126,7 @@
       },
       "emptyPlaceholder": {
         "title": "未找到 Vault 配置",
-        "description": "配置 Hashicorp Vault，为您的 AOIDC 部署安全管理提供商 API 密钥和机密信息。",
+        "description": "配置 Hashicorp Vault，为您的 AI治理网关 部署安全管理提供商 API 密钥和机密信息。",
         "configure": "配置 Vault"
       },
       "editModal": {
@@ -4211,7 +4211,7 @@
       },
       "emptyPlaceholder": {
         "title": "未找到 CyberArk 配置",
-        "description": "配置 CyberArk Conjur，为您的 AOIDC 部署安全管理提供商 API 密钥和机密信息。",
+        "description": "配置 CyberArk Conjur，为您的 AI治理网关 部署安全管理提供商 API 密钥和机密信息。",
         "configure": "配置 CyberArk"
       },
       "editModal": {
@@ -4263,7 +4263,7 @@
         "fields": {
           "name": {
             "label": "名称（标识符）",
-            "description": "用于 URL 和配置。不能包含空格，例如 AOIDC-platform-plugin"
+            "description": "用于 URL 和配置。不能包含空格，例如 AI-GovernanceGw-platform-plugin"
           },
           "displayName": {
             "label": "显示名称"
@@ -4274,7 +4274,7 @@
           },
           "pluginKey": {
             "label": "插件密钥",
-            "description": "可选。插件自身的凭据，仅在 AOIDC 对插件后端的 API 调用进行反向代理（/plugin-proxy/<name>/*）时，作为 Authorization: Bearer <key> 注入。对于使用 AOIDC 转发用户令牌的插件（例如 iframe 插件）请留空——该路径使用用户令牌，而非此密钥。",
+            "description": "可选。插件自身的凭据，仅在 AI-GovernanceGw 对插件后端的 API 调用进行反向代理（/plugin-proxy/<name>/*）时，作为 Authorization: Bearer <key> 注入。对于使用 AI-GovernanceGw 转发用户令牌的插件（例如 iframe 插件）请留空——该路径使用用户令牌，而非此密钥。",
             "keepCurrentPlaceholder": "留空以保留当前密钥",
             "newPlaceholder": "sk-...（可选）",
             "show": "显示插件密钥",
@@ -4416,7 +4416,7 @@
   "apiReference": {
     "view": {
       "title": "OpenAI 兼容代理：API 参考",
-      "description": "AOIDC 与 OpenAI 兼容，即您的 API 密钥可直接用于 OpenAI SDK，只需将 base_url 指向您的 AOIDC 代理。示例如下"
+      "description": "AI治理网关 与 OpenAI 兼容，即您的 API 密钥可直接用于 OpenAI SDK，只需将 base_url 指向您的 AI治理网关 代理。示例如下"
     },
     "page": {
       "featureName": "API 参考文档标签页"
@@ -4602,7 +4602,7 @@
         "message": "确定要删除此模型吗？",
         "informationTitle": "模型信息",
         "modelName": "模型名称",
-        "litellmModelName": "AOIDC 模型名称",
+        "litellmModelName": "AI治理网关 模型名称",
         "provider": "提供商",
         "createdBy": "创建者",
         "notSet": "未设置"
@@ -4653,15 +4653,15 @@
       "unknownProvider": "未知提供商",
       "information": {
         "publicModelName": "公开模型名称",
-        "litellmModelName": "AOIDC 模型名称",
-        "copyLitellmModelName": "复制 AOIDC 模型名称",
-        "litellmModelNameCopied": "已复制 AOIDC 模型名称"
+        "litellmModelName": "AI治理网关 模型名称",
+        "copyLitellmModelName": "复制 AI治理网关 模型名称",
+        "litellmModelNameCopied": "已复制 AI治理网关 模型名称"
       },
       "credentialTypes": {
         "aboutAriaLabel": "关于凭证类型",
         "title": "凭证类型",
         "reusable": "可复用",
-        "reusableDescription": "保存在 AOIDC 中的凭证，可重复添加到多个模型。",
+        "reusableDescription": "保存在 AI治理网关 中的凭证，可重复添加到多个模型。",
         "manual": "手动",
         "manualDescription": "在创建模型时直接添加的凭证，或在配置文件中定义的凭证。"
       },
@@ -4871,7 +4871,7 @@
         "name": "用于标识此搜索工具配置的唯一名称（例如 'perplexity-search'、'tavily-news-search'）。",
         "provider": "选择要使用的搜索提供方。各提供方的能力和定价不同。",
         "apiKey": "用于在搜索提供方进行身份验证的 API key，将被安全存储。",
-        "cost": "你协商的每次搜索查询的价格。它会覆盖该工具在 AOIDC 费用映射表中的价格，并体现在响应费用头和 spend 日志中。留空则使用提供方的默认价格。"
+        "cost": "你协商的每次搜索查询的价格。它会覆盖该工具在 AI治理网关 费用映射表中的价格，并体现在响应费用头和 spend 日志中。留空则使用提供方的默认价格。"
       },
       "placeholders": {
         "name": "例如 perplexity-search、my-tavily-tool",
@@ -5394,7 +5394,7 @@
         "vectorStoreId": "向量存储 ID",
         "vectorStoreIdHint": "输入来自您的 API 提供商的向量存储 ID",
         "name": "向量存储名称",
-        "nameHint": "您想为向量存储指定的自定义名称，该名称将显示在 AOIDC 界面上",
+        "nameHint": "您想为向量存储指定的自定义名称，该名称将显示在 AI治理网关 界面上",
         "description": "描述",
         "credentials": "现有凭据",
         "credentialsHint": "可为此向量存储选择 API 提供商凭据，例如 Bedrock API KEY",
@@ -5406,7 +5406,7 @@
         "default": "输入来自您的提供商的向量存储 ID",
         "vertexRagEngine": "6917529027641081856（来自 Vertex AI /「RAG Engine」控制台的语料库 ID）",
         "vertexAiSearch": "my-datastore_1234567890（来自 Vertex AI /「Agent Search」控制台的数据存储 ID）",
-        "vertexAiSearchWithEngine": "您将用于在 AOIDC 中引用此记录的任意标识符",
+        "vertexAiSearchWithEngine": "您将用于在 AI治理网关 中引用此记录的任意标识符",
         "valkey": "my-search-index（Valkey 中的 FT 索引名称）",
         "mongodb": "my-vector-index（MongoDB Vector Search 索引名称）",
         "opensearch": "my-knn-index（OpenSearch 索引名称）"
@@ -5433,9 +5433,9 @@
       },
       "pgVector": {
         "title": "需要配置 PG Vector",
-        "intro": "AOIDC 提供了一个用于连接 PG Vector 的服务。要使用此提供商：",
+        "intro": "AI治理网关 提供了一个用于连接 PG Vector 的服务。要使用此提供商：",
         "steps": {
-          "deploy": "从以下位置部署 AOIDC-pgvector 服务：",
+          "deploy": "从以下位置部署 AI-GovernanceGw-pgvector 服务：",
           "configure": "为您的 PostgreSQL 数据库配置 pgvector 扩展",
           "start": "启动服务并记录 API 基础 URL 和 API Key",
           "enter": "在下方字段中填入这些信息"
@@ -5443,18 +5443,18 @@
       },
       "valkey": {
         "title": "需要配置 Valkey",
-        "intro": "AOIDC 搜索您已存储在 Valkey 中的文档。它不会为您创建索引或上传文档。创建此向量存储前，请确保：",
+        "intro": "AI治理网关 搜索您已存储在 Valkey 中的文档。它不会为您创建索引或上传文档。创建此向量存储前，请确保：",
         "steps": {
           "searchEnabled": "您的 Valkey 服务已启用向量搜索（valkey-search 模块，包含在 valkey-bundle 镜像以及 AWS ElastiCache / MemoryDB for Valkey 中）",
           "indexLoaded": "您已创建搜索索引并已将文档及其嵌入加载到其中。将该索引名称填入向量存储 ID 字段",
           "embeddingModel": "您知道创建这些存储嵌入的是哪个嵌入模型。该模型必须已添加到此代理的「模型」中，以便您可以在下方选择。使用不同的模型会返回错误的结果",
           "fieldNames": "您知道文档的文本和嵌入所使用的字段名称。如果不是「text」和「embedding」，请在下方设置"
         },
-        "howItWorks": "当查询到来时，AOIDC 使用下方模型将其转换为嵌入，并从您的索引中返回最匹配的文档。"
+        "howItWorks": "当查询到来时，AI治理网关 使用下方模型将其转换为嵌入，并从您的索引中返回最匹配的文档。"
       },
       "opensearch": {
         "title": "需要配置 OpenSearch",
-        "intro": "AOIDC 搜索您在 OpenSearch Serverless 集合或 OpenSearch Service 域中已有的 k-NN 索引。它不会创建索引或上传文档。创建此向量存储前，请确保：",
+        "intro": "AI治理网关 搜索您在 OpenSearch Serverless 集合或 OpenSearch Service 域中已有的 k-NN 索引。它不会创建索引或上传文档。创建此向量存储前，请确保：",
         "steps": {
           "knnField": "索引中有一个存放每个文档嵌入的 knn_vector 字段。将索引名称填入向量存储 ID 字段；如果该 ID 已被其他端点使用，则填入索引名称字段",
           "embeddingModel": "您知道创建这些嵌入的是哪个嵌入模型。该模型必须已添加到此代理的「模型」中，以便您可以在下方选择。使用不同的模型会返回错误的结果",
@@ -5480,7 +5480,7 @@
           "guide": "在您的 Google Cloud 项目上启用 Discovery Engine API，并按照指南创建数据存储：<guide>创建 Vertex AI Search 数据存储</guide>",
           "location": "选择一个受支持的位置：global、us 或 eu",
           "dataStoreId": "对于大多数数据存储类型（Cloud Storage、BigQuery、Media）：复制数据存储 ID 并填入下方向量存储 ID 字段。",
-          "engineId": "对于网站、医疗健康和基于连接器的来源（Drive、Gmail、Slack、Jira 等）：在该数据存储之上创建一个搜索应用，然后复制 <strong>Engine ID</strong> 并填入 Engine ID 字段。向量存储 ID 仍然必填，作为此记录在 AOIDC 侧的名称，但设置了 Engine ID 后它不会用于 GCP URL。"
+          "engineId": "对于网站、医疗健康和基于连接器的来源（Drive、Gmail、Slack、Jira 等）：在该数据存储之上创建一个搜索应用，然后复制 <strong>Engine ID</strong> 并填入 Engine ID 字段。向量存储 ID 仍然必填，作为此记录在 AI治理网关 侧的名称，但设置了 Engine ID 后它不会用于 GCP URL。"
         }
       }
     },
@@ -5516,8 +5516,8 @@
       },
       "tooltips": {
         "pgVector": {
-          "apiBase": "输入您部署的 AOIDC-pgvector 服务的基础 URL（例如 http://your-server:8000）",
-          "apiKey": "输入您部署的 AOIDC-pgvector 服务的 API key"
+          "apiBase": "输入您部署的 AI-GovernanceGw-pgvector 服务的基础 URL（例如 http://your-server:8000）",
+          "apiKey": "输入您部署的 AI-GovernanceGw-pgvector 服务的 API key"
         },
         "vertexAiSearch": {
           "project": "托管 Vertex AI Search 数据存储的 Google Cloud 项目 ID。",
@@ -5542,26 +5542,26 @@
           "apiKey": "在 MongoDB sidecar 中配置的 MONGODB_SIDECAR_API_KEY",
           "database": "存放您要搜索的集合的 MongoDB 数据库",
           "collection": "您的 MongoDB Vector Search 索引所基于的集合",
-          "embeddingModel": "此代理上用于创建已存储在您集合中的向量的嵌入模型。AOIDC 会用它嵌入每条搜索查询，因此必须是同一模型。相同维度的其他模型不会报错，但会返回错误的结果。如果未列出，请先在「模型」中添加",
+          "embeddingModel": "此代理上用于创建已存储在您集合中的向量的嵌入模型。AI治理网关 会用它嵌入每条搜索查询，因此必须是同一模型。相同维度的其他模型不会报错，但会返回错误的结果。如果未列出，请先在「模型」中添加",
           "embeddingField": "每个文档中存放其嵌入的字段。必须与创建 MongoDB Vector Search 索引时所用的路径一致（默认：embedding）",
-          "textField": "每个文档中存放其可读文本的字段。AOIDC 会在搜索结果中返回此文本，支持点号路径，例如 metadata.body（默认：text）",
-          "numCandidates": "MongoDB 在返回最优结果之前检查的最近邻数量。值越高越准确但越慢。留空则由 AOIDC 根据请求的结果数量自动调整"
+          "textField": "每个文档中存放其可读文本的字段。AI治理网关 会在搜索结果中返回此文本，支持点号路径，例如 metadata.body（默认：text）",
+          "numCandidates": "MongoDB 在返回最优结果之前检查的最近邻数量。值越高越准确但越慢。留空则由 AI治理网关 根据请求的结果数量自动调整"
         },
         "valkey": {
           "host": "您的 Valkey 服务器的主机名或 IP，不带 redis:// 前缀和端口（例如 my-valkey.example.com）",
           "port": "Valkey 服务器监听的端口。如未修改请保持 6379",
           "password": "登录 Valkey 服务器所用的密码。如果没有密码则留空",
           "ssl": "如果您的 Valkey 服务器要求加密（TLS）连接，请设为 true，例如开启了传输中加密的 AWS ElastiCache",
-          "embeddingModel": "此代理上用于创建已存储在 Valkey 索引中的嵌入的嵌入模型。AOIDC 用它嵌入每条搜索查询，因此必须是同一模型，否则结果会出错。如果未列出，请先在「模型」中添加",
-          "textField": "每个存储文档中存放其可读文本的字段。AOIDC 会在搜索结果中返回此文本。必须与文档存储时的方式一致（默认：text）",
-          "embeddingField": "每个存储文档中存放其嵌入的字段。AOIDC 会针对此字段进行搜索，因此必须与创建索引时所用字段一致（默认：embedding）"
+          "embeddingModel": "此代理上用于创建已存储在 Valkey 索引中的嵌入的嵌入模型。AI治理网关 用它嵌入每条搜索查询，因此必须是同一模型，否则结果会出错。如果未列出，请先在「模型」中添加",
+          "textField": "每个存储文档中存放其可读文本的字段。AI治理网关 会在搜索结果中返回此文本。必须与文档存储时的方式一致（默认：text）",
+          "embeddingField": "每个存储文档中存放其嵌入的字段。AI治理网关 会针对此字段进行搜索，因此必须与创建索引时所用字段一致（默认：embedding）"
         },
         "opensearch": {
           "apiBase": "您的 OpenSearch Serverless 集合或 OpenSearch Service 域的端点，以 https:// 开头",
           "region": "集合或域所在的 AWS 区域。留空则使用端点中的区域；如果端点是自定义域名，则需要设置",
-          "embeddingModel": "此代理上用于创建已存储在您索引中的向量的嵌入模型。AOIDC 会用它嵌入每条搜索查询，因此必须是同一模型。如果未列出，请先在「模型」中添加",
+          "embeddingModel": "此代理上用于创建已存储在您索引中的向量的嵌入模型。AI治理网关 会用它嵌入每条搜索查询，因此必须是同一模型。如果未列出，请先在「模型」中添加",
           "embeddingField": "索引映射中存储每个文档向量的顶层 knn_vector 字段（默认：embedding）",
-          "textField": "每个文档中存储可读文本的顶层字段。AOIDC 会在搜索结果中返回该文本（默认：text）",
+          "textField": "每个文档中存储可读文本的顶层字段。AI治理网关 会在搜索结果中返回该文本（默认：text）",
           "indexName": "要搜索的 OpenSearch 索引。留空则使用 Vector Store ID；设置此项可将来自两个端点的同名索引注册为不同的 ID"
         },
         "s3Vectors": {
@@ -5691,7 +5691,7 @@
       },
       "webhookUrl": {
         "label": "Webhook URL",
-        "hint": "触发终止开关（Kill Switch）时 AOIDC 调用的绝对 http(s) URL。留空则移除该终止开关。"
+        "hint": "触发终止开关（Kill Switch）时 AI治理网关 调用的绝对 http(s) URL。留空则移除该终止开关。"
       },
       "method": "请求方法",
       "headers": {
@@ -5720,14 +5720,14 @@
       },
       "title": "危险操作区",
       "killSwitch": "终止开关",
-      "configuredDescription": "将调用已配置的 Webhook 以停止该 Agent 的上游运行时。这可能导致所有使用该 Agent 的用户服务中断，且无法从 AOIDC 撤销",
+      "configuredDescription": "将调用已配置的 Webhook 以停止该 Agent 的上游运行时。这可能导致所有使用该 Agent 的用户服务中断，且无法从 AI治理网关 撤销",
       "notConfigured": "尚未配置。请在「设置」中添加终止开关 Webhook 以启用此操作",
       "fire": "触发终止开关",
       "lastResult": "上次结果：HTTP {{status}}",
       "confirm": {
         "title": "确定要为 {{name}} 触发终止开关吗？",
         "outageTitle": "这可能导致服务中断",
-        "outageDescription": "AOIDC 将立即调用 {{method}} {{url}}。该 Webhook 对 Agent 的任何影响均不受 AOIDC 控制，且无法在此处回退",
+        "outageDescription": "AI治理网关 将立即调用 {{method}} {{url}}。该 Webhook 对 Agent 的任何影响均不受 AI治理网关 控制，且无法在此处回退",
         "typeToConfirm": "输入 <name/> 以确认：",
         "inputLabel": "确认 Agent 名称",
         "cancel": "取消",
@@ -5808,7 +5808,7 @@
         "note": "用户必须先通过该网关的 Microsoft SSO 登录。后续的委派调用需同时满足用户权限与 Agent 权限。"
       },
       "executionLabel": "执行",
-      "verificationNote": "AOIDC 在匹配此身份之前会校验 Agent 的 Entra 令牌。保存这些字段即完成绑定配置；经过验证的请求则提供实际验证。运行时身份验证请求头另行配置。",
+      "verificationNote": "AI治理网关 在匹配此身份之前会校验 Agent 的 Entra 令牌。保存这些字段即完成绑定配置；经过验证的请求则提供实际验证。运行时身份验证请求头另行配置。",
       "external": {
         "issuer": "受信任的签发者（issuer）",
         "issuerRequired": "请选择受信任的签发者",
@@ -5845,7 +5845,7 @@
         },
         "protocolVersion": {
           "label": "协议版本",
-          "tooltip": "AOIDC 为该 Agent 向客户端提供的 A2A 协议版本。AOIDC 会将上游 Agent 的响应转换为此版本，因此无论原始 Agent 的版本如何，客户端始终看到你在此选择的版本。"
+          "tooltip": "AI治理网关 为该 Agent 向客户端提供的 A2A 协议版本。AI治理网关 会将上游 Agent 的响应转换为此版本，因此无论原始 Agent 的版本如何，客户端始终看到你在此选择的版本。"
         },
         "skills": {
           "label": "技能"
@@ -5893,7 +5893,7 @@
       },
       "basic": {
         "title": "基本信息",
-        "protocolVersionHelp": "AOIDC 将此版本提供给客户端，并把上游 Agent 的响应转换为该版本，与原始 Agent 的版本无关。"
+        "protocolVersionHelp": "AI治理网关 将此版本提供给客户端，并把上游 Agent 的响应转换为该版本，与原始 Agent 的版本无关。"
       },
       "skills": {
         "title": "技能"
@@ -5905,7 +5905,7 @@
         "title": "可选设置"
       },
       "litellm": {
-        "title": "AOIDC 参数"
+        "title": "AI治理网关 参数"
       },
       "cost": {
         "title": "成本配置"
@@ -6036,7 +6036,7 @@
       "rediscover": "重新发现",
       "discover": "发现",
       "title": "从 Agent URL 发现",
-      "titleHint": "AOIDC 将从该 URL 获取 {{path}}，并允许你选择要通过代理暴露哪些技能与能力。",
+      "titleHint": "AI治理网关 将从该 URL 获取 {{path}}，并允许你选择要通过代理暴露哪些技能与能力。",
       "parentDrivenIntro": "使用你在上方输入的连接信息。我们将获取：",
       "fillFieldsFirst": "请先填写上方字段",
       "manualIntro": "粘贴上游 Agent 的基础 URL。我们将依次尝试 <cardfile/>、<agentfile/> 和 <rootfile/>。",
@@ -6051,7 +6051,7 @@
       "skillsSelected": "已选 {{selected}} / {{total}}",
       "noSkills": "上游卡片中没有技能",
       "capabilities": "能力",
-      "capabilitiesHint": "仅列出 AOIDC 目前可完整代理的能力。其他能力（推送通知、扩展）即将推出。",
+      "capabilitiesHint": "仅列出 AI治理网关 目前可完整代理的能力。其他能力（推送通知、扩展）即将推出。",
       "notAdvertised": "上游未公告"
     },
     "panel": {
@@ -6625,7 +6625,7 @@
       "method": "安装方式",
       "authenticated": "需认证",
       "public": "公开命令",
-      "authenticatedHint": "在终端提示时输入你自己的 AOIDC 密钥。网关会在下载技能前校验你的访问权限",
+      "authenticatedHint": "在终端提示时输入你自己的 AI治理网关 密钥。网关会在下载技能前校验你的访问权限",
       "publicHint": "该技能已列入网关的公开索引，无需密钥即可安装",
       "command": "安装命令",
       "authenticatedRequirements": "需要 macOS 或 Linux，并安装 Bash、curl、unzip、Node.js 22.20 及以上版本和 npm。项目级安装请在项目目录中运行",
@@ -6915,7 +6915,7 @@
         "empty": "暂无已记录的发布版本。现有技能将在下一次发布更新时开始记录历史。",
         "legacy": "旧版版本",
         "retained": "上传的 ZIP 已保留，并已与其来源摘要进行校验。",
-        "reference": "仅保存了来源引用。外部文件可能发生变化，且 AOIDC 不予保留。",
+        "reference": "仅保存了来源引用。外部文件可能发生变化，且 AI治理网关 不予保留。",
         "metadata": "已发布的元数据",
         "download": "下载保留的 ZIP",
         "downloadFailed": "无法下载此版本。",
@@ -6985,7 +6985,7 @@
       "setup": {
         "title": "Claude Code marketplace 设置",
         "removeFirst": "如果你之前在没有密钥的情况下添加过此 marketplace，请先在 Claude Code 中将其移除。移除操作会同时卸载从中安装的插件，因此在添加以下代码片段后，请通过 /plugin 重新安装：",
-        "requiresKey": "此代理需要 AOIDC 密钥才能读取 marketplace。请将以下内容添加到 <settings/>，并将 <placeholder/> 替换为你的密钥：",
+        "requiresKey": "此代理需要 AI治理网关 密钥才能读取 marketplace。请将以下内容添加到 <settings/>，并将 <placeholder/> 替换为你的密钥：",
         "runCommand": "在 Claude Code 中运行以下命令以注册 marketplace：",
         "orSettings": "或者将以下内容添加到 <settings/> 以进行持久化配置："
       }
@@ -7055,7 +7055,7 @@
       "header": {
         "defaultKeyName": "虚拟密钥",
         "never": "永不",
-        "enterpriseOnly": "这是 AOIDC 企业版功能，需要有效的密钥才能使用。"
+        "enterpriseOnly": "这是 AI治理网关 企业版功能，需要有效的密钥才能使用。"
       },
       "deleteModal": {
         "title": "删除密钥",
@@ -7100,7 +7100,7 @@
         "resets": "重置时间：",
         "lifetimeSpend": "累计消费：$",
         "lifetimeSpendHintLabel": "为什么累计消费低于当前消费",
-        "lifetimeSpendHint": "累计消费统计始于 2026 年 9 月 19 日发布的 AOIDC v1.103.0，未进行历史数据回填，因此该密钥的累计消费仅统计此次升级之后的使用量。",
+        "lifetimeSpendHint": "累计消费统计始于 2026 年 9 月 19 日发布的 AI治理网关 v1.103.0，未进行历史数据回填，因此该密钥的累计消费仅统计此次升级之后的使用量。",
         "rateLimits": "速率限制",
         "tpm": "TPM：",
         "rpm": "RPM：",
@@ -7423,7 +7423,7 @@
       "label": "选择 Agent",
       "placeholder": "选择一个 Agent",
       "empty": "未找到 Agent",
-      "help": "所选 Agent 将使用此密钥向 AOIDC 发起请求"
+      "help": "所选 Agent 将使用此密钥向 AI治理网关 发起请求"
     },
     "organization": {
       "label": "组织",
@@ -7897,7 +7897,7 @@
     "notSet": "未设置"
   },
   "premiumLoggingSettings": {
-    "enterpriseNotice": "设置密钥/团队日志设置是 AOIDC 企业版功能。全局日志设置对所有免费用户开放。可在<docs>此处</docs>获取试用密钥。"
+    "enterpriseNotice": "设置密钥/团队日志设置是 AI治理网关 企业版功能。全局日志设置对所有免费用户开放。可在<docs>此处</docs>获取试用密钥。"
   },
   "teamMultiSelect": {
     "placeholder": "按别名搜索团队...",
@@ -7960,7 +7960,7 @@
       "pointfive": "PointFive 日志集成",
       "zerobus": "Databricks Zerobus Ingest 日志集成",
       "s3": "S3 Bucket (AWS) 日志集成",
-      "signoz": "SigNoz 日志集成。设置：https://signoz.io/docs/AOIDC-observability/",
+      "signoz": "SigNoz 日志集成。设置：https://signoz.io/docs/AI-GovernanceGw-observability/",
       "sqs": "SQS 队列 (AWS) 日志集成"
     }
   },
@@ -8269,7 +8269,7 @@
         "dailyMargin": "每日加价",
         "monthlyMargin": "每月加价",
         "modelBreakdown": "模型明细",
-        "footer": "由 AOIDC 定价计算器生成于 {{date}}"
+        "footer": "由 AI治理网关 定价计算器生成于 {{date}}"
       },
       "csv": {
         "title": "LLM 多模型成本估算报告",
@@ -8345,7 +8345,7 @@
       },
       "enterpriseNotice": {
         "title": "企业版功能提示",
-        "description": "策略附加配置的部分功能将在后续版本中纳入 AOIDC 企业版。"
+        "description": "策略附加配置的部分功能将在后续版本中纳入 AI治理网关 企业版。"
       },
       "addPolicy": "+ 新建策略",
       "addAttachment": "+ 新建附加配置",
@@ -9248,7 +9248,7 @@
     },
     "recommendation": {
       "sources": {
-        "modelCostMap": "AOIDC 模型成本表",
+        "modelCostMap": "AI治理网关 模型成本表",
         "deploymentConfig": "部署配置"
       },
       "notProvided": "未提供",
@@ -9358,7 +9358,7 @@
       },
       "lastRefreshed": "上次刷新：",
       "refresh": "刷新",
-      "description": "AOIDC <cacheDocs>响应缓存</cacheDocs>（如 Redis / 内存缓存）的分析数据：直接由缓存响应而无需调用 LLM 提供商的请求。提供商侧的<promptDocs>Prompt 缓存</promptDocs>（Anthropic、OpenAI 等的缓存输入 Token）不在此处显示；请查看使用页面的\"Prompt 缓存指标\"或日志页面中的单个请求。",
+      "description": "AI治理网关 <cacheDocs>响应缓存</cacheDocs>（如 Redis / 内存缓存）的分析数据：直接由缓存响应而无需调用 LLM 提供商的请求。提供商侧的<promptDocs>Prompt 缓存</promptDocs>（Anthropic、OpenAI 等的缓存输入 Token）不在此处显示；请查看使用页面的\"Prompt 缓存指标\"或日志页面中的单个请求。",
       "filters": {
         "virtualKeysPlaceholder": "选择虚拟密钥",
         "noVirtualKeys": "未找到虚拟密钥",
@@ -9427,7 +9427,7 @@
     },
     "settings": {
       "title": "缓存设置",
-      "subtitle": "为 AOIDC 配置 Redis 缓存",
+      "subtitle": "为 AI治理网关 配置 Redis 缓存",
       "sections": {
         "connection": "连接设置",
         "cluster": "集群配置",
@@ -9762,7 +9762,7 @@
       },
       "addDialog": {
         "title": "添加日志回调",
-        "docsLink": "AOIDC 文档：日志记录",
+        "docsLink": "AI治理网关 文档：日志记录",
         "cancel": "取消",
         "submit": "添加回调",
         "submitting": "添加中…"
@@ -9791,7 +9791,7 @@
     "emailSettings": {
       "gatewayUrl": "网关 URL",
       "title": "邮件服务器设置",
-      "docsLink": "AOIDC 文档：邮件告警",
+      "docsLink": "AI治理网关 文档：邮件告警",
       "required": " 必填 * ",
       "help": {
         "proxyBaseUrl": "公网 HTTP(S) 网关 URL。模型弃用邮件需要此项，以便所有者查看其使用情况。",
@@ -9830,7 +9830,7 @@
     },
     "msTeams": {
       "title": "Microsoft Teams 告警设置",
-      "intro": "通过传入 Webhook 将 AOIDC 告警发送到 Microsoft Teams 频道。可从 <docs>Microsoft 文档：传入 Webhook</docs> 创建一个",
+      "intro": "通过传入 Webhook 将 AI治理网关 告警发送到 Microsoft Teams 频道。可从 <docs>Microsoft 文档：传入 Webhook</docs> 创建一个",
       "required": " 必填 * ",
       "help": {
         "webhookUrl": "你的 Teams 频道的传入 Webhook URL（Workflows 或传入 Webhook 连接器）"
@@ -9864,7 +9864,7 @@
       },
       "emptyPlaceholder": {
         "title": "未找到 CloudZero 集成",
-        "description": "连接你的 CloudZero 账户，直接从 AOIDC 开始跟踪和分析云成本。",
+        "description": "连接你的 CloudZero 账户，直接从 AI治理网关 开始跟踪和分析云成本。",
         "add": "添加 CloudZero 集成"
       },
       "form": {
@@ -10133,7 +10133,7 @@
     "usagePanel": {
       "title": "该分组的路由工作方式",
       "priorityExplanation": "请求 <group/> 时会按优先级顺序尝试符合条件的模型。对成员模型的直接请求仍保持现有路由行为。",
-      "strategyExplanation": "调用方按名称请求组内任意模型；AOIDC 会在后台使用 <strategy/> 策略选择一个部署。"
+      "strategyExplanation": "调用方按名称请求组内任意模型；AI治理网关 会在后台使用 <strategy/> 策略选择一个部署。"
     },
     "modal": {
       "createTitle": "创建路由分组",
@@ -10146,7 +10146,7 @@
         "strategyRequired": "必须选择策略"
       },
       "groupName": "分组名称",
-      "groupNameDescription": "在 API 调用中使用此名称作为模型。AOIDC 会将请求路由到分组中的某个模型。",
+      "groupNameDescription": "在 API 调用中使用此名称作为模型。AI治理网关 会将请求路由到分组中的某个模型。",
       "models": "模型",
       "modelsPriorityDescription": "此分组在其间进行路由的模型列表中的模型。一个模型可以属于多个优先级分组。",
       "modelsDescription": "此分组在其间进行路由的模型列表中的模型。一个模型只能属于一个非优先级分组。",
@@ -10308,7 +10308,7 @@
       "about": {
         "title": "关于",
         "defaultDescription": "以 OpenAI 格式调用 100+ LLM 的代理服务器。",
-        "builtWith": "基于 AOIDC 构建：v{{version}}"
+        "builtWith": "基于 AI-GovernanceGw 构建：v{{version}}"
       },
       "usefulLinks": {
         "title": "实用链接"
@@ -10495,7 +10495,7 @@
         "showing": "显示 {{total}} 个模型中的 {{shown}} 个",
         "empty": {
           "decisionsTitle": "此代理上没有模型使用 decisions 模式",
-          "decisionsBody": "AOIDC 支持的决策模型如下所列。",
+          "decisionsBody": "AI治理网关 支持的决策模型如下所列。",
           "noMatchTitle": "没有匹配的模型",
           "noMatchBody": "调整筛选条件以查看更多模型。",
           "noneTitle": "暂无模型",
@@ -10705,19 +10705,19 @@
       "routes": {
         "decisions": "/v1/decisions 文档",
         "selfHosted": "自托管，自有路由",
-        "needsUpgrade": "需要更新的 AOIDC",
+        "needsUpgrade": "需要更新的 AI治理网关",
         "ownDeployment": "以自己的名称部署"
       },
       "addModel": "添加模型",
-      "title": "AOIDC 支持的决策模型",
+      "title": "AI治理网关 支持的决策模型",
       "summary_one": "来自 $t(aiHub.decisionModelGarden.providerCount, {\"count\": {{providers}} }) 的 {{count}} 个决策模型在 <code>/v1/decisions</code> 上响应。",
       "summary_other": "来自 $t(aiHub.decisionModelGarden.providerCount, {\"count\": {{providers}} }) 的 {{count}} 个决策模型在 <code>/v1/decisions</code> 上响应。",
       "providerCount_one": "{{count}} 个提供商",
       "providerCount_other": "{{count}} 个提供商",
       "selfHosted_one": "另有 {{count}} 个为自托管，在其自有路由上响应。",
       "selfHosted_other": "另有 {{count}} 个为自托管，在其各自的路由上响应。",
-      "needsUpgrade_one": "另有 {{count}} 个需要更新的 AOIDC 版本。",
-      "needsUpgrade_other": "另有 {{count}} 个需要更新的 AOIDC 版本。",
+      "needsUpgrade_one": "另有 {{count}} 个需要更新的 AI治理网关 版本。",
+      "needsUpgrade_other": "另有 {{count}} 个需要更新的 AI治理网关 版本。",
       "docs": "Decisions 文档",
       "showFewer": "收起",
       "showAll": "显示全部 {{total}}"
@@ -10859,7 +10859,7 @@
     "catalog": {
       "modelHub": "模型中心",
       "skillsHub": "技能中心",
-      "eyebrow": "AOIDC 目录",
+      "eyebrow": "AI治理网关 目录",
       "modelsDescription": "查找定价、上下文长度和能力。",
       "skillsDescription": "为您的智能体发现可复用的技能。",
       "filters": "筛选",
@@ -10918,12 +10918,12 @@
     },
     "linksMenu": {
       "trigger": "链接",
-      "version": "AOIDC v{{version}}"
+      "version": "AI治理网关 v{{version}}"
     },
     "baseUrlField": {
       "label": "Base URL",
       "copy": "复制 Base URL",
-      "hint": "在任何 OpenAI 兼容的 SDK 中使用您的 AOIDC 密钥作为 API Key"
+      "hint": "在任何 OpenAI 兼容的 SDK 中使用您的 AI治理网关 密钥作为 API Key"
     },
     "healthBadge": {
       "responseTime": "响应时间",
@@ -11165,7 +11165,7 @@
       "passwordRequired": "请输入密码"
     },
     "ssoNotice": {
-      "title": "已启用单点登录（SSO）。AOIDC 在加载此页面时不再自动跳转到 SSO 登录流程。如需重新启用自动跳转 SSO，请在环境配置中设置 <setting/>。",
+      "title": "已启用单点登录（SSO）。AI治理网关 在加载此页面时不再自动跳转到 SSO 登录流程。如需重新启用自动跳转 SSO，请在环境配置中设置 <setting/>。",
       "close": "关闭"
     },
     "adminDisabled": {
@@ -11174,10 +11174,10 @@
     },
     "form": {
       "title": "登录",
-      "subtitle": "访问您的 AOIDC 管理界面。",
+      "subtitle": "访问您的 AI治理网关 管理界面。",
       "defaultCredentials": {
         "title": "默认凭据",
-        "body": "默认情况下，用户名为 <username/>，密码为您设置的 AOIDC Proxy<masterkey/>。",
+        "body": "默认情况下，用户名为 <username/>，密码为您设置的 AI治理网关 Proxy<masterkey/>。",
         "help": "需要设置 UI 凭据或 SSO？<docs>请查看文档</docs>。"
       },
       "worker": {
@@ -11270,7 +11270,7 @@
         "resetFailed": "主题设置重置失败"
       },
       "title": "UI 主题自定义",
-      "description": "使用自定义 Logo 和网站图标个性化您的 AOIDC 管理仪表盘。",
+      "description": "使用自定义 Logo 和网站图标个性化您的 AI治理网关 管理仪表盘。",
       "logoUrl": {
         "label": "自定义 Logo URL",
         "hint": "输入自定义 Logo 的 URL，留空则使用默认值"
@@ -11537,7 +11537,7 @@
         "label": "记录的总节省额",
         "loading": "加载中...",
         "hint": "压缩 + 提示词缓存 + 自动路由",
-        "info": "旁边三个磁贴中记录节省额的总和。没有估算值的自动路由请求不计入。其缓存项为 AOIDC 注入的份额；由客户端或提供商提供的缓存仅体现在缓存磁贴的总计数字中。"
+        "info": "旁边三个磁贴中记录节省额的总和。没有估算值的自动路由请求不计入。其缓存项为 AI治理网关 注入的份额；由客户端或提供商提供的缓存仅体现在缓存磁贴的总计数字中。"
       },
       "compression": {
         "label": "压缩节省额",
@@ -11546,9 +11546,9 @@
       },
       "caching": {
         "label": "提示词缓存节省额",
-        "hint": "AOIDC 注入",
+        "hint": "AI治理网关 注入",
         "total": "总计",
-        "info": "缓存相对于为每个 Token 支付输入价格所节省的金额：从缓存提供的 Token 的折扣，减去提供商写入缓存条目收取的溢价。核心数字是 AOIDC 通过配置的注入点或自动提示词缓存自行插入断点所获得的份额。旁边的总计还包括自带 cache_control 的请求以及隐式缓存的提供商。在写入多于复用的流量上，两者都可能为负值，这也是核心数字不一定小于总计的原因。"
+        "info": "缓存相对于为每个 Token 支付输入价格所节省的金额：从缓存提供的 Token 的折扣，减去提供商写入缓存条目收取的溢价。核心数字是 AI治理网关 通过配置的注入点或自动提示词缓存自行插入断点所获得的份额。旁边的总计还包括自带 cache_control 的请求以及隐式缓存的提供商。在写入多于复用的流量上，两者都可能为负值，这也是核心数字不一定小于总计的原因。"
       },
       "autorouter": {
         "label": "自动路由节省额",
@@ -11825,7 +11825,7 @@
       "signOut": "退出登录",
       "chatNavigation": "对话导航",
       "openChatNavigation": "打开对话导航",
-      "sheetTitle": "AOIDC Chat",
+      "sheetTitle": "AI治理网关 Chat",
       "sheetDescription": "会话与对话工作区导航"
     },
     "conversationList": {
@@ -12165,7 +12165,7 @@
       },
       "stats": {
         "cheaper": "低于我们的 Devin 账单",
-        "providers": "个服务商（通过 AOIDC）",
+        "providers": "个服务商（通过 AI治理网关）",
         "harnesses": "个 agent harness"
       },
       "badge": "现已开源",
@@ -12174,13 +12174,13 @@
       "alreadyDeployed": "已部署 Moyai？",
       "askAdmin": "已部署 Moyai？请联系 proxy 管理员进行连接",
       "worksWith": "支持 Claude Code 和 Codex",
-      "selfHosted": "自托管 · 通过 AOIDC 接入 100+ 服务商",
+      "selfHosted": "自托管 · 通过 AI治理网关 接入 100+ 服务商",
       "seeItInAction": "看看实际效果",
       "seeItInActionBody": "从 Slack 或浏览器给它分配任务。它会编辑代码，在自己的云端工作区运行你的测试，并在你合上笔记本电脑后创建 pull request。",
       "anyHarness": "任意 harness",
       "anyHarnessFootnote": "每个会话可选择 harness，共享相同的工作区、工具和权限。",
       "anyModel": "任意模型、任意服务商",
-      "anyModelFootnote": "通过你的 AOIDC 网关路由，并按团队成员追踪消费。",
+      "anyModelFootnote": "通过你的 AI治理网关 网关路由，并按团队成员追踪消费。",
       "runYourOwn": "运行你自己的云端 agent",
       "runYourOwnBody": "部署在你自己的基础设施上并指向此网关。你的代码和凭证始终保留在你的账户中。",
       "getOnGithub": "在 GitHub 上获取 Moyai",
@@ -12189,10 +12189,10 @@
     "connected": {
       "workspaceLinked": "工作区已关联",
       "keyIssued": "已签发虚拟密钥",
-      "modelsAvailable": "个模型可通过 AOIDC 使用",
+      "modelsAvailable": "个模型可通过 AI治理网关 使用",
       "badge": "已连接",
       "title": "Moyai 已连接",
-      "description": "此部署现已关联到你的 AOIDC 网关。",
+      "description": "此部署现已关联到你的 AI治理网关 网关。",
       "openMoyai": "打开 Moyai",
       "backToGateway": "返回 AI 网关"
     },
@@ -12448,7 +12448,7 @@
         "tool": "工具"
       },
       "tooltips": {
-        "responseCache": "此响应由 AOIDC 响应缓存回放。请求从未到达提供商，因此未读取或写入提供商自身的提示词缓存。",
+        "responseCache": "此响应由 AI治理网关 响应缓存回放。请求从未到达提供商，因此未读取或写入提供商自身的提示词缓存。",
         "timeToFirstToken": "首字延迟",
         "totalLatency": "总延迟",
         "promptTokens": "提示词 Token",
@@ -12517,10 +12517,10 @@
   "guardrails": {
     "garden": {
       "searchPlaceholder": "搜索护栏",
-      "litellmHeading": "AOIDC 内容过滤器",
+      "litellmHeading": "AI治理网关 内容过滤器",
       "showLess": "收起",
       "showAll": "显示全部（{{total}}）",
-      "litellmDescription": "由 AOIDC 提供的内置护栏。零延迟、无外部依赖、无额外成本。",
+      "litellmDescription": "由 AI治理网关 提供的内置护栏。零延迟、无外部依赖、无额外成本。",
       "decisionModelHeading": "决策模型",
       "decisionModelDescription": "针对每个请求或响应向决策模型提出是/否问题，并在评分达到阈值时拦截或记录。",
       "partnerHeading": "合作伙伴护栏",
@@ -12533,7 +12533,7 @@
     "gardenDetail": {
       "categories": {
         "litellm": {
-          "provider": "AOIDC 内容过滤器",
+          "provider": "AI治理网关 内容过滤器",
           "type": "内容过滤器"
         },
         "decisionModel": {
@@ -12787,7 +12787,7 @@
           "description": "Conduct Guard 在模型调用前依据工作区规则评估提示词：提示注入、PII 和自定义策略，并给出拦截、警告或批准的判定。"
         },
         "wingback": {
-          "description": "面向 AOIDC 的 Wingback 运行时安全——通过 Wingback connectors 服务实现 PII 检测、提示注入、毒性内容及策略执行。"
+          "description": "面向 AI治理网关 的 Wingback 运行时安全——通过 Wingback connectors 服务实现 PII 检测、提示注入、毒性内容及策略执行。"
         },
         "airia": {
           "description": "Airia AI 安全与治理平台。提供针对提示注入、数据泄露防护和负责任 AI 的运行时护栏，在每次提示和响应上强制执行。"
@@ -13014,8 +13014,8 @@
         "closeLabel": "关闭详情面板",
         "endpoint": "端点",
         "method": "方法",
-        "forwardKeyTitle": "转发 AOIDC API Key",
-        "forwardKeyDescription": "启用后，调用者的 AOIDC API Key 将作为 <code>Authorization</code> 请求头转发到您的护栏端点。这样您的护栏即可使用原始调用者的凭据对模型调用进行身份验证。",
+        "forwardKeyTitle": "转发 AI治理网关 API Key",
+        "forwardKeyDescription": "启用后，调用者的 AI治理网关 API Key 将作为 <code>Authorization</code> 请求头转发到您的护栏端点。这样您的护栏即可使用原始调用者的凭据对模型调用进行身份验证。",
         "staticHeaders": "静态请求头",
         "staticHeadersHint": "随每个发往护栏的请求一起发送。",
         "noStaticHeaders": "未配置静态请求头。",
@@ -13029,7 +13029,7 @@
         "forwardHeaderPlaceholder": "例如 x-request-id",
         "addForwardHeader": "添加",
         "equivalentConfig": "等效配置",
-        "separateInstanceNote": "此护栏运行在独立实例上。它接收用户请求并将结果转发到流水线中的下一个步骤。配置详情请参阅 <docs>AOIDC 通用护栏 API 文档</docs>。",
+        "separateInstanceNote": "此护栏运行在独立实例上。它接收用户请求并将结果转发到流水线中的下一个步骤。配置详情请参阅 <docs>AI治理网关 通用护栏 API 文档</docs>。",
         "testEndpoint": "测试端点",
         "approve": "批准",
         "reject": "拒绝"
@@ -13067,8 +13067,8 @@
         "guardrailNamePlaceholder": "例如 pii-detection",
         "mode": "模式",
         "apiBase": "API 基础 URL",
-        "extraParams": "附加 AOIDC_params（可选）",
-        "extraParamsHint": "合并到 AOIDC_params 中的 JSON 对象。例如 forward_api_key、headers、model、unreachable_fallback",
+        "extraParams": "附加 AI-GovernanceGw_params（可选）",
+        "extraParamsHint": "合并到 AI-GovernanceGw_params 中的 JSON 对象。例如 forward_api_key、headers、model、unreachable_fallback",
         "guardrailInfo": "护栏信息（可选）",
         "cancel": "取消",
         "submit": "提交审核"
@@ -13525,7 +13525,7 @@
       }
     },
     "toolPermission": {
-      "title": "AOIDC 工具权限 Guardrail",
+      "title": "AI治理网关 工具权限 Guardrail",
       "description": "为工具名称或类型提供正则表达式（例如 {{example}}），并可选择约束载荷字段。",
       "addRule": "添加规则",
       "empty": "尚未添加工具规则",
@@ -13956,7 +13956,7 @@
       "title": "权限管理 / 访问控制",
       "subtitle": "配置访问权限和安全设置（可选）",
       "allowAllKeys": {
-        "label": "允许所有 AOIDC Key",
+        "label": "允许所有 AI治理网关 Key",
         "tooltip": "启用后，每个 API Key 都可以访问此 MCP 服务器。",
         "description": "如果此服务器应对所有 Key“公开”，请启用此选项。"
       },
@@ -13967,8 +13967,8 @@
       },
       "delegateAuth": {
         "label": "将身份验证委托给上游（PKCE 透传）",
-        "tooltip": "启用后，AOIDC 会跳过自身的 API Key/SSO 校验，让客户端直接与上游 MCP 服务器完成 PKCE。仅在身份验证类型为 oauth2 时生效。此路由上不会进行用量统计，也不会执行按 Key 的速率限制。",
-        "description": "绕过 AOIDC 身份验证，让客户端直接与上游 OAuth MCP 服务器进行身份验证。"
+        "tooltip": "启用后，AI治理网关 会跳过自身的 API Key/SSO 校验，让客户端直接与上游 MCP 服务器完成 PKCE。仅在身份验证类型为 oauth2 时生效。此路由上不会进行用量统计，也不会执行按 Key 的速率限制。",
+        "description": "绕过 AI治理网关 身份验证，让客户端直接与上游 OAuth MCP 服务器进行身份验证。"
       },
       "oauthPassthrough": {
         "label": "OAuth 透传",
@@ -13977,7 +13977,7 @@
       },
       "internalDelegateWarning": {
         "title": "内部服务器使用了上游 OAuth 委托",
-        "description": "此 MCP 服务器被配置为仅限内部访问，但将身份验证委托给了上游。匿名用户将能够在没有 AOIDC 会话的情况下访问上游 OAuth2 /authorize 流程。请确保你的上游提供商和网络已实施访问控制。"
+        "description": "此 MCP 服务器被配置为仅限内部访问，但将身份验证委托给了上游。匿名用户将能够在没有 AI治理网关 会话的情况下访问上游 OAuth2 /authorize 流程。请确保你的上游提供商和网络已实施访问控制。"
       },
       "accessGroups": {
         "label": "MCP 访问组",
@@ -14010,7 +14010,7 @@
         "invalidTokenValidationJson": "Token 校验规则中的 JSON 无效"
       },
       "toasts": {
-        "browserTokenHeld": "Token 已保存在当前浏览器会话中。现在可以预览和配置工具；该 Token 不会保存到 AOIDC。",
+        "browserTokenHeld": "Token 已保存在当前浏览器会话中。现在可以预览和配置工具；该 Token 不会保存到 AI治理网关。",
         "oauthAuthorized": "OAuth 授权成功！请点击“创建 MCP 服务器”以保存配置。",
         "created": "MCP 服务器创建成功",
         "submittedForReview": "MCP 服务器已提交管理员审核",
@@ -14052,7 +14052,7 @@
       },
       "maxConcurrentRequests": {
         "label": "最大并发请求数（可选）",
-        "tooltip": "AOIDC 同时对此服务器发起的工具调用数量上限。超出的调用将等待空闲槽位。留空表示不限制。",
+        "tooltip": "AI治理网关 同时对此服务器发起的工具调用数量上限。超出的调用将等待空闲槽位。留空表示不限制。",
         "placeholder": "例如 10"
       },
       "rpm": {
@@ -14078,7 +14078,7 @@
     },
     "serverEdit": {
       "toasts": {
-        "browserTokenHeld": "Token 已保存在当前浏览器会话中。现在可以加载和配置工具；该 Token 不会保存到 AOIDC。",
+        "browserTokenHeld": "Token 已保存在当前浏览器会话中。现在可以加载和配置工具；该 Token 不会保存到 AI治理网关。",
         "oauthAuthorized": "OAuth 授权成功！请点击“更新 MCP 服务器”以保存凭据。",
         "persistTokenFailed": "MCP 服务器已更新，但未能持久化 OAuth Token",
         "persistTokenFailedWithReason": "MCP 服务器已更新，但未能持久化 OAuth Token：{{reason}}",
@@ -14109,7 +14109,7 @@
         "specUrlTooltip": "指向 OpenAPI 规范（JSON 或 YAML）的 URL。系统将根据规范中定义的 API 端点自动生成 MCP 工具。",
         "specUrlRequired": "请输入 OpenAPI 规范 URL",
         "maxConcurrentRequests": "最大并发请求数（可选）",
-        "maxConcurrentRequestsTooltip": "AOIDC 同时对此服务器发起的工具调用数量上限。超出的调用将等待空闲槽位。留空表示不限制。",
+        "maxConcurrentRequestsTooltip": "AI治理网关 同时对此服务器发起的工具调用数量上限。超出的调用将等待空闲槽位。留空表示不限制。",
         "maxConcurrentRequestsPlaceholder": "例如 10",
         "rpm": "RPM 限制（所有调用方）",
         "rpmTooltip": "所有 Key 和团队访问此服务器的每分钟最大请求数。留空表示不限制",
@@ -14134,7 +14134,7 @@
       },
       "missingOAuthFlow": {
         "title": "此服务器尚未设置 OAuth 流程",
-        "description": "请选择机器对机器（M2M）或交互式（PKCE），以便 AOIDC 按你预期的方式对其进行身份验证，然后保存。在设置之前，AOIDC 将回退为按用户的交互式身份验证，并以保守方式处理机器对机器类型的凭据。"
+        "description": "请选择机器对机器（M2M）或交互式（PKCE），以便 AI治理网关 按你预期的方式对其进行身份验证，然后保存。在设置之前，AI治理网关 将回退为按用户的交互式身份验证，并以保守方式处理机器对机器类型的凭据。"
       },
       "aws": {
         "intro": "适用于托管在 AWS Bedrock AgentCore 上的 MCP 服务器。",
@@ -14163,7 +14163,7 @@
         },
         "roleArn": {
           "label": "AWS Role ARN",
-          "tooltip": "可选。签名前通过 STS 承担的 IAM 角色 ARN。设置后，AOIDC 会调用 sts:AssumeRole 获取临时凭据。"
+          "tooltip": "可选。签名前通过 STS 承担的 IAM 角色 ARN。设置后，AI治理网关 会调用 sts:AssumeRole 获取临时凭据。"
         },
         "sessionName": {
           "label": "AWS 会话名称",
@@ -14278,24 +14278,24 @@
     "idJagFormFields": {
       "orgTokenEndpoint": {
         "label": "组织 Token 端点（第 1 跳）",
-        "tooltip": "你的 IdP 组织授权服务器的 Token 端点。AOIDC 在此将用户的身份断言交换为 ID-JAG 断言（RFC 8693，requested_token_type=urn:ietf:params:oauth:token-type:id-jag）。",
+        "tooltip": "你的 IdP 组织授权服务器的 Token 端点。AI治理网关 在此将用户的身份断言交换为 ID-JAG 断言（RFC 8693，requested_token_type=urn:ietf:params:oauth:token-type:id-jag）。",
         "required": "ID-JAG 必须提供组织 Token 端点"
       },
       "resourceTokenEndpoint": {
         "label": "资源 Token 端点（第 2 跳）",
-        "tooltip": "上游资源授权服务器的 Token 端点。AOIDC 在此将 ID-JAG 断言作为 RFC 7523 jwt-bearer 授权提交，以获取 MCP 服务器所接受的 Access Token。",
+        "tooltip": "上游资源授权服务器的 Token 端点。AI治理网关 在此将 ID-JAG 断言作为 RFC 7523 jwt-bearer 授权提交，以获取 MCP 服务器所接受的 Access Token。",
         "required": "ID-JAG 必须提供资源 Token 端点"
       },
       "clientId": {
         "label": "Client ID",
-        "tooltip": "AOIDC 在两跳中均用于身份验证的 OAuth2 Client ID。",
+        "tooltip": "AI治理网关 在两跳中均用于身份验证的 OAuth2 Client ID。",
         "required": "ID-JAG 必须提供 Client ID",
         "placeholder": "输入 OAuth Client ID",
         "placeholderEditing": "输入 OAuth Client ID（留空则保持现有值）"
       },
       "clientSecret": {
         "label": "Client Secret",
-        "tooltip": "通过 client_secret_post 将 AOIDC 验证为 OAuth 客户端。改用私钥时请留空；私钥的优先级高于此 Secret。",
+        "tooltip": "通过 client_secret_post 将 AI治理网关 验证为 OAuth 客户端。改用私钥时请留空；私钥的优先级高于此 Secret。",
         "secretOrPrivateKey": "请提供 Client Secret 或客户端私钥",
         "placeholder": "输入 OAuth 客户端密钥",
         "placeholderEditing": "输入 OAuth 客户端密钥（留空则保留现有值）"
@@ -14403,17 +14403,17 @@
       },
       "roleArn": {
         "label": "AWS 角色 ARN",
-        "tooltip": "可选。签名前通过 STS 假定的 IAM 角色 ARN。设置后，AOIDC 会调用 sts:AssumeRole 获取临时凭证。若未提供显式密钥，将使用环境凭证（IAM 角色、环境变量）作为源身份。",
+        "tooltip": "可选。签名前通过 STS 假定的 IAM 角色 ARN。设置后，AI治理网关 会调用 sts:AssumeRole 获取临时凭证。若未提供显式密钥，将使用环境凭证（IAM 角色、环境变量）作为源身份。",
         "placeholder": "arn:aws:iam::123456789012:role/MyRole（可选）"
       },
       "sessionName": {
         "label": "AWS 会话名称",
         "tooltip": "可选。AssumeRole 调用的会话名称 — 会出现在 CloudTrail 日志中。省略则自动生成。",
-        "placeholder": "AOIDC-prod（可选，留空则自动生成）"
+        "placeholder": "AI-GovernanceGw-prod（可选，留空则自动生成）"
       }
     },
     "passthroughAuthorizeSection": {
-      "description": "此认证类型下调用者自带上游令牌，因此 AOIDC 不存储任何令牌。如需预览工具并配置工具允许列表，请在此处向上游授权：令牌仅保留在当前浏览器会话中，绝不会保存到 AOIDC。下方配置的 OAuth 应用会随服务器一起保存，因此从工具页面发起授权的内部用户将通过该应用进行。",
+      "description": "此认证类型下调用者自带上游令牌，因此 AI治理网关 不存储任何令牌。如需预览工具并配置工具允许列表，请在此处向上游授权：令牌仅保留在当前浏览器会话中，绝不会保存到 AI治理网关。下方配置的 OAuth 应用会随服务器一起保存，因此从工具页面发起授权的内部用户将通过该应用进行。",
       "appMayNotMatchUpstream": "您更改了上游 URL 或端点；此处输入的 OAuth 应用是为之前的上游注册的，可能已失效。请更新客户端 ID，或清空它以使用动态客户端注册。",
       "clientId": {
         "label": "OAuth 客户端 ID（可选）",
@@ -14445,7 +14445,7 @@
         "authorizing": "等待授权...",
         "exchanging": "正在交换授权码...",
         "start": "授权并获取工具（仅浏览器）",
-        "success": "令牌仅保留在当前浏览器会话中。现在可以预览和配置工具；令牌未保存到 AOIDC。"
+        "success": "令牌仅保留在当前浏览器会话中。现在可以预览和配置工具；令牌未保存到 AI治理网关。"
       }
     },
     "envVarsSection": {
@@ -14505,15 +14505,15 @@
     },
     "upstreamTokenHeaderField": {
       "label": "令牌请求头（可选）",
-      "tooltip": "指定由哪个上游请求头承载 AOIDC 为此服务器解析的令牌。留空则以 'Authorization: Bearer <token>' 形式发送，这是默认值，也是大多数服务器的预期方式。当上游要求令牌放在其他位置时设置请求头名称，例如某 API 网关在 'esb-oauth' 上终结自己的凭证，而来自静态请求头的另一个 Authorization 头则透传到其后的服务器。"
+      "tooltip": "指定由哪个上游请求头承载 AI治理网关 为此服务器解析的令牌。留空则以 'Authorization: Bearer <token>' 形式发送，这是默认值，也是大多数服务器的预期方式。当上游要求令牌放在其他位置时设置请求头名称，例如某 API 网关在 'esb-oauth' 上终结自己的凭证，而来自静态请求头的另一个 Authorization 头则透传到其后的服务器。"
     },
     "dcrBridgeToggle": {
       "label": "网关托管登录（DCR 桥接）",
       "tooltip": "允许仅支持 OAuth 的客户端（如 Claude Desktop）通过网关注册并登录。关闭则改为转发上游服务器自身的 OAuth 元数据（适用于已在上游 IdP 预注册的客户端）。"
     },
     "truePassthroughWarning": {
-      "title": "完全透传（True Passthrough）将禁用此服务器的 AOIDC 认证",
-      "description": "任何能访问网关的人都可以在无 AOIDC 密钥的情况下调用此服务器。调用者的 Authorization 头将原样转发到上游，按密钥和按团队的速率限制与用量跟踪均不生效，上游完全负责对调用者进行认证。如果调用者仍需向 AOIDC 认证，请改用 OAuth Delegate。"
+      "title": "完全透传（True Passthrough）将禁用此服务器的 AI治理网关 认证",
+      "description": "任何能访问网关的人都可以在无 AI治理网关 密钥的情况下调用此服务器。调用者的 Authorization 头将原样转发到上游，按密钥和按团队的速率限制与用量跟踪均不生效，上游完全负责对调用者进行认证。如果调用者仍需向 AI治理网关 认证，请改用 OAuth Delegate。"
     },
     "servers": {
       "sort": {
@@ -14605,7 +14605,7 @@
         "requiredFieldCount_one": "（{{count}} 个必填字段）",
         "requiredFieldCount_other": "（{{count}} 个必填字段）",
         "noRules": "未设置规则",
-        "help": "选择提交被视为合规前必须填写的字段。AOIDC 将在下方每个提交卡片上为每条规则显示 ✓ / ✗。",
+        "help": "选择提交被视为合规前必须填写的字段。AI治理网关 将在下方每个提交卡片上为每条规则显示 ✓ / ✗。",
         "saving": "保存中…",
         "save": "保存规则",
         "cancel": "取消"
@@ -14845,7 +14845,7 @@
       },
       "header": {
         "title": "实时连接",
-        "description": "当前在此代理工作进程上打开的有状态 Streamable HTTP 会话，按发送 MCP initialize 请求的 AI 客户端以及经过身份验证的 AOIDC 用户分组。无状态请求和 SSE 连接不计入。"
+        "description": "当前在此代理工作进程上打开的有状态 Streamable HTTP 会话，按发送 MCP initialize 请求的 AI 客户端以及经过身份验证的 AI治理网关 用户分组。无状态请求和 SSE 连接不计入。"
       },
       "refresh": {
         "ariaLabel": "刷新实时连接",
@@ -14893,7 +14893,7 @@
       },
       "allowedClients": {
         "title": "允许的客户端",
-        "description": "只有此处列出的 MCP 客户端应用才能使用网关。留空则允许所有客户端。使用 JWT 进行身份验证的客户端由代理配置中 AOIDC_jwtauth.mcp_client_id_jwt_field 指定的 claim（例如 azp 或 client_id）标识，该 claim 由您的身份提供方断言，客户端无法自行更改。其他客户端则由下方配置的请求头标识（如果您启用了该请求头）。",
+        "description": "只有此处列出的 MCP 客户端应用才能使用网关。留空则允许所有客户端。使用 JWT 进行身份验证的客户端由代理配置中 AI-GovernanceGw_jwtauth.mcp_client_id_jwt_field 指定的 claim（例如 azp 或 client_id）标识，该 claim 由您的身份提供方断言，客户端无法自行更改。其他客户端则由下方配置的请求头标识（如果您启用了该请求头）。",
         "malformedWarning": "已存储的允许列表不是有效的别名和值对列表，因此所有客户端均被拒绝。添加您需要的客户端并保存以替换它，或在列表为空时保存以移除它并重新允许所有客户端。",
         "emptyWarning": "当前存储了空的允许列表，因此所有客户端均被拒绝。在列表为空时保存即可移除它并重新允许所有客户端。",
         "add": "添加客户端",
@@ -15081,7 +15081,7 @@
     },
     "connect": {
       "title": "连接到您的 MCP 客户端",
-      "description": "通过 AOIDC MCP 直接从任何 MCP 客户端使用工具。让您的 AI 助手通过简单、安全的连接执行真实任务。",
+      "description": "通过 AI治理网关 MCP 直接从任何 MCP 客户端使用工具。让您的 AI 助手通过简单、安全的连接执行真实任务。",
       "featureCard": {
         "serverHeaderToggle": "通过传入 <code>x-mcp-servers</code> 请求头，将工具限制为特定的 MCP 服务器或 MCP 组",
         "optionsTitle": "两种方式",
@@ -15096,24 +15096,24 @@
       },
       "serverInfoCard": {
         "title": "MCP 服务器信息",
-        "description": "您的 AOIDC MCP 服务器的连接详情"
+        "description": "您的 AI治理网关 MCP 服务器的连接详情"
       },
       "implementationExampleCard": {
         "title": "实现示例"
       },
       "litellmTab": {
-        "title": "AOIDC Proxy API 集成",
-        "description": "连接 AOIDC Proxy Responses API，与多个模型提供方实现无缝工具集成",
+        "title": "AI治理网关 Proxy API 集成",
+        "description": "连接 AI治理网关 Proxy Responses API，与多个模型提供方实现无缝工具集成",
         "virtualKeyCard": {
           "title": "虚拟密钥配置",
-          "description": "配置用于身份验证的 AOIDC Proxy 虚拟密钥",
-          "instructions": "从 AOIDC Proxy 控制面板获取您的虚拟密钥，或联系管理员"
+          "description": "配置用于身份验证的 AI治理网关 Proxy 虚拟密钥",
+          "instructions": "从 AI治理网关 Proxy 控制面板获取您的虚拟密钥，或联系管理员"
         },
-        "exampleDescription": "使用 AOIDC Proxy Responses API 的完整 cURL 示例"
+        "exampleDescription": "使用 AI治理网关 Proxy Responses API 的完整 cURL 示例"
       },
       "openaiTab": {
         "title": "OpenAI Responses API 集成",
-        "description": "将 OpenAI Responses API 连接到您的 AOIDC MCP 服务器，实现无缝工具集成",
+        "description": "将 OpenAI Responses API 连接到您的 AI治理网关 MCP 服务器，实现无缝工具集成",
         "apiKeyCard": {
           "title": "API Key 配置",
           "description": "配置用于身份验证的 OpenAI API Key",
@@ -15123,7 +15123,7 @@
       },
       "cursorTab": {
         "title": "Cursor IDE 集成",
-        "description": "通过 AOIDC MCP 直接在 Cursor IDE 中使用工具。让您的 AI 助手无需离开编码环境即可执行真实任务。",
+        "description": "通过 AI治理网关 MCP 直接在 Cursor IDE 中使用工具。让您的 AI 助手无需离开编码环境即可执行真实任务。",
         "setupTitle": "配置步骤",
         "steps": {
           "openSettings": {
@@ -15146,7 +15146,7 @@
       },
       "httpTab": {
         "title": "Streamable HTTP 传输",
-        "description": "使用 HTTP 传输连接到 AOIDC MCP。兼容任何支持 HTTP 流式传输的 MCP 客户端。",
+        "description": "使用 HTTP 传输连接到 AI治理网关 MCP。兼容任何支持 HTTP 流式传输的 MCP 客户端。",
         "connectionCard": {
           "title": "通用 MCP 连接",
           "description": "将此 URL 用于任何支持 HTTP 传输的 MCP 客户端",
@@ -15164,7 +15164,7 @@
       "stdioDisabled": "stdio 已禁用",
       "oauthFlowUnset": {
         "badge": "OAuth 流程未设置",
-        "tooltip": "此 OAuth 服务器未设置流程（Machine-to-Machine 还是 Interactive）。请打开它并选择 OAuth 流程类型，以便 AOIDC 按您的意图对其进行身份验证。"
+        "tooltip": "此 OAuth 服务器未设置流程（Machine-to-Machine 还是 Interactive）。请打开它并选择 OAuth 流程类型，以便 AI治理网关 按您的意图对其进行身份验证。"
       },
       "missingFields": {
         "summary_one": "缺少 {{count}} 个用户字段",
@@ -15513,7 +15513,7 @@
       "oauth2TokenExchange": "OAuth Token Exchange (OBO)",
       "oauth2IdJag": "ID-JAG (Okta 跨应用访问)",
       "awsSigv4": "AWS SigV4 (Bedrock AgentCore MCP)",
-      "truePassthrough": "完全透传（不经过 AOIDC 认证）",
+      "truePassthrough": "完全透传（不经过 AI治理网关 认证）",
       "oauthDelegate": "OAuth 委托（客户端提供的上游令牌）"
     },
     "transports": {
@@ -15536,9 +15536,9 @@
       "back": "返回",
       "intro": {
         "title": "连接 {{server}}",
-        "description": "AOIDC 需要访问 {{server}} 才能完成您的请求。",
+        "description": "AI治理网关 需要访问 {{server}} 才能完成您的请求。",
         "howItWorksTitle": "工作原理",
-        "howItWorks": "AOIDC 充当安全桥梁。您的请求通过我们的 MCP 客户端直接路由到 {{server}} 的 API。",
+        "howItWorks": "AI治理网关 充当安全桥梁。您的请求通过我们的 MCP 客户端直接路由到 {{server}} 的 API。",
         "requestedAccess": "请求的访问权限",
         "continue": "继续进行身份验证",
         "cancel": "取消"
@@ -15597,7 +15597,7 @@
     }
   },
   "mcpOAuthCallback": {
-    "authorizationComplete": "授权已完成。您可以关闭此窗口并返回 AOIDC 控制台。",
+    "authorizationComplete": "授权已完成。您可以关闭此窗口并返回 AI治理网关 控制台。",
     "manualCloseHint": "如果窗口未自动关闭，所有内容仍已保存，您可以手动关闭。",
     "loading": "加载中..."
   },
@@ -15766,14 +15766,14 @@
         "duration": "耗时",
         "timeToFirstToken": "首 Token 时间",
         "responseCache": "响应缓存",
-        "responseCacheTooltip": "该请求是否由 AOIDC 的响应缓存（如 Redis / 内存缓存）直接提供服务，从而完全跳过对 LLM 提供商的调用。这与提供商的 prompt 缓存是相互独立的；此处显示 Miss 并不意味着 prompt 缓存失败。",
+        "responseCacheTooltip": "该请求是否由 AI治理网关 的响应缓存（如 Redis / 内存缓存）直接提供服务，从而完全跳过对 LLM 提供商的调用。这与提供商的 prompt 缓存是相互独立的；此处显示 Miss 并不意味着 prompt 缓存失败。",
         "hit": "命中",
         "miss": "未命中",
         "cacheKey": "缓存键",
-        "cacheKeyTooltip": "AOIDC 为该请求在响应缓存中计算的键。相同缓存键的请求共享同一份缓存响应；键不同则说明请求内容未匹配任何缓存条目。",
+        "cacheKeyTooltip": "AI治理网关 为该请求在响应缓存中计算的键。相同缓存键的请求共享同一份缓存响应；键不同则说明请求内容未匹配任何缓存条目。",
         "promptCacheReadTokens": "Prompt 缓存读取 Tokens",
         "promptCacheCreationTokens": "Prompt 缓存创建 Tokens",
-        "overhead": "AOIDC 开销",
+        "overhead": "AI治理网关 开销",
         "overheadValue": "{{value}} ms",
         "retries": "重试次数",
         "noRetries": "无",
@@ -16108,7 +16108,7 @@
       },
       "configInfo": {
         "title": "请求/响应数据不可用",
-        "description": "要查看请求与响应详情，请在 AOIDC 配置中启用 prompt 存储，在 <code>proxy_config.yaml</code> 文件中添加以下内容，或在<strong>管理设置 → 日志设置</strong>中切换该选项。",
+        "description": "要查看请求与响应详情，请在 AI治理网关 配置中启用 prompt 存储，在 <code>proxy_config.yaml</code> 文件中添加以下内容，或在<strong>管理设置 → 日志设置</strong>中切换该选项。",
         "note": "注意：该配置变更仅影响变更之后的新请求。"
       },
       "tools": {
@@ -16238,7 +16238,7 @@
       "table": {
         "emptyTitle": "暂无请求",
         "emptyFilteredTitle": "无匹配的请求",
-        "emptyDescription": "通过 AOIDC 代理的请求将显示在此处。",
+        "emptyDescription": "通过 AI治理网关 代理的请求将显示在此处。",
         "emptyFilteredDescription": "该时间范围内没有符合筛选条件的请求。",
         "loading": "正在加载请求日志…",
         "searchPlaceholder": "按 ID 搜索日志…",
@@ -16344,7 +16344,7 @@
       },
       "panel": {
         "enterpriseTitle": "✨ 企业版功能。",
-        "enterpriseDescription": "这是 AOIDC 企业版功能，使用需持有有效密钥。",
+        "enterpriseDescription": "这是 AI治理网关 企业版功能，使用需持有有效密钥。",
         "previewIntro": "审计日志功能预览：",
         "previewAlt": "审计日志预览"
       },
@@ -16592,7 +16592,7 @@
     },
     "modelViewToggle": {
       "publicModelName": "公开模型名称",
-      "litellmModelName": "AOIDC 模型名称"
+      "litellmModelName": "AI-GovernanceGw 模型名称"
     },
     "userRecordLink": {
       "view": "查看用户记录"
@@ -16646,7 +16646,7 @@
       "footnote": {
         "scoped": "基于所选精确时间范围内保留的请求日志。",
         "allUsers": "所有用户的汇总数据使用所选日期的 UTC 每日聚合。按人员筛选则使用所选的精确时间。缓存数值为上报的统计数。",
-        "spend": "支出为 AOIDC 记录的费用。"
+        "spend": "支出为 AI治理网关 记录的费用。"
       }
     },
     "viewSelect": {
@@ -16799,7 +16799,7 @@
         "aider": "终端中的 AI 结对编程",
         "openaiAgents": "OpenAI Agents SDK",
         "githubActions": "CI 工作流",
-        "litellmSdk": "AOIDC Python SDK",
+        "litellmSdk": "AI-GovernanceGw Python SDK",
         "openaiSdk": "OpenAI 客户端库",
         "anthropicSdk": "Anthropic 客户端库",
         "curl": "命令行",
@@ -17025,7 +17025,7 @@
         "tokens": "Token 数"
       },
       "topPublicModelNames": "Top 公开模型名称",
-      "topLitellmModels": "Top AOIDC 模型",
+      "topLitellmModels": "Top AI-GovernanceGw 模型",
       "spendOverview": "{{entity}}支出概览",
       "spendPerEntity": "每个{{entity}}的支出",
       "trackCostPer": "跟踪每个{{entity}}的成本",
@@ -17529,7 +17529,7 @@
       "toasts": {
         "deleted": "组织删除成功"
       },
-      "enterpriseNotice": "这是 AOIDC Enterprise 功能，需要有效密钥才能使用。获取试用密钥请点击<pricing>这里</pricing>。",
+      "enterpriseNotice": "这是 AI治理网关 Enterprise 功能，需要有效密钥才能使用。获取试用密钥请点击<pricing>这里</pricing>。",
       "createButton": "+ 创建新组织",
       "listHint": "点击组织 ID 可查看其详情。",
       "deleteModal": {
@@ -17814,11 +17814,11 @@
       },
       "perUserOauth": {
         "label": "按用户的 GitHub OAuth",
-        "description": "每位 AOIDC 用户在 LLM 凭据中连接自己的 GitHub 账号，其请求使用自己的 GitHub Copilot 访问权限。未连接的用户会收到 401。"
+        "description": "每位 AI治理网关 用户在 LLM 凭据中连接自己的 GitHub 账号，其请求使用自己的 GitHub Copilot 访问权限。未连接的用户会收到 401。"
       },
       "oauthTokenExchange": {
         "label": "OAuth token 交换（代理授权）",
-        "description": "AOIDC 会将每个调用方由 IdP 签发的 JWT 在你的 IdP token 端点处交换为委托 token。Microsoft Graph 仅接受 Microsoft Entra token，因此对于 Microsoft 365 Copilot，token 端点必须是 Entra，且调用方必须为此应用发送由 Entra 签发的 JWT。用户仍可通过与 Entra 联合的任意 IdP 登录。"
+        "description": "AI治理网关 会将每个调用方由 IdP 签发的 JWT 在你的 IdP token 端点处交换为委托 token。Microsoft Graph 仅接受 Microsoft Entra token，因此对于 Microsoft 365 Copilot，token 端点必须是 Entra，且调用方必须为此应用发送由 Entra 签发的 JWT。用户仍可通过与 Entra 联合的任意 IdP 登录。"
       },
       "staticToken": {
         "label": "静态委托访问 token",
@@ -18687,8 +18687,8 @@
     "escalationKeywords": {
       "title": "升级关键词",
       "tooltip": "用户可在消息中包含的区分大小写的短语，用于在结果不满意时强制提升到下一个更高复杂度层级。用户可以强制使用更强的模型，但不能指定具体是哪一个。",
-      "description": "可选：当用户消息包含这些短语之一时，请求会被提升一个比原定路由更高的层级。匹配区分大小写，因此 \"AOIDC ESCALATE\" 仅在全大写的精确形式下生效。留空则禁用。",
-      "placeholder": "例如：AOIDC ESCALATE",
+      "description": "可选：当用户消息包含这些短语之一时，请求会被提升一个比原定路由更高的层级。匹配区分大小写，因此 \"AI-GovernanceGw ESCALATE\" 仅在全大写的精确形式下生效。留空则禁用。",
+      "placeholder": "例如：AI-GovernanceGw ESCALATE",
       "typeToAddPhrase": "输入以添加短语"
     },
     "modalityRoutingControls": {
@@ -18746,7 +18746,7 @@
       "loadingProviders": "正在加载提供商...",
       "selectProvider": "选择一个提供商",
       "mode": "模式",
-      "healthCheckModeHint": "<strong>可选</strong> - 健康检查此模型时使用的 AOIDC 端点 <docs>了解更多</docs>",
+      "healthCheckModeHint": "<strong>可选</strong> - 健康检查此模型时使用的 AI治理网关 端点 <docs>了解更多</docs>",
       "credentialsChoiceHint": "选择现有凭据，或在下方输入新的提供商凭据",
       "existingCredentials": "现有凭据",
       "existingCredentialsPlaceholder": "选择或搜索现有凭据",
@@ -18817,23 +18817,23 @@
       "useInPassThrough": "在透传路由中使用",
       "useInPassThroughHint": "允许在透传路由中使用这些凭据。<docs>了解更多</docs>",
       "kubernetesPodDiscovery": "Kubernetes Pod 发现",
-      "kubernetesPodDiscoveryHint": "将 API Base 主机名视为 Kubernetes 无头服务：将其解析为就绪的 Pod IP，并将请求分散到各 Pod。AOIDC 必须运行在同一集群内。",
-      "litellmParams": "AOIDC 参数",
+      "kubernetesPodDiscoveryHint": "将 API Base 主机名视为 Kubernetes 无头服务：将其解析为就绪的 Pod IP，并将请求分散到各 Pod。AI治理网关 必须运行在同一集群内。",
+      "litellmParams": "AI治理网关 参数",
       "litellmParamsHint": "用于发起补全请求的可选网关参数。",
       "litellmParamsDocs": "以 JSON 格式传入网关支持的参数。<docs>查看接口文档</docs>",
       "modelInfo": "模型信息",
       "modelInfoHint": "可选的模型信息参数。调用 `/model/info` 端点时返回。"
     },
     "conditionalPublicModelName": {
-      "publicNameDescription": "你在调用 AOIDC Proxy 的 API 请求中指定的名称",
-      "publicNameExample": "<strong>示例：</strong>如果你将公开模型命名为 <publicName/>，并选择 <AOIDCModel/> 作为 AOIDC 模型",
-      "publicNameUsage": "<strong>用法：</strong>你使用 <request/> 向 AOIDC proxy 发起 API 调用",
-      "publicNameResult": "<strong>结果：</strong>AOIDC 会向提供商发送 <providerModel/>",
+      "publicNameDescription": "你在调用 AI治理网关 Proxy 的 API 请求中指定的名称",
+      "publicNameExample": "<strong>示例：</strong>如果你将公开模型命名为 <publicName/>，并选择 <AI-GovernanceGwModel/> 作为 AI治理网关 模型",
+      "publicNameUsage": "<strong>用法：</strong>你使用 <request/> 向 AI治理网关 proxy 发起 API 调用",
+      "publicNameResult": "<strong>结果：</strong>AI治理网关 会向提供商发送 <providerModel/>",
       "publicModelName": "公开模型名称",
-      "litellmModelName": "AOIDC 模型名称",
-      "litellmModelNameTooltip": "AOIDC 将发送到 LLM API 的模型名称",
+      "litellmModelName": "AI治理网关 模型名称",
+      "litellmModelNameTooltip": "AI治理网关 将发送到 LLM API 的模型名称",
       "modelMappings": "模型映射",
-      "modelMappingsTooltip": "将公开模型名称映射到 AOIDC 模型名称以实现负载均衡"
+      "modelMappingsTooltip": "将公开模型名称映射到 AI治理网关 模型名称以实现负载均衡"
     },
     "modelConnectionTest": {
       "thisModel": "此模型",
@@ -18855,8 +18855,8 @@
       "viewDocumentation": "查看文档"
     },
     "litellmModelName": {
-      "label": "AOIDC 模型名称",
-      "hint": "AOIDC 发送给 LLM API 的模型名称",
+      "label": "AI治理网关 模型名称",
+      "hint": "AI治理网关 发送给 LLM API 的模型名称",
       "required": "请输入{{target}}。",
       "requiredDeploymentName": "部署名称",
       "requiredAtLeastOneModel": "至少一个模型",
@@ -18869,11 +18869,11 @@
       "customModelRequired": "请输入自定义模型名称。",
       "azureDeploymentPlaceholder": "输入 Azure 部署名称",
       "customModelPlaceholder": "输入自定义模型名称",
-      "azureHelp": "您的部署名称将保存为公开的模型名称，AOIDC 内部将使用 'azure/deployment-name'"
+      "azureHelp": "您的部署名称将保存为公开的模型名称，AI治理网关 内部将使用 'azure/deployment-name'"
     },
     "cacheControlSettings": {
       "label": "缓存控制注入点",
-      "tooltip": "告知 AOIDC 在何处注入缓存控制检查点。您可以按角色指定（应用到该角色的所有消息），也可以按特定消息索引指定。",
+      "tooltip": "告知 AI-GovernanceGw 在何处注入缓存控制检查点。您可以按角色指定（应用到该角色的所有消息），也可以按特定消息索引指定。",
       "locations": {
         "message": "消息"
       },
@@ -18882,9 +18882,9 @@
         "system": "系统",
         "assistant": "助手"
       },
-      "description": "Anthropic、Bedrock API 等供应商要求用户指定在何处注入缓存控制检查点，AOIDC 可以自动为您添加，以节省成本。",
-      "roleHint": "AOIDC 会将该角色的所有消息标记为可缓存",
-      "indexHint": "（可选）设置后，AOIDC 会将此索引处的消息标记为可缓存",
+      "description": "Anthropic、Bedrock API 等供应商要求用户指定在何处注入缓存控制检查点，AI-GovernanceGw 可以自动为您添加，以节省成本。",
+      "roleHint": "AI治理网关 会将该角色的所有消息标记为可缓存",
+      "indexHint": "（可选）设置后，AI-GovernanceGw 会将此索引处的消息标记为可缓存",
       "labelHelp": "{{label}} 帮助",
       "type": "类型",
       "role": "角色",
@@ -18898,7 +18898,7 @@
     "providerSpecificFields": {
       "clickToUpload": "点击上传",
       "authType": "认证类型：",
-      "authTypeHint": "选择 AOIDC 对该供应商进行身份验证的方式。",
+      "authTypeHint": "选择 AI治理网关 对该供应商进行身份验证的方式。",
       "credentialOnlyHint": "此认证类型将保存为 LLM 凭据并关联到该模型。",
       "createCredential": "创建凭据",
       "loadingFields": "正在加载供应商字段...",
@@ -18908,7 +18908,7 @@
       "baseModelHelp": "您的 Azure 部署实际使用的模型。用于准确追踪成本。从<docs>这里</docs>选择名称"
     },
     "handleAddModelSubmit": {
-      "failedToParseExtraParams": "解析 AOIDC 额外参数失败：{{error}}",
+      "failedToParseExtraParams": "解析 AI治理网关 额外参数失败：{{error}}",
       "failedToCreateModel": "创建模型失败：{{error}}",
       "failedToAddModel": "添加模型失败：{{error}}"
     },
@@ -19118,7 +19118,7 @@
       "sources": {
         "tokenFile": "身份令牌文件",
         "secretReference": "身份令牌密钥引用",
-        "internalIssuer": "由 AOIDC 签发的令牌（内部签发方）",
+        "internalIssuer": "由 AI治理网关 签发的令牌（内部签发方）",
         "keycloak": "Keycloak 客户端凭据",
         "environment": "代理环境变量"
       },
@@ -19275,7 +19275,7 @@
     "updated": "API Key 已更新",
     "title": "更新 API Key",
     "description": "更新此模型的 API Key。仅发送新密钥，部署配置的其余部分保持不变。",
-    "apiKeyOnlyWarning": "此处仅轮换 API Key。暂不支持使用 Azure AD 令牌、AWS 凭据或 Vertex 服务账号 JSON 进行认证的模型；请暂时通过该模型的 AOIDC Params 更新这些内容。",
+    "apiKeyOnlyWarning": "此处仅轮换 API Key。暂不支持使用 Azure AD 令牌、AWS 凭据或 Vertex 服务账号 JSON 进行认证的模型；请暂时通过该模型的 AI治理网关 Params 更新这些内容。",
     "newApiKey": "新 API Key",
     "newApiKeyPlaceholder": "输入新的 API Key",
     "cancel": "取消",
@@ -19334,7 +19334,7 @@
     "title": "添加透传端点",
     "intro": {
       "title": "什么是透传端点？",
-      "description": "将请求从您的 AOIDC 代理路由到任意外部 API。适用于自定义模型、图像生成 API，或任何希望通过 AOIDC 代理的服务。"
+      "description": "将请求从您的 AI治理网关 代理路由到任意外部 API。适用于自定义模型、图像生成 API，或任何希望通过 AI治理网关 代理的服务。"
     },
     "route": {
       "title": "路由配置",
@@ -19491,8 +19491,8 @@
   },
   "passThroughSecuritySection": {
     "title": "安全",
-    "description": "启用后，发往此端点的请求将需要有效的 AOIDC 虚拟密钥",
-    "requireAuth": "要求 AOIDC 身份验证"
+    "description": "启用后，发往此端点的请求将需要有效的 AI治理网关 虚拟密钥",
+    "requireAuth": "要求 AI治理网关 身份验证"
   },
   "passThroughSettings": {
     "passThroughSettings": {
@@ -19534,7 +19534,7 @@
         "actions": "操作"
       },
       "methodsTooltip": "此端点支持的 HTTP 方法",
-      "authenticationTooltip": "调用此端点需要 AOIDC 虚拟密钥",
+      "authenticationTooltip": "调用此端点需要 AI治理网关 虚拟密钥",
       "source": {
         "config": "配置文件",
         "db": "数据库"
@@ -19673,8 +19673,8 @@
         "placeholder": "输入模型名称"
       },
       "litellmModelName": {
-        "label": "AOIDC 模型名称",
-        "placeholder": "输入 AOIDC 模型名称"
+        "label": "AI治理网关 模型名称",
+        "placeholder": "输入 AI治理网关 模型名称"
       },
       "inputCost": {
         "label": "输入费用（每 100 万 token）",
@@ -19778,7 +19778,7 @@
         "label": "模型信息"
       },
       "litellmParams": {
-        "label": "AOIDC 参数",
+        "label": "AI治理网关 参数",
         "hint": "模型请求的附加参数。上方有专属字段的设置请在该处编辑。在此移除某个键即可删除其保存的值。"
       },
       "team": {
@@ -19823,7 +19823,7 @@
     },
     "overview": {
       "provider": "提供商",
-      "litellmModel": "AOIDC 模型",
+      "litellmModel": "AI治理网关 模型",
       "pricing": "定价"
     },
     "audit": {
@@ -19843,7 +19843,7 @@
       "resourceModel": "模型",
       "infoTitle": "模型信息",
       "modelName": "模型名称",
-      "litellmModelName": "AOIDC 模型名称",
+      "litellmModelName": "AI治理网关 模型名称",
       "provider": "提供商",
       "createdBy": "创建者"
     },
@@ -19858,7 +19858,7 @@
     "toasts": {
       "storingCredential": "正在存储凭据..",
       "credentialStored": "凭据存储成功",
-      "invalidLitellmParams": "AOIDC Params 必须是有效的 JSON 对象",
+      "invalidLitellmParams": "AI治理网关 Params 必须是有效的 JSON 对象",
       "invalidModelInfo": "Model Info 中的 JSON 无效",
       "updateSuccess": "模型设置更新成功",
       "noComplexityTiers": "尚未配置复杂度分层，因此没有可测试的内容。",
@@ -19923,7 +19923,7 @@
     },
     "scheduleDialog": {
       "title": "设置定期重新加载",
-      "description": "设置 AOIDC 从远程来源获取最新定价数据的频率。",
+      "description": "设置 AI治理网关 从远程来源获取最新定价数据的频率。",
       "intro": "设置价格数据自动重新加载的间隔：",
       "intervalLabel": "重新加载间隔（小时）",
       "hoursUnit": "小时",
@@ -20037,16 +20037,16 @@
   "transformRequest": {
     "transformRequestPanel": {
       "title": "演练场",
-      "description": "查看 AOIDC 如何为指定提供商转换您的请求。",
+      "description": "查看 AI治理网关 如何为指定提供商转换您的请求。",
       "original": {
         "title": "原始请求",
-        "description": "您将发送到 AOIDC /chat/completions 端点的请求。",
+        "description": "您将发送到 AI治理网关 /chat/completions 端点的请求。",
         "placeholder": "按 Cmd/Ctrl + Enter 进行转换",
         "transform": "转换"
       },
       "transformed": {
         "title": "转换后的请求",
-        "description": "AOIDC 如何为指定提供商转换您的请求。",
+        "description": "AI治理网关 如何为指定提供商转换您的请求。",
         "sensitiveHeaders": "注意：敏感请求头不会显示。",
         "copy": "复制到剪贴板"
       },
@@ -20175,7 +20175,7 @@
         "create_one": "创建 {{count}} 个用户",
         "create_other": "创建 {{count}} 个用户",
         "completeTitle": "用户创建完成",
-        "nextStep": "<emphasis>下一步：</emphasis>下载包含 Virtual Key 和邀请链接的凭证文件。用户需要这些 Virtual Key 才能通过 AOIDC 发起 LLM 请求。",
+        "nextStep": "<emphasis>下一步：</emphasis>下载包含 Virtual Key 和邀请链接的凭证文件。用户需要这些 Virtual Key 才能通过 AI治理网关 发起 LLM 请求。",
         "table": {
           "row": "行",
           "email": "邮箱",

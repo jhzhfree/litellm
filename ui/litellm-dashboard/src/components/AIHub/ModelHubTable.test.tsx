@@ -558,9 +558,9 @@ describe("ModelHubTable", () => {
 
       const garden = await screen.findByTestId("decision-model-garden");
       expect(garden).toHaveTextContent("2 decision models across 2 providers answer on /v1/decisions");
-      expect(garden).toHaveTextContent("1 more needs a newer AOIDC version.");
+      expect(garden).toHaveTextContent("1 more needs a newer AI-GovernanceGw version.");
       const newCard = within(garden).getByTestId("decision-model-card-newvendor/decider");
-      expect(within(newCard).getByRole("link", { name: "Needs a newer AOIDC" })).toHaveAttribute(
+      expect(within(newCard).getByRole("link", { name: "Needs a newer AI-GovernanceGw" })).toHaveAttribute(
         "href",
         "/docs",
       );
@@ -620,7 +620,7 @@ describe("ModelHubTable", () => {
 
       const garden = await screen.findByTestId("decision-model-garden");
       expect(garden).toHaveTextContent("3 decision models across 3 providers answer on /v1/decisions");
-      expect(garden).not.toHaveTextContent("a newer AOIDC version");
+      expect(garden).not.toHaveTextContent("a newer AI-GovernanceGw version");
     });
 
     it("offers a decisions mode option that keeps the garden, hides the chat rows, and points at the garden", async () => {

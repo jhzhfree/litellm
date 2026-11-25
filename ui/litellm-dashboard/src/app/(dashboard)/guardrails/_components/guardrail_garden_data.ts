@@ -75,7 +75,7 @@ export const gardenTagLabel = (tag: string, t: TFunction): string => {
   return key ? t(key) : tag;
 };
 
-const litellmContentFilterLogo = guardrailLogoMap["AOIDC Content Filter"];
+const litellmContentFilterLogo = guardrailLogoMap["AI-GovernanceGw Content Filter"];
 
 export const LITELLM_CONTENT_FILTER_CARDS: GuardrailCardInfo[] = [
   {
@@ -711,7 +711,7 @@ export const PARTNER_GUARDRAIL_CARDS: GuardrailCardInfo[] = [
     id: "wingback",
     name: "Wingback",
     description:
-      "Wingback runtime security for AOIDC — PII detection, prompt injection, toxic content, and policy enforcement via the Wingback connectors service.",
+      "Wingback runtime security for AI-GovernanceGw — PII detection, prompt injection, toxic content, and policy enforcement via the Wingback connectors service.",
     descriptionKey: "guardrails.gardenCatalog.partner.wingback.description",
     category: "partner",
     logo: guardrailLogoMap["Wingback"],

@@ -77,7 +77,7 @@ describe("AdvancedSettings", () => {
       fireEvent.click(screen.getByText("Advanced Settings"));
     });
     await waitFor(() => {
-      expect(screen.getByText("AOIDC Params")).toBeInTheDocument();
+      expect(screen.getByText("AI-GovernanceGw Params")).toBeInTheDocument();
     });
   });
 

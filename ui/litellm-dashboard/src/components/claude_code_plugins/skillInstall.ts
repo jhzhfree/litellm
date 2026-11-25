@@ -69,7 +69,7 @@ set -euo pipefail
 set +x
 skill_tmp=$(mktemp -d)
 trap 'rm -rf "$skill_tmp"' EXIT
-IFS= read -r -s -p 'AOIDC API key: ' skill_key </dev/tty
+IFS= read -r -s -p 'AI-GovernanceGw API key: ' skill_key </dev/tty
 export -n skill_key
 printf '\\n'
 printf '%s: Bearer %s\\n' ${shellQuote(options.authHeaderName)} "$skill_key" |

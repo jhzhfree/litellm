@@ -31,11 +31,11 @@ describe("SearchSelect", () => {
     expect(screen.getByRole("combobox")).toHaveValue("Growth");
   });
 
-  it("should keep the AOIDC Gateway logo visible after selection and remove it when cleared", async () => {
+  it("should keep the AI-GovernanceGw Gateway logo visible after selection and remove it when cleared", async () => {
     const user = userEvent.setup();
     const options = [
       {
-        label: "AOIDC Gateway",
+        label: "AI-GovernanceGw Gateway",
         value: "LITELLM_PROXY",
         icon: <ProviderLogo provider="litellm_proxy" className="w-5 h-5" />,
       },
@@ -47,10 +47,10 @@ describe("SearchSelect", () => {
     render(<Controlled />);
     const input = screen.getByRole("combobox", { name: "Provider" });
 
-    await chooseSelectOption(user, input, /AOIDC Gateway/);
+    await chooseSelectOption(user, input, /AI-GovernanceGw Gateway/);
     await user.tab();
 
-    expect(input).toHaveValue("AOIDC Gateway");
+    expect(input).toHaveValue("AI-GovernanceGw Gateway");
     expect(screen.getByRole("img", { name: "litellm_proxy logo" })).toHaveAttribute(
       "src",
       expect.stringContaining("ai_gw_logo"),

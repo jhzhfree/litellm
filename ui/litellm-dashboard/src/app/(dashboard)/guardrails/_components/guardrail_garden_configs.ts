@@ -10,7 +10,7 @@ export interface GuardrailPreset {
 }
 
 export const GUARDRAIL_PRESETS: Record<string, GuardrailPreset> = {
-  // ── AOIDC Content Filter: Content Categories ──
+  // ── AI-GovernanceGw Content Filter: Content Categories ──
   cf_denied_financial: {
     provider: "LitellmContentFilter",
     categoryName: "denied_financial_advice",
@@ -145,7 +145,7 @@ export const GUARDRAIL_PRESETS: Record<string, GuardrailPreset> = {
     defaultOn: false,
   },
 
-  // ── AOIDC Content Filter: Patterns & Keywords (no category) ──
+  // ── AI-GovernanceGw Content Filter: Patterns & Keywords (no category) ──
   cf_patterns: {
     provider: "LitellmContentFilter",
     guardrailNameSuggestion: "Pattern Matching",

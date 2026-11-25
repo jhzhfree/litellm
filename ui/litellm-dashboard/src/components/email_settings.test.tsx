@@ -44,7 +44,7 @@ describe("EmailSettings", () => {
     renderWithProviders(<EmailSettings accessToken="sk-test" premiumUser alerts={alerts} />);
 
     expect(screen.getByText("Email Server Settings")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /AOIDC Docs: email alerts/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /AI-GovernanceGw Docs: email alerts/ })).toHaveAttribute(
       "href",
       "/docs",
     );

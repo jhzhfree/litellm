@@ -229,7 +229,7 @@ describe("Sidebar (leftnav)", () => {
   const collapsedLogos = () => {
     const home = within(screen.getByRole("link", { name: /litellm home/i }));
     return {
-      light: home.getByRole("img", { name: "AOIDC" }),
+      light: home.getByRole("img", { name: "AI-GovernanceGw" }),
       dark: home.getByRole("presentation", { hidden: true }),
     };
   };
@@ -243,7 +243,7 @@ describe("Sidebar (leftnav)", () => {
     expect(dark).toHaveAttribute("src", expect.stringMatching(/\/get_image\?theme=dark&variant=monogram$/));
   });
 
-  it("keeps a configured custom logo when collapsed instead of the AOIDC monogram", () => {
+  it("keeps a configured custom logo when collapsed instead of the AI-GovernanceGw monogram", () => {
     mockUseThemeImpl = () => ({
       ...unbrandedTheme(),
       logoUrl: "https://cdn.example.com/logo.png",

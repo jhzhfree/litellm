@@ -4,7 +4,7 @@ const chatCompletionsExample = (baseUrl: string, model: string): string => `impo
 
 client = openai.OpenAI(
     api_key="your_api_key",
-    base_url=${JSON.stringify(baseUrl)}  # Your AOIDC Proxy URL
+    base_url=${JSON.stringify(baseUrl)}  # Your AI-GovernanceGw Proxy URL
 )
 
 response = client.chat.completions.create(
@@ -22,7 +22,7 @@ print(response.choices[0].message.content)`;
 const systemOneExample = (baseUrl: string, model: string, keyHeaderName: string): string => `import requests
 
 response = requests.post(
-    ${JSON.stringify(`${baseUrl}/v1/systemone`)},  # Your AOIDC Proxy URL
+    ${JSON.stringify(`${baseUrl}/v1/systemone`)},  # Your AI-GovernanceGw Proxy URL
     headers={${JSON.stringify(keyHeaderName)}: "Bearer your_api_key"},
     json={
         "model": ${JSON.stringify(model)},
@@ -41,7 +41,7 @@ print(response.json()["answers"])`;
 const extractionExample = (baseUrl: string, model: string, keyHeaderName: string): string => `import requests
 
 response = requests.post(
-    ${JSON.stringify(`${baseUrl}/v1/extraction`)},  # Your AOIDC Proxy URL
+    ${JSON.stringify(`${baseUrl}/v1/extraction`)},  # Your AI-GovernanceGw Proxy URL
     headers={${JSON.stringify(keyHeaderName)}: "Bearer your_api_key"},
     json={
         "model": ${JSON.stringify(model)},

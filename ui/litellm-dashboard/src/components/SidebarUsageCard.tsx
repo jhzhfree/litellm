@@ -77,7 +77,7 @@ const buildMeters = (data: RemainingUsage | null, t: TFunction): MeterData[] => 
 
 /**
  * Bottom-dock "Enterprise usage" card for the sidebar. Backed only by data
- * AI-GovernanceGw actually exposes: seat (user) and team allocations from the license,
+ * AOIDC actually exposes: seat (user) and team allocations from the license,
  * plus the license expiry. There is no plan-level spend or request cap, so the
  * design's Spend / API-request meters are intentionally omitted.
  */

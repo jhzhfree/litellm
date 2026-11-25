@@ -50,7 +50,7 @@ describe("APIReferenceView", () => {
     render(<APIReferenceView proxySettings={{ PROXY_BASE_URL: "https://proxy.litellm.test" }} />);
 
     expect(screen.getByText("OpenAI Compatible Proxy: API Reference")).toBeInTheDocument();
-    expect(screen.getByText(/AI-GovernanceGw is OpenAI Compatible/)).toBeInTheDocument();
+    expect(screen.getByText(/AOIDC is OpenAI Compatible/)).toBeInTheDocument();
 
     const docsLink = screen.getByRole("link", { name: /API Reference Docs/ });
     expect(docsLink).toHaveAttribute("href", "/docs");

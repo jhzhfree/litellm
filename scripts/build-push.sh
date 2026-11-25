@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/build-push.sh — 智能构建 AI-GovernanceGw 镜像并推送到本地 registry
+# scripts/build-push.sh — 智能构建 AOIDC 镜像并推送到本地 registry
 #
 # 用法:
 #   scripts/build-push.sh             # 自动选择构建方式 + 推送 gateway:1

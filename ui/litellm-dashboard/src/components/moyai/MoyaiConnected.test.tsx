@@ -13,7 +13,7 @@ describe("MoyaiConnected", () => {
     expect(screen.getByText("Virtual key issued")).toBeInTheDocument();
     expect(screen.getByText("moyai-moyai.example.com")).toBeInTheDocument();
     expect(screen.getByText(/models available through LiteLLM/)).toHaveTextContent(
-      "42 models available through AI-GovernanceGw",
+      "42 models available through AOIDC",
     );
     expect(screen.getByRole("link", { name: /Open Moyai/ })).toHaveAttribute("href", "https://moyai.example.com");
     expect(screen.getByRole("link", { name: /Back to AI Gateway/ })).toHaveAttribute("href", "/ui/");

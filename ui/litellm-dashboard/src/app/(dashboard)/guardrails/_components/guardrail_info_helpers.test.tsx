@@ -130,10 +130,10 @@ describe("guardrail_info_helpers", () => {
   });
 
   describe("shouldRenderContentFilterConfigSettings", () => {
-    it("should return true when dynamic providers include AI-GovernanceGw Content Filter", () => {
+    it("should return true when dynamic providers include AOIDC Content Filter", () => {
       populateGuardrailProviders({
         litellm_content_filter: {
-          ui_friendly_name: "AI-GovernanceGw Content Filter",
+          ui_friendly_name: "AOIDC Content Filter",
         },
       });
 

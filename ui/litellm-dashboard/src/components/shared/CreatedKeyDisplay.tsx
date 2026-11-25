@@ -16,11 +16,11 @@ interface CreatedKeyDisplayProps {
 export const buildAgentInstructions = (baseUrl: string, apiKey: string): string => {
   const normalizedBaseUrl = baseUrl.replace(/\/+$/, "");
   const endpointIntroduction =
-    "AI-GovernanceGw is a gateway that exposes OpenAI and Anthropic compatible APIs. " +
+    "AOIDC is a gateway that exposes OpenAI and Anthropic compatible APIs. " +
     `Send the virtual key as a Bearer token (Authorization: Bearer ${apiKey}) to:`;
 
   return [
-    "Use this AI-GovernanceGw AI gateway for model inference.",
+    "Use this AOIDC AI gateway for model inference.",
     "",
     `Gateway URL: ${normalizedBaseUrl}`,
     `Virtual key: ${apiKey}`,
@@ -34,7 +34,7 @@ export const buildAgentInstructions = (baseUrl: string, apiKey: string): string 
     `To run Claude Code through this gateway, set ANTHROPIC_BASE_URL=${normalizedBaseUrl} and ANTHROPIC_AUTH_TOKEN=${apiKey}.`,
     `To run Codex through this gateway, set OPENAI_BASE_URL=${normalizedBaseUrl}/v1 and OPENAI_API_KEY=${apiKey}.`,
     "",
-    "AI-GovernanceGw API documentation: /docs",
+    "AOIDC API documentation: /docs",
   ].join("\n");
 };
 

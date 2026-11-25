@@ -565,7 +565,7 @@ describe("ModelInfoView", () => {
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Provider")).toBeInTheDocument();
-      expect(screen.getByText("AI-GovernanceGw Model")).toBeInTheDocument();
+      expect(screen.getByText("AOIDC Model")).toBeInTheDocument();
       expect(screen.getByText("Pricing")).toBeInTheDocument();
     });
   });
@@ -673,7 +673,7 @@ describe("ModelInfoView", () => {
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText("Enter model name")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Enter AI-GovernanceGw model name")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Enter AOIDC model name")).toBeInTheDocument();
     });
   });
 
@@ -752,10 +752,10 @@ describe("ModelInfoView", () => {
     });
   });
 
-  it("should display AI-GovernanceGw Params section", async () => {
+  it("should display AOIDC Params section", async () => {
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("AI-GovernanceGw Params")).toBeInTheDocument();
+      expect(screen.getByText("AOIDC Params")).toBeInTheDocument();
     });
   });
 
@@ -774,7 +774,7 @@ describe("ModelInfoView", () => {
     });
   });
 
-  it("should keep selector credential and ignore litellm_credential_name from AI-GovernanceGw Params json", async () => {
+  it("should keep selector credential and ignore litellm_credential_name from AOIDC Params json", async () => {
     const user = userEvent.setup();
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
@@ -784,7 +784,7 @@ describe("ModelInfoView", () => {
 
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
-    const litellmParamsInput = screen.getByRole("textbox", { name: "AI-GovernanceGw Params" });
+    const litellmParamsInput = screen.getByRole("textbox", { name: "AOIDC Params" });
     expect((litellmParamsInput as HTMLTextAreaElement).value).not.toContain("litellm_credential_name");
     await user.clear(litellmParamsInput);
     await user.paste(`{"litellm_credential_name":"from-json","timeout":42}`);
@@ -815,7 +815,7 @@ describe("ModelInfoView", () => {
     const user = userEvent.setup();
     const { unmount } = render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    fireEvent.change(screen.getByRole("textbox", { name: "AI-GovernanceGw Params" }), {
+    fireEvent.change(screen.getByRole("textbox", { name: "AOIDC Params" }), {
       target: { value: JSON.stringify(retained) },
     });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -833,7 +833,7 @@ describe("ModelInfoView", () => {
     mockUseModelsInfo.mockReturnValue({ data: { data: [saved] }, isLoading: false });
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    expect(JSON.parse((screen.getByRole("textbox", { name: "AI-GovernanceGw Params" }) as HTMLTextAreaElement).value)).toEqual(
+    expect(JSON.parse((screen.getByRole("textbox", { name: "AOIDC Params" }) as HTMLTextAreaElement).value)).toEqual(
       retained,
     );
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -852,7 +852,7 @@ describe("ModelInfoView", () => {
     };
     mockUseModelsInfo.mockReturnValue({ data: { data: [otherModel] }, isLoading: false });
     rerender(<ModelInfoView {...DEFAULT_ADMIN_PROPS} modelId="456" />);
-    expect(screen.getByPlaceholderText("Enter AI-GovernanceGw model name")).toHaveValue("openai/other-model");
+    expect(screen.getByPlaceholderText("Enter AOIDC model name")).toHaveValue("openai/other-model");
   });
 
   it("should not include vector_store_ids in update payload when model has none", async () => {
@@ -1172,7 +1172,7 @@ describe("ModelInfoView", () => {
     expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
-    const extraParams = screen.getByRole("textbox", { name: "AI-GovernanceGw Params" });
+    const extraParams = screen.getByRole("textbox", { name: "AOIDC Params" });
     await user.clear(extraParams);
     await user.paste(value);
 
@@ -1824,8 +1824,8 @@ describe("ModelInfoView", () => {
 
       await user.clear(screen.getByPlaceholderText("Enter model name"));
       await user.type(screen.getByPlaceholderText("Enter model name"), "renamed-model");
-      await user.clear(screen.getByPlaceholderText("Enter AI-GovernanceGw model name"));
-      await user.type(screen.getByPlaceholderText("Enter AI-GovernanceGw model name"), "gpt-4o");
+      await user.clear(screen.getByPlaceholderText("Enter AOIDC model name"));
+      await user.type(screen.getByPlaceholderText("Enter AOIDC model name"), "gpt-4o");
       await user.clear(screen.getByPlaceholderText("Enter API base"));
       await user.type(screen.getByPlaceholderText("Enter API base"), "https://example.test/v1");
       await user.clear(screen.getByPlaceholderText("Enter custom LLM provider"));
@@ -2037,11 +2037,11 @@ describe("ModelInfoView", () => {
       expect(screen.queryByRole("option", { name: "beta (team-2)" })).not.toBeInTheDocument();
     });
 
-    it("sends the edited AI-GovernanceGw extra params", async () => {
+    it("sends the edited AOIDC extra params", async () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      const extraParams = screen.getByRole("textbox", { name: "AI-GovernanceGw Params" });
+      const extraParams = screen.getByRole("textbox", { name: "AOIDC Params" });
       await user.clear(extraParams);
       await user.paste('{"drop_params":true}');
 

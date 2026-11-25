@@ -38,7 +38,7 @@ describe("latestLaunches", () => {
 });
 
 describe("card fields", () => {
-  const argon = post("Gemini 4 Argon API Pricing and Day 0 Support on AI-GovernanceGw", "2026-10-13", [
+  const argon = post("Gemini 4 Argon API Pricing and Day 0 Support on AOIDC", "2026-10-13", [
     "gemini",
     "gemini 4",
     "card_title:Gemini 4 Argon",
@@ -47,7 +47,7 @@ describe("card fields", () => {
   ]);
   const legacy = {
     ...post("Day 0 Support: Grok 4.7", "2026-09-21", ["xai", DAY_ZERO_TAG]),
-    description: "Day 0 support for Grok 4.7 on AI-GovernanceGw, at the same price as Grok 4.6. Use it anywhere.",
+    description: "Day 0 support for Grok 4.7 on AOIDC, at the same price as Grok 4.6. Use it anywhere.",
   };
 
   it("reads card_title and card_summary from the tags", () => {
@@ -57,7 +57,7 @@ describe("card fields", () => {
 
   it("falls back to the full title and the first sentence of the description", () => {
     expect(cardTitle(legacy)).toBe("Day 0 Support: Grok 4.7");
-    expect(cardSummary(legacy)).toBe("Day 0 support for Grok 4.7 on AI-GovernanceGw, at the same price as Grok 4.6.");
+    expect(cardSummary(legacy)).toBe("Day 0 support for Grok 4.7 on AOIDC, at the same price as Grok 4.6.");
     expect(firstSentence("No terminal punctuation here")).toBe("No terminal punctuation here");
     expect(firstSentence("Costs $0.10 per 1M tokens. Twice.")).toBe("Costs $0.10 per 1M tokens.");
   });

@@ -7,7 +7,7 @@ interface TokenFlowProps {
 }
 
 /**
- * Displays token usage in AI-GovernanceGw format: "12 (9 prompt tokens + 3 completion tokens)"
+ * Displays token usage in AOIDC format: "12 (9 prompt tokens + 3 completion tokens)"
  * Shows total with breakdown of prompt and completion tokens.
  */
 export function TokenFlow({ prompt = 0, completion = 0, total = 0 }: TokenFlowProps) {

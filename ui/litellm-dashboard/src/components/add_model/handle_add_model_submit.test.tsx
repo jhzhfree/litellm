@@ -147,7 +147,7 @@ describe("prepareModelAddRequest", () => {
     expect(deployment.litellmParamsObj.model).toBe("cursor/*");
   });
 
-  it("ignores litellm_credential_name inside AI-GovernanceGw Params JSON", async () => {
+  it("ignores litellm_credential_name inside AOIDC Params JSON", async () => {
     const formValues = {
       model_mappings: [
         {
@@ -171,7 +171,7 @@ describe("prepareModelAddRequest", () => {
     expect(deployment.litellmParamsObj.timeout).toBe(5);
   });
 
-  it("keeps litellm_credential_name from AI-GovernanceGw Params JSON when no credential is selected", async () => {
+  it("keeps litellm_credential_name from AOIDC Params JSON when no credential is selected", async () => {
     const formValues = {
       model_mappings: [
         {

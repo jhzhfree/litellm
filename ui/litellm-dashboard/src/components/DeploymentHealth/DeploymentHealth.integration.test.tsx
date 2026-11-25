@@ -185,7 +185,7 @@ describe("deployment banner", () => {
     renderHealth();
 
     const banner = await screen.findByRole("alert", { name: "Deployment alert" });
-    expect(banner).toHaveTextContent("Your AI-GovernanceGw Enterprise license expires in 3 days (Oct 17, 2026)");
+    expect(banner).toHaveTextContent("Your AOIDC Enterprise license expires in 3 days (Oct 17, 2026)");
     expect(banner).not.toHaveTextContent("No Redis configured");
     expect(banner).not.toHaveTextContent("more");
   });
@@ -261,7 +261,7 @@ describe("deployment health panel", () => {
     expect(within(debug).getByText(/^Until/)).toHaveTextContent(/^Until Oct 2[12], 2026/);
     expect(debug).toHaveTextContent("by admin-2");
     const expired = within(panel).getByRole("article", {
-      name: "Your AI-GovernanceGw Enterprise license expired on Oct 1, 2026",
+      name: "Your AOIDC Enterprise license expired on Oct 1, 2026",
     });
     expect(expired).toHaveTextContent("by admin-3");
 

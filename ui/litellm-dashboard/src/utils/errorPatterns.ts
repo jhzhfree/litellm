@@ -39,7 +39,7 @@ export const errorPatterns: ErrorPattern[] = [
     pattern: /500.*Internal Server Error/i,
     replacement: "errorPatterns.providerServerError",
   },
-  // AI-GovernanceGw specific wrapped errors
+  // AOIDC specific wrapped errors
   {
     pattern: /litellm\.AuthenticationError/i,
     replacement: "errorPatterns.authenticationFailed",

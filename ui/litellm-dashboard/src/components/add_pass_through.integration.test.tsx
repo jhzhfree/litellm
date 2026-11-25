@@ -165,7 +165,7 @@ describe("add_pass_through submit payload", () => {
       target: { value: "https://example.com" },
     });
 
-    expect(screen.getByRole("switch", { name: "Require AI-GovernanceGw authentication" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "Require AOIDC authentication" })).toBeChecked();
     await submit(user);
 
     await waitFor(() => expect(createPassThroughEndpoint).toHaveBeenCalledOnce());
@@ -178,14 +178,14 @@ describe("add_pass_through submit payload", () => {
     await openModal(user);
     await fillRequiredFields(user);
     await user.click(screen.getByRole("button", { name: "Remove header 1" }));
-    await user.click(screen.getByRole("switch", { name: "Require AI-GovernanceGw authentication" }));
+    await user.click(screen.getByRole("switch", { name: "Require AOIDC authentication" }));
 
     await submit(user);
 
     await waitFor(() => expect(createPassThroughEndpoint).toHaveBeenCalledOnce());
     expect(lastPayload()).toMatchObject({ headers: {}, auth: false });
     await openModal(user);
-    expect(screen.getByRole("switch", { name: "Require AI-GovernanceGw authentication" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "Require AOIDC authentication" })).toBeChecked();
     expect(screen.queryByPlaceholderText("Header Name")).not.toBeInTheDocument();
   });
 

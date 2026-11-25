@@ -51,8 +51,8 @@ describe("NotificationsBellView", () => {
     await user.click(bell(2));
 
     const titles = screen.getAllByRole("article").map((item) => item.getAttribute("aria-label"));
-    expect(titles).toEqual(["AI-GovernanceGw v1.103.0 is available", "AI-GovernanceGw Auto Router"]);
-    const upgrade = announcement("AI-GovernanceGw v1.103.0 is available");
+    expect(titles).toEqual(["AOIDC v1.103.0 is available", "AOIDC Auto Router"]);
+    const upgrade = announcement("AOIDC v1.103.0 is available");
     expect(upgrade).toHaveTextContent("12 new features, 30 fixes, and 8 other updates");
     expect(upgrade).toHaveTextContent("Your current version is v1.102.0");
     const notes = screen.getByRole("link", { name: /^view release notes$/i });
@@ -72,7 +72,7 @@ describe("NotificationsBellView", () => {
       />,
     );
     await user.click(bell(2));
-    expect(announcement("AI-GovernanceGw v1.103.0 is available")).toHaveTextContent("1 new feature, 1 fix, and 1 other update");
+    expect(announcement("AOIDC v1.103.0 is available")).toHaveTextContent("1 new feature, 1 fix, and 1 other update");
   });
 
   it.each([
@@ -85,7 +85,7 @@ describe("NotificationsBellView", () => {
     renderWithProviders(<NotificationsBellView currentVersion={currentVersion} latestRelease={latestRelease} />);
     await user.click(bell(1));
     expect(screen.getAllByRole("article").map((item) => item.getAttribute("aria-label"))).toEqual([
-      "AI-GovernanceGw Auto Router",
+      "AOIDC Auto Router",
     ]);
   });
 
@@ -97,7 +97,7 @@ describe("NotificationsBellView", () => {
 
     expect(bell(1).querySelector("[data-slot=badge]")).not.toBeNull();
     expect(screen.getAllByRole("button", { name: /^mark as read$/i })).toHaveLength(1);
-    expect(announcement("AI-GovernanceGw Auto Router")).toContainElement(
+    expect(announcement("AOIDC Auto Router")).toContainElement(
       screen.getByRole("button", { name: /^mark as read$/i }),
     );
     await user.click(screen.getByRole("button", { name: /^mark as read$/i }));
@@ -129,7 +129,7 @@ describe("NotificationsBellView", () => {
 
     rerender(<NotificationsBellView currentVersion="1.102.0" latestRelease={{ ...RELEASE, version: "1.104.0" }} />);
     expect(bell(2)).toBeInTheDocument();
-    expect(announcement("AI-GovernanceGw v1.104.0 is available")).toContainElement(
+    expect(announcement("AOIDC v1.104.0 is available")).toContainElement(
       screen.getAllByRole("button", { name: /^mark as read$/i })[0],
     );
   });
@@ -145,7 +145,7 @@ describe("NotificationsBellView", () => {
     const user = userEvent.setup();
     renderWithProviders(<NotificationsBellView currentVersion="1.103.0" latestRelease={RELEASE} />);
     await user.click(bell(0));
-    expect(announcement("AI-GovernanceGw Auto Router")).toBeInTheDocument();
+    expect(announcement("AOIDC Auto Router")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^mark as read$/i })).not.toBeInTheDocument();
   });
 
@@ -178,7 +178,7 @@ describe("NotificationsBell", () => {
     const user = userEvent.setup();
     renderWithProviders(<NotificationsBell accessToken="token" />);
     await user.click(bell(2));
-    expect(announcement("AI-GovernanceGw v1.103.0 is available")).toHaveTextContent("Your current version is v1.102.0");
+    expect(announcement("AOIDC v1.103.0 is available")).toHaveTextContent("Your current version is v1.102.0");
   });
 });
 

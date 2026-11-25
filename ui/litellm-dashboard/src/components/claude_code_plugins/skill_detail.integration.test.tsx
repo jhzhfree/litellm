@@ -260,5 +260,5 @@ it("offers the indexed public skill name and discards its availability when reop
   fireEvent.click(screen.getByRole("button", { name: "Install / Share" }));
   expect(screen.queryByRole("radio", { name: "Public command" })).not.toBeInTheDocument();
   refreshedIndex.resolve(Response.json({ skills: [] }));
-  expect(screen.getByLabelText("Install command")).toHaveTextContent("AI-GovernanceGw API key");
+  expect(screen.getByLabelText("Install command")).toHaveTextContent("AOIDC API key");
 });

@@ -36,10 +36,10 @@ describe("GuardrailGarden", () => {
   it("should render both sections with their descriptions and hide the partner section", () => {
     renderGarden();
 
-    expect(screen.getByText("AI-GovernanceGw Content Filter")).toBeInTheDocument();
+    expect(screen.getByText("AOIDC Content Filter")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Built-in guardrails powered by AI-GovernanceGw. Zero latency, no external dependencies, no additional cost.",
+        "Built-in guardrails powered by AOIDC. Zero latency, no external dependencies, no additional cost.",
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText("Partner Guardrails")).not.toBeInTheDocument();

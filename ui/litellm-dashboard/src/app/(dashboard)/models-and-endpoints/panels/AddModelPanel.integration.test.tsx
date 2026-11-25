@@ -320,11 +320,11 @@ describe("AddModelPanel submit payload contract", () => {
     });
   });
 
-  it("merges typed AI-GovernanceGw Params into litellm_params", async () => {
+  it("merges typed AOIDC Params into litellm_params", async () => {
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("AI-GovernanceGw Params"), '{{"rpm": 7}');
+    await user.type(screen.getByLabelText("AOIDC Params"), '{{"rpm": 7}');
     await submit();
 
     expect(lastCreatedModel()).toStrictEqual({
@@ -356,7 +356,7 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, closeAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("AI-GovernanceGw Params"), '{{"rpm": 7}');
+    await user.type(screen.getByLabelText("AOIDC Params"), '{{"rpm": 7}');
     await closeAdvanced();
     await submit();
 
@@ -371,10 +371,10 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, closeAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("AI-GovernanceGw Params"), '{{"rpm": 7}');
+    await user.type(screen.getByLabelText("AOIDC Params"), '{{"rpm": 7}');
     await closeAdvanced();
     await openAdvanced();
-    expect(screen.getByLabelText("AI-GovernanceGw Params")).toHaveValue('{"rpm": 7}');
+    expect(screen.getByLabelText("AOIDC Params")).toHaveValue('{"rpm": 7}');
 
     await submit();
 
@@ -533,12 +533,12 @@ describe("AddModelPanel validation gates", () => {
     expect(modelCreateCall).not.toHaveBeenCalled();
   });
 
-  it("blocks the submit when AI-GovernanceGw Params is not valid JSON", async () => {
+  it("blocks the submit when AOIDC Params is not valid JSON", async () => {
     mockPtuEnabled.mockReturnValue(false);
     const { user, openAdvanced, fillRequired, submitExpectingRejection } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("AI-GovernanceGw Params"), "rpm: 7");
+    await user.type(screen.getByLabelText("AOIDC Params"), "rpm: 7");
     await submitExpectingRejection("Please enter valid JSON");
 
     expect(modelCreateCall).not.toHaveBeenCalled();
@@ -553,12 +553,12 @@ describe("AddModelPanel behaviours the removed Advanced Settings form instance n
     mockAuthorized.mockReturnValue(PROXY_ADMIN);
   });
 
-  it("leaves AI-GovernanceGw Params untouched when pass through routes is switched on", async () => {
+  it("leaves AOIDC Params untouched when pass through routes is switched on", async () => {
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
     await user.click(screen.getByRole("switch", { name: "Use in pass through routes" }));
-    expect(screen.getByLabelText("AI-GovernanceGw Params")).toHaveValue("");
+    expect(screen.getByLabelText("AOIDC Params")).toHaveValue("");
 
     await submit();
 

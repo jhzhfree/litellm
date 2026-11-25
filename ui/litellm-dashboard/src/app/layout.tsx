@@ -13,8 +13,8 @@ import I18nProvider from "@/i18n/I18nProvider";
 import aiGwMonogram from "../../public/assets/logos/ai_gw_monogram.svg";
 
 export const metadata: Metadata = {
-  title: "AI-GovernanceGw Dashboard",
-  description: "AI-GovernanceGw AI Gateway Admin UI",
+  title: "AOIDC Dashboard",
+  description: "AOIDC Admin UI",
   icons: { icon: aiGwMonogram.src },
 };
 

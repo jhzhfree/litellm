@@ -7,7 +7,7 @@ import { AUTH_TYPE } from "@/components/mcp_tools/types";
 /**
  * Warning shown in the create/edit MCP server forms when auth_type
  * true_passthrough is selected: the gateway performs no admission auth for
- * that server, so callers reach the upstream without a AI-GovernanceGw identity.
+ * that server, so callers reach the upstream without a AOIDC identity.
  */
 export default function TruePassthroughWarning({ authType }: { authType?: string | null }) {
   const { t } = useTranslation();

@@ -1,7 +1,7 @@
 /**
  * Shared error-message extraction utility.
  *
- * Handles the common shapes returned by AI-GovernanceGw / FastAPI:
+ * Handles the common shapes returned by AOIDC / FastAPI:
  *   - Error instances (err.message)
  *   - { detail: "string" }
  *   - { detail: [{ msg, loc, type }] }   (FastAPI 422)

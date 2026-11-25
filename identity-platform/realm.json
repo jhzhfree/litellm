@@ -1,5 +1,6 @@
 {
   "realm": "company",
+  "displayName": "统一身份管理系统（AOIDC）",
   "enabled": true,
   "registrationAllowed": false,
   "resetPasswordAllowed": false,
@@ -7,8 +8,8 @@
   "accessTokenLifespan": 300,
   "internationalizationEnabled": true,
   "supportedLocales": ["en", "zh-CN"],
-  "defaultLocale": "en",
-  "loginTheme": "keycloak.v2",
+  "defaultLocale": "zh-CN",
+  "loginTheme": "aoidc",
   "clients": [
     {
       "clientId": "gateway-console",

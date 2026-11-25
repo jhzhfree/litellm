@@ -10,6 +10,8 @@ export interface ProxySettings {
   LITELLM_UI_API_DOC_BASE_URL?: string | null;
   LITELLM_UI_IDENTITY_ADMIN_URL?: string | null;
   LITELLM_UI_PROMETHEUS_URL?: string | null;
+  AI_GATEWAY_UI_IDENTITY_ADMIN_URL?: string | null;
+  AI_GATEWAY_UI_PROMETHEUS_URL?: string | null;
   DISABLE_EXPENSIVE_DB_QUERIES?: boolean;
   NUM_SPEND_LOGS_ROWS?: number;
 }

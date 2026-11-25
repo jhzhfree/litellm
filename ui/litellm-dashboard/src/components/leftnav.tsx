@@ -606,8 +606,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
   const { userId, accessToken, userRole, isViewOnly } = useAuthorized();
   const enterpriseEnabled = useEnterpriseFeatures();
   const canManageSystems = isProxyAdminRole(userRole) && !isViewOnly;
-  const { LITELLM_UI_IDENTITY_ADMIN_URL: identityAdminUrl, LITELLM_UI_PROMETHEUS_URL: prometheusUrl } =
-    useProxySettings(canManageSystems ? accessToken : null);
+  const settings = useProxySettings(canManageSystems ? accessToken : null);
+  const identityAdminUrl = settings.LITELLM_UI_IDENTITY_ADMIN_URL ?? settings.AI_GATEWAY_UI_IDENTITY_ADMIN_URL;
+  const prometheusUrl = settings.LITELLM_UI_PROMETHEUS_URL ?? settings.AI_GATEWAY_UI_PROMETHEUS_URL;
   const { t } = useTranslation();
   const term = useTerminology();
   const labelOf = (item: MenuItem) => (typeof item.label === "string" ? term(labelText(item)) : item.label);

@@ -1,6 +1,6 @@
-:HL["/ai-gateway-assets/_next/static/chunks/39-ezbzdgs1dd.css","style"]
+:HL["/ai-gateway-assets/_next/static/chunks/2dseoaa97h07p.css","style"]
 :HL["/ai-gateway-assets/_next/static/media/barlow_condensed_latin_600-s.p.0fa85icsp3e0f.ttf","font",{"crossOrigin":"","type":"font/ttf"}]
 :HL["/ai-gateway-assets/_next/static/chunks/2e7n_46ngeruo.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"model_hub_table","h":96,"c":"$Q2"}]]
-0:{"b":"HrxRz6Wpp7y1KCC8gRF2v","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"yvwzjr8dkMzZmHgtibGWR","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

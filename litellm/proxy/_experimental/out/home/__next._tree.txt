@@ -1,5 +1,5 @@
-:HL["/ai-gateway-assets/_next/static/chunks/39-ezbzdgs1dd.css","style"]
+:HL["/ai-gateway-assets/_next/static/chunks/2dseoaa97h07p.css","style"]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":"home","h":96,"c":"$Q3"}]]
 1:[["children",{"s":"(dashboard)","h":96,"c":"$Q2"}]]
-0:{"b":"HrxRz6Wpp7y1KCC8gRF2v","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"yvwzjr8dkMzZmHgtibGWR","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

@@ -1,7 +1,7 @@
 name: ai-identity-platform
 services:
   database:
-    image: postgres:16
+    image: 192.168.22.6:5000/ai-gw/identity-db:16
     environment:
       POSTGRES_DB: identity
       POSTGRES_USER: identity
@@ -14,7 +14,7 @@ services:
       timeout: 3s
       retries: 30
   identity:
-    image: quay.io/keycloak/keycloak:26.4.7@sha256:9409c59bdfb65dbffa20b11e6f18b8abb9281d480c7ca402f51ed3d5977e6007
+    image: 192.168.22.6:5000/ai-gw/identity:1
     command: [start-dev, --import-realm]
     environment:
       KC_DB: postgres

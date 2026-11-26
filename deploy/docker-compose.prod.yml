@@ -65,7 +65,7 @@ services:
     image: 192.168.22.6:5000/ai-gw/prometheus:1
     container_name: ai-tokengw-monitor
     ports:
-    - ${MONITOR_PORT:-9090}:9090
+    - ${MONITOR_PORT:-9190}:9090
     volumes:
     - prometheus_data:/prometheus
     - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro

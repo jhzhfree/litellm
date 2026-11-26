@@ -21,7 +21,7 @@
 | 宿主机 PostgreSQL | `5432` | `.env` 的 `DATABASE_URL` → 本地开发库 |
 | 容器版 PostgreSQL | `5433`（对外） | `docker-compose.override.yml` 映射，容器内部 `db:5432` |
 | 身份平台 PostgreSQL | 仅容器内部 `5432` | 独立命名卷 `identity-db`，不与网关共用 |
-| Prometheus（容器） | `${MONITOR_PORT:-9090}` | compose 自带 |
+| Prometheus（容器） | `${MONITOR_PORT:-9190}` | compose 自带 |
 
 本地 venv 是 editable 安装（`litellm.__file__` 指向仓库源码），后端改代码即生效。
 
@@ -238,7 +238,7 @@ docker compose -f deploy/docker-compose.prod.yml -f deploy/docker-compose.local.
 cd identity-platform && docker compose up -d
 ```
 
-- 网关入口 `http://localhost:4000`（凭证 `deploy/.env` 的 `UI_USERNAME`/`UI_PASSWORD`），监控 `http://localhost:9090`
+- 网关入口 `http://localhost:4000`（凭证 `deploy/.env` 的 `UI_USERNAME`/`UI_PASSWORD`），监控 `http://localhost:9190`
 - 身份平台管理台 `http://127.0.0.1:18080/admin/`（`identity-platform/.env`），Keycloak 就绪需 30-60s，判断：`curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/realms/company` 返回 200
 - 停止：两个 compose 目录分别 `docker compose down`（**勿加 `-v`**，数据卷保留）
 

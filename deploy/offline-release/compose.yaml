@@ -65,7 +65,7 @@ services:
     image: ai-gw/prometheus:3.16.0
     pull_policy: never
     ports:
-    - ${BIND_ADDRESS:-127.0.0.1}:${MONITOR_PORT:-9090}:9090
+    - ${BIND_ADDRESS:-127.0.0.1}:${MONITOR_PORT:-9190}:9090
     volumes:
     - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     - prometheus_data:/prometheus

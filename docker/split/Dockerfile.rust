@@ -1,0 +1,52 @@
+# rust 镜像：只产出供 python 镜像安装的原生 wheel，不是运行时服务。
+# /wheels 内含 litellm-*.whl（python-bridge 的 _native 扩展）与
+# litellm_proxy-*.whl（Rust gateway 扩展），与既有 native:split-1 一致。
+#
+# 只复制 Rust 源码与 workspace 元数据，UI/Python/部署文件改动不会让 cargo
+# 层失效。cache mount id 与主构建一致，复用已填充的编译缓存。
+
+ARG LITELLM_BUILD_IMAGE=cgr.dev/chainguard/wolfi-base:local
+ARG UV_IMAGE=ghcr.io/astral-sh/uv:0.11.7@sha256:240fb85ab0f263ef12f492d8476aa3a2e4e1e333f7d67fbdd923d00a506a516a
+
+FROM $UV_IMAGE AS uvbin
+
+FROM $LITELLM_BUILD_IMAGE AS wheel-builder
+WORKDIR /app
+USER root
+
+COPY --from=uvbin /uv /uvx /usr/local/bin/
+
+RUN for i in 1 2 3; do \
+      apk add --no-cache bash gcc python-3.13 python-3.13-dev rust openssl openssl-dev && break; \
+      [ $i = 3 ] && { echo "apk add failed after 3 retries" >&2; exit 1; }; \
+      sleep 5; \
+    done
+
+ENV UV_PYTHON_DOWNLOADS=0 \
+    CARGO_PROFILE_RELEASE_LTO=thin \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16
+
+RUN mkdir -p /root/.cargo && \
+    printf '[source.crates-io]\nreplace-with = "rsproxy"\n\n[source.rsproxy]\nregistry = "sparse+https://rsproxy.cn/index/"\n' \
+    > /root/.cargo/config.toml
+
+COPY pyproject.toml README.md rust-toolchain.toml ./
+COPY .cargo ./.cargo
+COPY litellm-rust ./litellm-rust
+COPY model_prices_and_context_window.json ./
+COPY packaging/litellm-proxy/pyproject.toml packaging/litellm-proxy/
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=cache,target=/root/.cargo/registry \
+    --mount=type=cache,target=/root/.cargo/git \
+    --mount=type=cache,id=litellm-rust-wheel-target,target=/app/litellm-rust/target \
+    mkdir -p litellm/rust_bridge /wheels && \
+    touch litellm/__init__.py litellm/rust_bridge/__init__.py && \
+    uvx --python python3.13 --from maturin==1.15.0 --with puccinialin==0.1.14 \
+        python -c "import maturin; maturin.build_wheel('/wheels')" && \
+    cd packaging/litellm-proxy && \
+    uvx --python python3.13 --from maturin==1.15.0 --with puccinialin==0.1.14 \
+        python -c "import maturin; maturin.build_wheel('/wheels')"
+
+FROM scratch AS artifact
+COPY --from=wheel-builder /wheels /wheels

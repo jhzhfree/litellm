@@ -1,10 +1,8 @@
-# 本地测试用覆盖文件：单体 gateway:1 镜像自带 UI，
-# core 直接把 4000 映射到宿主机（拆分部署时由 ui 服务映射，无需此文件）。
-# 用法见 LOCAL_DEV.md「启动产品栈」。
+# 本地调试覆盖文件：把 python 镜像的 API 直接映射到宿主机，便于绕过 ui 容器
+# 直接访问管理/推理 API。正常使用拆分编排时由 ui 服务对外映射并反代 API，
+# 无需此文件。
+# 用法: docker compose -f docker-compose.prod.yml -f docker-compose.local.yml up -d
 services:
   core:
     ports:
-      - "${CORE_PORT:-4000}:4000"
-    # 临时：把源码中新增的定价重载模块挂进容器，下次 build-push.sh 重建镜像后可删除这两行
-    volumes:
-      - ../litellm/litellm_core_utils/get_model_cost_map.py:/app/.venv/lib/python3.13/site-packages/litellm/litellm_core_utils/get_model_cost_map.py
+      - "${API_PORT:-4000}:4000"

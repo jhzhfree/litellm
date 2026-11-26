@@ -1,7 +1,9 @@
 name: ai-tokengw
+# 拆分镜像运行时编排：core=python 镜像（完整 proxy），ui=nginx 静态站点并反代 API，
+# db/monitor 两个镜像保持不变。rust 镜像为构建期 wheel 产物，不参与运行时编排。
 services:
   core:
-    image: ${PYTHON_IMAGE:?Set PYTHON_IMAGE to the split Python image}
+    image: ${PYTHON_IMAGE:-192.168.22.6:5000/ai-gw/python:1}
     container_name: ai-tokengw-core
     environment:
       DATABASE_URL: postgresql://llmproxy:${DB_PASSWORD:-dbpassword9090}@db:5432/litellm
@@ -42,8 +44,6 @@ services:
       start_period: 40s
     expose:
     - '4000'
-    entrypoint:
-    - /app/.venv/bin/litellm
   db:
     image: 192.168.22.6:5000/ai-gw/postgres:16
     container_name: ai-tokengw-db
@@ -76,7 +76,7 @@ services:
     - --storage.tsdb.retention.time=15d
     restart: always
   ui:
-    image: ${UI_IMAGE:?Set UI_IMAGE to the split frontend image}
+    image: ${UI_IMAGE:-192.168.22.6:5000/ai-gw/ui:1}
     ports:
     - ${CORE_PORT:-4000}:3000
     volumes:

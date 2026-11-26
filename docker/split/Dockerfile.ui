@@ -1,0 +1,25 @@
+# ui 镜像：Next.js 静态导出由 nginx 提供，反代 API 到 python 服务。
+# 与独立 python 镜像配套，UI 产物不烤进 python 镜像。
+
+ARG UI_BUILD_IMAGE=node:24.19-alpine3.24@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43
+ARG NGINX_IMAGE=nginx@sha256:1ef7ca94d7879df82421428ce13bd1eaa412404953859cf7a5b6512c25e67a60
+
+FROM --platform=$BUILDPLATFORM $UI_BUILD_IMAGE AS builder
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    npm_config_fund=false \
+    npm_config_audit=false
+WORKDIR /app
+COPY ui/litellm-dashboard/package.json ui/litellm-dashboard/package-lock.json ./
+COPY ui/litellm-dashboard/vendor/ ./vendor/
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline
+COPY ui/litellm-dashboard/ ./
+RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build
+
+FROM $NGINX_IMAGE AS runtime
+RUN apk upgrade --no-cache brotli-libs
+RUN rm -f /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/out /usr/share/nginx/html
+COPY ui/docker-entrypoint.d/40-litellm-runtime-config.sh /docker-entrypoint.d/
+COPY deploy/nginx.split.conf /etc/nginx/nginx.conf
+EXPOSE 3000/tcp
+CMD ["nginx", "-g", "daemon off;"]

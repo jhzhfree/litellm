@@ -1,6 +1,8 @@
+# 拆分镜像离线编排：core=python 镜像，ui=nginx 静态站点并反代 API，
+# db/monitor 镜像保持不变。rust 为构建期 wheel 产物，不参与运行时编排。
 services:
   core:
-    image: ${PYTHON_IMAGE:?Set PYTHON_IMAGE to the split Python image}
+    image: ${PYTHON_IMAGE:-192.168.22.6:5000/ai-gw/python:1}
     pull_policy: never
     environment:
       DATABASE_URL: postgresql://gateway:${DB_PASSWORD:?Run init-env.py}@db:5432/gateway
@@ -40,8 +42,6 @@ services:
       start_period: 60s
     expose:
     - '4000'
-    entrypoint:
-    - /app/.venv/bin/litellm
   db:
     image: ai-gw/postgres:16-dd2bf3ce2dc8
     pull_policy: never
@@ -77,7 +77,7 @@ services:
     - isolated
     restart: unless-stopped
   ui:
-    image: ${UI_IMAGE:?Set UI_IMAGE to the split frontend image}
+    image: ${UI_IMAGE:-192.168.22.6:5000/ai-gw/ui:1}
     ports:
     - ${BIND_ADDRESS:-127.0.0.1}:${CORE_PORT:-4400}:3000
     volumes:

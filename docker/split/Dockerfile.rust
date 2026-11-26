@@ -1,6 +1,6 @@
 # rust 镜像：只产出供 python 镜像安装的原生 wheel，不是运行时服务。
 # /wheels 内含 litellm-*.whl（python-bridge 的 _native 扩展）与
-# litellm_proxy-*.whl（Rust gateway 扩展），与既有 native:split-1 一致。
+# litellm_proxy-*.whl（Rust gateway 扩展），与 ai-gw/rust:1 的产出一致。
 #
 # 只复制 Rust 源码与 workspace 元数据，UI/Python/部署文件改动不会让 cargo
 # 层失效。cache mount id 与主构建一致，复用已填充的编译缓存。

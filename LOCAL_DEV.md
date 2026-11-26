@@ -120,41 +120,39 @@ PYTHONPATH=. .venv/bin/python identity-platform/smoke.py --gateway-jwt
 
 ## 5. 镜像构建与推送（22.6）
 
-Registry：`192.168.22.6:5000`。**版本号保持不变**：拆分镜像固定标签 `split-1`（见 `deploy/env.example`），单体兼容镜像固定标签 `gateway:1`；同标签推送为覆盖语义，以 digest 区分版本。
+Registry：`192.168.22.6:5000`。**版本号保持不变**，全部使用固定标签，以 digest 区分版本：
 
-### 5.1 拆分镜像（当前架构，本机未验收通过）
+| 镜像 | 标签 | 作用 |
+| --- | --- | --- |
+| `ai-gw/rust` | `1` | Rust 编译产物 wheel，仅构建期 |
+| `ai-gw/python` | `1` | 完整 proxy 服务（管理 + 推理） |
+| `ai-gw/ui` | `1` | 静态 UI + nginx，反代 API 到 core |
+| `ai-gw/identity` | `1` | Keycloak 统一身份管理系统（AOIDC） |
+| `ai-gw/identity-db` | `16` | 身份平台 PostgreSQL |
+| `ai-gw/postgres` | `16` | 网关 PostgreSQL |
+| `ai-gw/prometheus` | `1` | 监控 |
 
-组件与脚本：`docker/split/build.sh native|gateway|ui`。`gateway` 依赖先构建好的 `native` 产物镜像（通过 `NATIVE_IMAGE` 传入）；`ui` 为 Next.js 静态导出 + nginx，不需 Node SSR。Rust 无变更时跳过 `native` 构建。
+配置基准是 `deploy/env.example`，与 `deploy/.env` 保持一致。
+
+### 5.1 拆分镜像构建
+
+脚本 `scripts/build-split.sh` 按依赖顺序构建 rust、python、ui 并推送固定标签，Dockerfile 在 `docker/split/`。python 镜像从 rust 镜像取 wheel，不重编 Rust，因此改 UI 或 Python 代码不会触发 cargo 重编。
 
 ```bash
 cd /opt/dev/litellm
-export IMAGE_TAG=split-1
-export IMAGE_PREFIX=192.168.22.6:5000/ai-gw
-
-# 1) Rust 产物镜像（Rust 有变更时执行）
-docker/split/build.sh native
-
-# 2) Python 核心镜像（作为 compose 的 PYTHON_IMAGE）
-export NATIVE_IMAGE=192.168.22.6:5000/ai-gw/native:split-1
-docker/split/build.sh gateway
-
-# 3) 静态 UI 镜像（作为 compose 的 UI_IMAGE）
-docker/split/build.sh ui
-
-# 4) 推送固定标签
-docker push $IMAGE_PREFIX/native:split-1
-docker push $IMAGE_PREFIX/gateway:split-1
-docker push $IMAGE_PREFIX/ui:split-1
+scripts/build-split.sh                 # 全部三个
+scripts/build-split.sh --only ui       # 仅前端
+scripts/build-split.sh --only python   # 仅 Python
 ```
 
-`deploy/docker-compose.prod.yml` 强制要求设置 `PYTHON_IMAGE` 和 `UI_IMAGE`（见 `deploy/env.example`）。服务端升级顺序：
+服务端升级顺序（仅更新前端时只执行第二条）：
 
 ```bash
 docker compose -f deploy/docker-compose.prod.yml up -d --no-deps core
 docker compose -f deploy/docker-compose.prod.yml up -d --no-deps --force-recreate ui  # 重新解析 core 容器地址
 ```
 
-仅更新前端时只执行第二条。部署配置全部外置挂载（`proxy_config.yaml`、`nginx.split.conf`、`prometheus.yml`）。注意 `deploy/.env` 的 `UI_PASSWORD` 与 compose 默认值不一致（前者 `AI-Tokengw@2026`，后者 `AI-GovernanceGw@2026`），以实际 `.env` 为准。
+部署配置全部外置挂载（`proxy_config.yaml`、`nginx.split.conf`、`prometheus.yml`）。
 
 ### 5.1.1 定价数据本地化与热重载
 
@@ -167,75 +165,51 @@ curl -X POST http://localhost:4000/reload/model_cost_map -H "Authorization: Bear
 # 返回 {status: success, models_count, source_revision}；revision 变化即文件已重读
 ```
 
-说明：坏文件（JSON 非法）重载会失败并**保留当前定价数据**（fail-safe），修正文件后再重载即可。代码位于 `litellm/litellm_core_utils/get_model_cost_map.py`（`LITELLM_MODEL_COST_MAP_PATH` 优先级高于 `LITELLM_LOCAL_MODEL_COST_MAP`——后者会在首次联网失败后被 litellm 自动置 True，若路径分支顺序不当会被遮蔽）。本地测试期间 `docker-compose.local.yml` 临时把该模块源文件挂进容器，**下次 build-push.sh 重建镜像后可删除该挂载**。
+说明：坏文件（JSON 非法）重载会失败并**保留当前定价数据**（fail-safe），修正文件后再重载即可。代码位于 `litellm/litellm_core_utils/get_model_cost_map.py`（`LITELLM_MODEL_COST_MAP_PATH` 优先级高于 `LITELLM_LOCAL_MODEL_COST_MAP`——后者会在首次联网失败后被 litellm 自动置 True，若路径分支顺序不当会被遮蔽）。
 
-### 5.2 单体兼容镜像（当前本机实际交付路径）
+### 5.2 身份平台镜像
 
-拆分镜像的 BuildKit 元数据解析在当前网络环境反复超时（`SPLIT_IMAGES.md` 也注明未完成构建验收），本机实际交付走本节的单体脚本。**版本号仍为固定标签 `gateway:1`，以 digest 区分版本**。
-
-```bash
-# 0) 预拉取基础镜像（首次或缓存被清后必做；BuildKit 元数据解析不走 dockerd 代理，
-#    不预拉取会卡在 "load metadata ... i/o timeout"）
-docker pull cgr.dev/chainguard/wolfi-base:latest
-docker tag cgr.dev/chainguard/wolfi-base:latest cgr.dev/chainguard/wolfi-base:local   # /root/Dockerfile.build 用 :local 标签
-docker pull ghcr.io/astral-sh/uv:0.11.7                                               # 摘要与 Dockerfile 固定值一致
-docker pull node:24.19-alpine3.24                                                     # 同上
-
-# 1) UI 源码有改动先同步静态产物（镜像构建输入）
-scripts/sync-ui.sh --no-restart
-
-# 2) 构建 + 推送 ai-gw/gateway:1（固定标签，版本号不变）
-scripts/build-push.sh
-```
-
-基础镜像 digest 核对（与 `/root/Dockerfile.build` 固定值一致才可用缓存）：
+Keycloak 与它的 PostgreSQL 已本地化到 22.6，compose 在 `identity-platform/compose.yaml`，自定义 AOIDC 主题通过 `keycloak-theme` 目录挂载，`realm.json` 首次导入。
 
 ```bash
-docker images --digests --format '{{.Repository}}:{{.Tag}} {{.Digest}}' | grep -E "wolfi-base|astral-sh/uv|node:24.19-alpine"
+docker compose -f identity-platform/compose.yaml pull
+docker compose -f identity-platform/compose.yaml up -d
 ```
-
-`/root/Dockerfile.build` 是本机适配版（去掉 `# syntax=` 指令避免 buildkit frontend 拉取超时；`NODE_OPTIONS=--max-old-space-size=4096` 避免 Next.js OOM；烤入默认 `proxy_config.yaml`）。丢失时按 git 历史中的旧版文档重建，或直接从仓库 `Dockerfile` 按上述三处 sed 修改。
 
 ### 5.3 前置检查与排障
 
 ```bash
-df -h /    # 剩余需 ≥6G；2026-11-18 已将 LVM 卷组空闲空间全部扩入根分区（115G，可用约 62G）
+df -h /    # 剩余需 ≥6G
 # 不足时: docker builder prune -f --keep-storage=10GB（勿全清，否则 Rust 全量重编）
 ```
 
-> 磁盘扩容记录：`lsblk` 只看到一块 120G 盘，但 PV/LVM 成员分区已是 116.9G、逻辑卷仅 58.5G，卷组剩余 58.47G。执行 `lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv && resize2fs /dev/ubuntu-vg/ubuntu-lv` 在线扩容根文件系统（`ext4` 支持在线扩容，无需停机、不丢数据）。lvextend 输出的 "File descriptor leaked" 是 LVM 工具的提示，可忽略。
-
-- **BuildKit 元数据解析不走 dockerd 代理**：`cgr.dev` / `ghcr.io` 匿名 token 拉取直连超时。先 `docker pull` 预拉取基础镜像到本地（含摘要标签），再重跑构建。拆分镜像当前固定的 `cgr.dev/chainguard/wolfi-base@sha256:360896ef...` 与旧单体镜像的 `:local`（`2c12da...`）**摘要不同**，需单独预拉取。
-- `ui/Dockerfile` 带 `# syntax=docker/dockerfile:1.7`，本机需临时去掉该行并给 `npm run build` 加 `NODE_OPTIONS=--max-old-space-size=4096`，否则 frontend 拉取超时 / Node 堆溢出。
+- **BuildKit 元数据解析不走 dockerd 代理**：`cgr.dev` / `ghcr.io` 匿名 token 拉取直连超时。先 `docker pull` 预拉取基础镜像到本地（含摘要标签），再重跑构建。
+- 三个新 Dockerfile 不带 `# syntax=` 指令，避免 buildkit frontend 拉取超时；UI 构建已设 `NODE_OPTIONS=--max-old-space-size=4096` 防 Node 堆溢出。
 - 若构建中途磁盘满：清理后直接重跑，已编译层有缓存不会重来。
-- 代理出口：`192.168.24.200:7890`（HTTP）/ `7891`（SOCKS5），控制接口 `9090`。验证：`curl -x http://192.168.24.200:7890 -m 15 -o /dev/null -w "%{http_code}\n" https://registry-1.docker.io/v2/`（401 即通）。
-- 4000 端口占用：`ss -ltnp | grep :4000`；本地 dev 后端固定 4001。
+- 端口占用排查：`ss -ltnp | grep -E ':4000|:9190|:18080'`；网关 UI 对外 4000，Prometheus 对外 9190（容器内部仍 9090），身份平台 18080。
 
 ### 5.4 推送验证
 
 ```bash
-REG=$(curl -s -I -H "Accept: application/vnd.oci.image.index.v1+json" \
-  http://192.168.22.6:5000/v2/ai-gw/gateway/manifests/split-1 | grep -i docker-content-digest | awk '{print $2}' | tr -d '\r')
-LOCAL=$(docker inspect --format='{{index .RepoDigests 0}}' 192.168.22.6:5000/ai-gw/gateway:split-1 2>/dev/null | awk -F@ '{print $2}')
-echo "registry: $REG"; echo "local: $LOCAL"; [ "$REG" = "$LOCAL" ] && echo "✓ digest 一致" || echo "✗ 不一致"
+for tag in rust:1 python:1 ui:1 identity:1 identity-db:16 postgres:16 prometheus:1; do
+  echo "-- $tag"
+  curl -s -I -H "Accept: application/vnd.oci.image.index.v1+json" \
+    "http://192.168.22.6:5000/v2/ai-gw/${tag%:*}/manifests/${tag#*:}" \
+    | grep -i docker-content-digest | awk '{print $2}' | tr -d '\r'
+done
 ```
 
-单体镜像把 `manifests/split-1` 换成 `manifests/1`、`:split-1` 换成 `:1` 即可。
+### 5.5 本地用新镜像启动产品栈
 
-### 5.5 本地用新镜像启动产品栈测试
-
-单体镜像自带 UI，但拆分架构下 `core` 默认只在容器内暴露，需加本地覆盖文件 `deploy/docker-compose.local.yml`（把 core 的 4000 映射到宿主机，已固化在仓库）：
+网关 UI 对外 4000（nginx 反代 API 到 core），core 只在容器内暴露 4000，不需覆盖文件：
 
 ```bash
-# 启动网关（core + db + monitor）
 cd /opt/dev/litellm
-PYTHON_IMAGE=192.168.22.6:5000/ai-gw/gateway:1 \
-UI_IMAGE=192.168.22.6:5000/ai-gw/gateway:1 \
-docker compose -f deploy/docker-compose.prod.yml -f deploy/docker-compose.local.yml \
-  --env-file deploy/.env up -d core db monitor
+docker compose -f deploy/docker-compose.prod.yml pull
+docker compose -f deploy/docker-compose.prod.yml up -d
 
-# 启动身份认证平台
-cd identity-platform && docker compose up -d
+docker compose -f identity-platform/compose.yaml pull
+docker compose -f identity-platform/compose.yaml up -d
 ```
 
 - 网关入口 `http://localhost:4000`（凭证 `deploy/.env` 的 `UI_USERNAME`/`UI_PASSWORD`），监控 `http://localhost:9190`
@@ -244,7 +218,7 @@ cd identity-platform && docker compose up -d
 
 ## 6. 离线发布包
 
-`deploy/offline-release/` 提供 `pull_policy: never` 的离线 compose（core/db/monitor/ui，默认绑定 `127.0.0.1:4400`），构建包装 `deploy/offline-release/build/build.sh`（`docker save` + sha256）。适用于无外网环境交付；配置模板与在线版同路径。
+`deploy/offline-release/` 提供 `pull_policy: never` 的离线 compose（core/db/monitor/ui，默认绑定 `127.0.0.1:4400`，Prometheus 对外 `9190`），镜像由 `scripts/build-split.sh` 构建后经 `docker save` 打包，加载到本地后再由该 compose 启动。适用于无外网环境交付；配置模板与在线版同路径。
 
 ## 7. 已知 unfinished 事项（勿误判为完成）
 

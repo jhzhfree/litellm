@@ -1,8 +1,6 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
 import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBouncingIcon";
-import { useDisableLiteAdmin } from "@/app/(dashboard)/hooks/useDisableLiteAdmin";
-import { ARIA_AGENT_LABEL } from "@/components/liteadmin/aria-brand";
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import {
   emitLocalStorageChange,
@@ -12,7 +10,6 @@ import {
 } from "@/utils/localStorageUtils";
 import { navAccountDisplayName } from "@/components/Navbar/navDisplayName";
 import { uiHref } from "@/utils/uiHref";
-import { isProxyAdminRole } from "@/utils/roles";
 import { ChevronDown, ChevronsUpDown, Crown, KeyRound, LogOut, Mail, ShieldCheck, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -70,22 +67,12 @@ interface UserDropdownProps {
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar", collapsed = false }) => {
   const { t } = useTranslation();
-  const {
-    userId,
-    userEmail,
-    userRole: role,
-    userRoleLabel: userRole,
-    isViewOnly,
-    premiumUser,
-    loginMethod,
-  } = useAuthorized();
+  const { userId, userEmail, userRoleLabel: userRole, premiumUser, loginMethod } = useAuthorized();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const disableShowPrompts = useDisableShowPrompts();
   const disableBlogPosts = useDisableBlogPosts();
   const disableBouncingIcon = useDisableBouncingIcon();
-  const [disableLiteAdmin, setDisableLiteAdmin] = useDisableLiteAdmin(userId);
-  const canUseLiteAdmin = userId && !isViewOnly && isProxyAdminRole(role);
   const [disableShowNewBadge, setDisableShowNewBadge] = useState(false);
 
   useEffect(() => {
@@ -207,17 +194,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
           aria-label={t("shell.userMenu.toggleHideBouncingIcon")}
         />
       </div>
-      {premiumUser === true && canUseLiteAdmin && (
-        <div className="flex w-full items-center justify-between gap-2">
-          <span className="text-muted-foreground">{t("shell.userMenu.hideAgent", { agent: ARIA_AGENT_LABEL })}</span>
-          <Switch
-            size="sm"
-            checked={disableLiteAdmin}
-            onCheckedChange={setDisableLiteAdmin}
-            aria-label={t("shell.userMenu.toggleHideAgent", { agent: ARIA_AGENT_LABEL })}
-          />
-        </div>
-      )}
     </div>
   );
 

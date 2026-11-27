@@ -23,7 +23,6 @@ import {
 } from "@/components/DeploymentHealth/DeploymentHealth";
 import { DeploymentHealthPanel } from "@/components/DeploymentHealth/DeploymentHealthPanel";
 import { UserBanner } from "@/components/UserBanner";
-import { LiteAdminFrame } from "@/components/liteadmin/LiteAdmin";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
 import { PluginModeProvider, usePluginMode } from "@/contexts/PluginModeContext";
 import { createApiClient } from "@/lib/http/client";
@@ -173,7 +172,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   // sidebar owns its own scroll and the content column scrolls independently,
   // so the page can't be dragged past the end of the nav.
   return (
-    <LiteAdminFrame>
+    <>
       <div className="flex h-screen overflow-hidden bg-background max-md:h-dvh">
         <div className="hidden h-full md:flex">
           <SidebarProvider sidebarCollapsed={sidebarCollapsed} onToggleCollapsed={toggleSidebar} />
@@ -220,13 +219,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <DeploymentHealthBanner handle={deploymentHealthHandle} />
             <DeploymentHealthPanel handle={deploymentHealthHandle} />
             <UserBanner accessToken={accessToken} />
-            <main
-              className={
-                routeSegment === "aria"
-                  ? "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
-                  : "min-h-0 min-w-0 flex-1 overflow-y-auto"
-              }
-            >
+            <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
               <TelemetryEnvBanner />
               {children}
             </main>
@@ -234,7 +227,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </CommandPaletteProvider>
       </div>
-    </LiteAdminFrame>
+    </>
   );
 }
 

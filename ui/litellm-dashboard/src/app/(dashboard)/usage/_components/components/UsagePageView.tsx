@@ -73,7 +73,6 @@ import EntityUsage, { EntityList } from "./EntityUsage/EntityUsage";
 import ModelViewToggle, { ModelViewType } from "./ModelViewToggle";
 import TopKeyView, { type TopKeyItem } from "@/components/UsagePage/components/EntityUsage/TopKeyView";
 import { getGlobalTopKeys } from "./EntityUsage/entityUsageAggregations";
-import { AriaUsageTrigger } from "@/components/liteadmin/LiteAdmin";
 import { allowedUsageOptions, UsageViewSelect } from "./UsageViewSelect/UsageViewSelect";
 import UserRecordLink from "./UserRecordLink";
 import {
@@ -537,7 +536,6 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                     )}
                   </TabsList>
                   <div className="flex items-center gap-2">
-                    <AriaUsageTrigger />
                     <Button variant="outline" size="sm" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
                       {t("usage.pageView.exportData")}

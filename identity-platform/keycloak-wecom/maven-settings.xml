@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 内网构建专用：Maven 依赖下载经局域网代理（与 dockerd 代理一致） -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+  <proxies>
+    <proxy>
+      <id>lan-proxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>192.168.24.200</host>
+      <port>7890</port>
+      <nonProxyHosts>localhost|127.*|[::1]|192.168.*|10.*|172.16.*|172.17.*</nonProxyHosts>
+    </proxy>
+  </proxies>
+</settings>

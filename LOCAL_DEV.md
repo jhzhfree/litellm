@@ -169,12 +169,23 @@ curl -X POST http://localhost:4000/reload/model_cost_map -H "Authorization: Bear
 
 ### 5.2 身份平台镜像
 
-Keycloak 与它的 PostgreSQL 已本地化到 22.6，compose 在 `identity-platform/compose.yaml`，自定义 AOIDC 主题通过 `keycloak-theme` 目录挂载，`realm.json` 首次导入。
+Keycloak 与它的 PostgreSQL 已本地化到 22.6，compose 在 `identity-platform/compose.yaml`。**AOIDC 主题（含简体中文消息包）与 realm.json 已烤入 `identity:1` 镜像**（`/opt/keycloak/themes` 与 `/opt/keycloak/data/import/company-realm.json`），compose 不再挂载宿主机文件，避免版本漂移。
 
 ```bash
-docker compose -f identity-platform/compose.yaml pull
-docker compose -f identity-platform/compose.yaml up -d
+# 构建 + 推送（构建上下文是 identity-platform/，Dockerfile 在 keycloak-wecom/）
+cd /opt/dev/litellm/identity-platform
+docker build -f keycloak-wecom/Dockerfile -t 192.168.22.6:5000/ai-gw/identity:1 .
+docker push 192.168.22.6:5000/ai-gw/identity:1
+
+# 服务端升级
+docker compose -f identity-platform/compose.yaml pull && docker compose -f identity-platform/compose.yaml up -d
 ```
+
+排障要点：
+
+- **Maven 依赖下载必须走 settings.xml 代理**（`keycloak-wecom/maven-settings.xml`，已 COPY 进构建层）：JVM 不读 HTTP_PROXY 环境变量，`-Dhttps.proxyHost` JVM 属性对 Maven resolver 也不生效（实测直连报 Network is unreachable），只有 `~/.m2/settings.xml` 的 `<proxies>` 有效。
+- **BuildKit 元数据解析不走 dockerd 代理**：`maven:3.9.9-eclipse-temurin-21`（digest `3a4ab327...`）需先 `docker pull` 预拉取再重跑构建。
+- **realm.json 只在首次导入**：Keycloak `--import-realm` 对已存在的 realm 跳过（IGNORE_EXISTING）。更新语言配置等 realm 设置时，要么 Admin Console 手动改，要么删除 realm 重新导入（会删该 realm 全部用户，谨慎）。
 
 ### 5.3 前置检查与排障
 

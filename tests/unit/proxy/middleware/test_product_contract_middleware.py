@@ -83,8 +83,8 @@ async def test_provider_labels_are_branded_without_rewriting_user_metadata():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url="http://test") as client:
         response = await client.get("/providers")
         assert response.json() == {
-            "provider_display_name": "AI-Tokengw Gateway",
-            "ui_friendly_name": "AI-Tokengw Content Filter",
+            "provider_display_name": "AI-GovernanceGw Gateway",
+            "ui_friendly_name": "AI-GovernanceGw Content Filter",
             "metadata": {"ui_friendly_name": "LiteLLM Content Filter"},
         }
 
@@ -192,7 +192,7 @@ async def test_stream_error_branding_handles_split_events():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url="http://test") as client:
         response = await client.get("/v1/chat/completions")
         assert '"gateway_call_id":"request-1"' in response.text
-        assert "AI-Tokengw could not complete" in response.text
+        assert "AI-GovernanceGw internal failure" in response.text
         assert "LiteLLM internal failure" not in response.text
         assert response.text.endswith("data: [DONE]\n\n")
 

@@ -247,6 +247,7 @@ def mock_prisma_client(mocker):
 def mock_in_memory_handler(mocker):
     """Mock InMemoryGuardrailHandler for testing"""
     mock_handler = mocker.Mock(spec=InMemoryGuardrailHandler)
+    mock_handler.guardrail_id_to_custom_guardrail = {}
     mock_handler.list_in_memory_guardrails.return_value = [MOCK_CONFIG_GUARDRAIL]
     mock_handler.get_guardrail_by_id.return_value = MOCK_CONFIG_GUARDRAIL
     mock_handler.get_source.return_value = "config"

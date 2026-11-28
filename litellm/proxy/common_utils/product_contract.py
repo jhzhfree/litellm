@@ -158,8 +158,13 @@ def _environment_field(key: str, incoming: bool) -> str:
 
 def product_description(value: str) -> str:
     without_links: Final = re.sub(r"https?://(?:docs\.|www\.|models\.)?litellm\.ai[^\s\)\]\"<>]*", "/docs", value)
+    with_tokens: Final = re.sub(
+        r"\b(?:litellm_db|litellm-executed)\b",
+        lambda match: {"litellm_db": "gateway_db", "litellm-executed": "gateway-executed"}[match[0]],
+        without_links,
+    )
     fields: Final = re.sub(
-        r"\b(?:" + "|".join(FIELD_NAMES) + r")\b", lambda match: FIELD_NAMES[match[0]], without_links
+        r"\b(?:" + "|".join(FIELD_NAMES) + r")\b", lambda match: FIELD_NAMES[match[0]], with_tokens
     )
     environment: Final = fields.replace("LITELLM_", "AI_GATEWAY_")
     return re.sub(r"litellm", PRODUCT_NAME, environment, flags=re.IGNORECASE)

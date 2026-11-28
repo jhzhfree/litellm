@@ -5625,7 +5625,7 @@ class TestResponsesInputTokens:
     def test_managed_file_ids_reach_the_counter_with_the_mapping_inference_uses(self) -> None:
         from litellm.integrations.custom_logger import CustomLogger
 
-        mapping: Final = {"litellm-managed-file": {"deployment-a": "file-on-a"}}
+        mapping: Final = {"unified-managed-file": {"deployment-a": "file-on-a"}}
 
         class ManagedFiles(CustomLogger):
             async def async_pre_call_hook(self, user_api_key_dict, cache, data, call_type):
@@ -5636,7 +5636,7 @@ class TestResponsesInputTokens:
         response, counter = self._post_input_tokens(
             {
                 "model": "gpt-4o",
-                "input": [{"role": "user", "content": [{"type": "input_file", "file_id": "litellm-managed-file"}]}],
+                "input": [{"role": "user", "content": [{"type": "input_file", "file_id": "unified-managed-file"}]}],
             },
             managed_files=ManagedFiles(),
         )
@@ -5767,7 +5767,7 @@ class TestResponsesInputTokens:
     def test_a_managed_file_the_key_cannot_read_answers_403_without_a_count(self) -> None:
         from litellm.integrations.custom_logger import CustomLogger
 
-        denied: Final = "User u1 does not have access to the file litellm-managed-file"
+        denied: Final = "User u1 does not have access to the file unified-managed-file"
 
         class ManagedFiles(CustomLogger):
             async def async_pre_call_hook(self, user_api_key_dict, cache, data, call_type):
@@ -5776,7 +5776,7 @@ class TestResponsesInputTokens:
         response, counter = self._post_input_tokens(
             {
                 "model": "gpt-4o",
-                "input": [{"role": "user", "content": [{"type": "input_file", "file_id": "litellm-managed-file"}]}],
+                "input": [{"role": "user", "content": [{"type": "input_file", "file_id": "unified-managed-file"}]}],
             },
             managed_files=ManagedFiles(),
         )
@@ -6041,11 +6041,11 @@ class TestResponsesInputTokens:
         assert response.status_code == 400, response.text
         assert response.json() == {
             "error": {
-                "message": "LiteLLM does not support counting tokens for Vertex AI model zai-org/glm-5.2-maas.",
+                "message": "AI-GovernanceGw does not support counting tokens for Vertex AI model zai-org/glm-5.2-maas.",
                 "type": "invalid_request_error",
                 "param": None,
                 "code": None,
-                "litellm_call_id": "call-9564",
+                "gateway_call_id": "call-9564",
             }
         }
 

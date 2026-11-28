@@ -897,7 +897,7 @@ def test_upload_naming_litellm_db_as_target_storage_is_rejected(batch_upload_sea
     error = response.json()["error"]
     assert error["type"] == "invalid_request_error"
     assert error["param"] == "target_storage"
-    assert "litellm_db" in error["message"]
+    assert "gateway_db" in error["message"]
     assert upstream_files_route.call_count == 0
     stored.assert_not_awaited()
     provider_upload.assert_not_awaited()

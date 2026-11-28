@@ -13,6 +13,7 @@ from litellm.proxy.common_utils.product_contract import (
     INTERNAL_FIELDS,
     internal_header,
     internal_path,
+    product_description,
     public_header,
     public_path,
     public_schema,
@@ -34,7 +35,7 @@ def error_payload(value: JsonValue) -> JsonValue:
     if not isinstance(value, dict):
         return value
     return {
-        key: "AI-GovernanceGw could not complete this request. Contact your administrator with the request ID."
+        key: product_description(item)
         if key in {"message", "detail"} and isinstance(item, str) and "litellm" in item.lower()
         else [FIELD_NAMES.get(part, part) if isinstance(part, str) else part for part in item]
         if key == "loc" and isinstance(item, list)

@@ -1198,8 +1198,8 @@ except Exception:
 ###################
 # Import enterprise routes
 try:
-    from litellm_enterprise.proxy.enterprise_routes import router as _enterprise_router
-    from litellm_enterprise.proxy.proxy_server import EnterpriseProxyConfig
+    from litellm_custom.proxy.enterprise_routes import router as _enterprise_router
+    from litellm_custom.proxy.proxy_server import EnterpriseProxyConfig
 
     enterprise_router = _enterprise_router
     enterprise_proxy_config: EnterpriseProxyConfig | None = EnterpriseProxyConfig()
@@ -11986,7 +11986,7 @@ class ProxyStartupEvent:
         ### CHECK BATCH COST ###
         if llm_router is not None and PROXY_BATCH_POLLING_ENABLED:
             try:
-                from litellm_enterprise.proxy.common_utils.check_batch_cost import (
+                from litellm_custom.proxy.common_utils.check_batch_cost import (
                     CheckBatchCost,
                 )
 
@@ -12017,7 +12017,7 @@ class ProxyStartupEvent:
         ### CHECK RESPONSES COST ###
         if llm_router is not None and PROXY_BATCH_POLLING_ENABLED:
             try:
-                from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+                from litellm_custom.proxy.common_utils.check_responses_cost import (
                     CheckResponsesCost,
                 )
 
@@ -21657,7 +21657,7 @@ def _is_litellm_internal_callback(callback_name: str, callback: CustomLogger | C
 
     module_owner: Final = _callback_module_name(callback).partition(".")[0]
     is_registered_integration: Final = callback_name in CustomLoggerRegistry.CALLBACK_CLASS_STR_TO_CLASS_TYPE
-    return not is_registered_integration and module_owner in ("litellm", "litellm_enterprise")
+    return not is_registered_integration and module_owner in ("litellm", "litellm_custom")
 
 
 def _is_instance_of_configured_callback(

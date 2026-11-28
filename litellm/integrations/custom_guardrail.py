@@ -1435,12 +1435,12 @@ class CustomGuardrail(CustomLogger):
             if self._event_hook_is_event_type(event_type):
                 if isinstance(self.event_hook, Mode):
                     try:
-                        from litellm_enterprise.integrations.custom_guardrail import (
+                        from litellm_custom.integrations.custom_guardrail import (
                             EnterpriseCustomGuardrailHelper,
                         )
                     except ImportError:
                         raise ImportError(
-                            "Setting tag-based guardrails is only available in litellm-enterprise. You must be a premium user to use this feature."
+                            "Setting tag-based guardrails is only available in litellm-custom. You must be a premium user to use this feature."
                         )
                     result = EnterpriseCustomGuardrailHelper._should_run_if_mode_by_tag(
                         data, self.event_hook, event_type
@@ -1464,12 +1464,12 @@ class CustomGuardrail(CustomLogger):
 
         if isinstance(self.event_hook, Mode):
             try:
-                from litellm_enterprise.integrations.custom_guardrail import (
+                from litellm_custom.integrations.custom_guardrail import (
                     EnterpriseCustomGuardrailHelper,
                 )
             except ImportError:
                 raise ImportError(
-                    "Setting tag-based guardrails is only available in litellm-enterprise. You must be a premium user to use this feature."
+                    "Setting tag-based guardrails is only available in litellm-custom. You must be a premium user to use this feature."
                 )
             result = EnterpriseCustomGuardrailHelper._should_run_if_mode_by_tag(data, self.event_hook, event_type)
             if result is not None:

@@ -432,7 +432,7 @@ def test_run_ends_with_a_summary_of_ran_and_skipped_blocks(tmp_path: Path) -> No
     (
         "litellm/tracing/generated/models.py",
         "litellm/models/credentials.py",
-        "enterprise/litellm_enterprise/types/proxy/audit_logging_endpoints.py",
+        "enterprise/litellm_custom/types/proxy/audit_logging_endpoints.py",
         "pyproject.toml",
         "uv.lock",
     ),

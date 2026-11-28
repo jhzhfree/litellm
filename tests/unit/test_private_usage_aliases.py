@@ -93,12 +93,12 @@ PROXY_CLASS_NAME_ALIAS_CASES: Final = (
         "ProxyDBLogger",
     ),
     (
-        "enterprise.litellm_enterprise.proxy.hooks.managed_files",
+        "enterprise.litellm_custom.proxy.hooks.managed_files",
         "_PROXY_LiteLLMManagedFiles",
         "PROXY_LiteLLMManagedFiles",
     ),
     (
-        "enterprise.litellm_enterprise.proxy.hooks.managed_vector_stores",
+        "enterprise.litellm_custom.proxy.hooks.managed_vector_stores",
         "_PROXY_LiteLLMManagedVectorStores",
         "PROXY_LiteLLMManagedVectorStores",
     ),
@@ -1168,14 +1168,14 @@ ALIAS_CASES: Final = (
         False,
     ),
     (
-        "enterprise.litellm_enterprise.proxy.hooks.managed_files",
+        "enterprise.litellm_custom.proxy.hooks.managed_files",
         "",
         "_PROXY_LiteLLMManagedFiles",
         "PROXY_LiteLLMManagedFiles",
         False,
     ),
     (
-        "enterprise.litellm_enterprise.proxy.hooks.managed_vector_stores",
+        "enterprise.litellm_custom.proxy.hooks.managed_vector_stores",
         "",
         "_PROXY_LiteLLMManagedVectorStores",
         "PROXY_LiteLLMManagedVectorStores",
@@ -1694,7 +1694,7 @@ ALIAS_CASES: Final = (
         False,
     ),
     (
-        "litellm.proxy.enterprise.litellm_enterprise.proxy.utils",
+        "litellm.proxy.enterprise.litellm_custom.proxy.utils",
         "",
         "_should_block_robots",
         "should_block_robots",

@@ -113,7 +113,7 @@ class RouteChecks:
     @staticmethod
     def check_route_enabled(route: str) -> None:
         try:
-            from litellm_enterprise.proxy.auth.route_checks import EnterpriseRouteChecks
+            from litellm_custom.proxy.auth.route_checks import EnterpriseRouteChecks
 
             EnterpriseRouteChecks.should_call_route(route=route)
         except HTTPException as e:

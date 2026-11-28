@@ -98,8 +98,8 @@ async def test_v2_invitation_email_suppresses_legacy_duplicate():
     successfully, the modern invitation email is sent and the legacy V1 email is
     NOT also sent, so the invited user does not receive a duplicate.
     """
-    pytest.importorskip("litellm_enterprise")
-    from litellm_enterprise.enterprise_callbacks.send_emails.base_email import (
+    pytest.importorskip("litellm_custom")
+    from litellm_custom.enterprise_callbacks.send_emails.base_email import (
         BaseEmailLogger,
     )
 
@@ -154,8 +154,8 @@ async def test_v2_invitation_email_failure_falls_back_to_legacy():
     raises (e.g. misconfigured SMTP), the legacy V1 email still fires as a
     fallback so the invited user is not left with zero emails.
     """
-    pytest.importorskip("litellm_enterprise")
-    from litellm_enterprise.enterprise_callbacks.send_emails.base_email import (
+    pytest.importorskip("litellm_custom")
+    from litellm_custom.enterprise_callbacks.send_emails.base_email import (
         BaseEmailLogger,
     )
 

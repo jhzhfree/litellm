@@ -5053,7 +5053,7 @@ def _setup_unscoped_list_files_route_over_real_hook(
     MagicMock, so it cannot see anything past the route's argument plumbing."""
     import litellm.proxy.proxy_server as ps
     from litellm.proxy._types import LitellmUserRoles
-    from litellm_enterprise.proxy.hooks.managed_files import (
+    from litellm_custom.proxy.hooks.managed_files import (
         PROXY_LiteLLMManagedFiles,
     )
 

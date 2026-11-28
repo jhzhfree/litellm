@@ -233,7 +233,7 @@ async def unblock_user(data: BlockUsers):
     ```
     """
     try:
-        from enterprise.enterprise_hooks.blocked_user_list import (
+        from litellm_custom.enterprise_hooks.blocked_user_list import (
             ENTERPRISE_BlockedUserList,
         )
     except ImportError:

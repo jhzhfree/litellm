@@ -7,7 +7,7 @@ import httpx
 import pytest
 import respx
 from fastapi import HTTPException
-from litellm_enterprise.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
+from litellm_custom.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
 
 import litellm
 from litellm import Router

@@ -247,6 +247,10 @@ vi.mock("@/components/EntityUsageExport", () => ({
   default: () => <div>Entity Usage Export Modal</div>,
 }));
 
+vi.mock("@/components/liteadmin/LiteAdmin", () => ({
+  AriaUsageTrigger: () => <a href="/aria">Ask Aria</a>,
+}));
+
 vi.mock("@/app/(dashboard)/hooks/agents/useAgents", () => ({
   useAgents: vi.fn(),
 }));
@@ -1442,6 +1446,36 @@ describe("UsagePage", () => {
       });
 
       expect(screen.getByText("Export Data")).toBeInTheDocument();
+    });
+  });
+
+  describe("小恒", () => {
+    it("offers a link to Aria without a second composer in global view", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      expect(screen.getByRole("link", { name: "Ask Aria" })).toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "Ask 小恒" })).not.toBeInTheDocument();
+      expect(screen.queryByText("Ask AI")).not.toBeInTheDocument();
+    });
+
+    it("does not embed a second Aria composer in entity usage views", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      act(() => {
+        fireEvent.change(screen.getByTestId("usage-view-select"), { target: { value: "team" } });
+      });
+
+      expect(await screen.findByText("Entity Usage")).toBeInTheDocument();
+      expect(screen.queryByPlaceholderText(/Ask Aria/)).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "Ask 小恒" })).not.toBeInTheDocument();
     });
   });
 

@@ -38,7 +38,7 @@ async def test_project_perm_check_uses_current_team_not_caller_supplied():
     """The permission check must look at the project's existing team. Even
     if the caller is admin of an unrelated team, they must not pass when no
     explicit team_object is forced through."""
-    from litellm_enterprise.proxy.management_endpoints.project_endpoints import (
+    from litellm_custom.proxy.management_endpoints.project_endpoints import (
         _check_user_permission_for_project,
     )
 
@@ -61,7 +61,7 @@ async def test_project_perm_check_uses_current_team_not_caller_supplied():
 
 @pytest.mark.asyncio
 async def test_project_perm_check_allows_team_admin_of_existing_team():
-    from litellm_enterprise.proxy.management_endpoints.project_endpoints import (
+    from litellm_custom.proxy.management_endpoints.project_endpoints import (
         _check_user_permission_for_project,
     )
 
@@ -83,7 +83,7 @@ async def test_project_perm_check_allows_team_admin_of_existing_team():
 @pytest.mark.asyncio
 async def test_project_perm_check_allows_members_with_roles_admin():
     """Team admins added through /team/member_add live in members_with_roles, not the legacy admins list."""
-    from litellm_enterprise.proxy.management_endpoints.project_endpoints import (
+    from litellm_custom.proxy.management_endpoints.project_endpoints import (
         _check_user_permission_for_project,
     )
 
@@ -112,7 +112,7 @@ async def test_project_perm_check_allows_members_with_roles_admin():
 @pytest.mark.asyncio
 @pytest.mark.parametrize("general_settings", [MappingProxyType({}), _PROJECTS_DISABLED])
 async def test_project_perm_check_denies_team_admin_unless_projects_permission_configured(general_settings):
-    from litellm_enterprise.proxy.management_endpoints.project_endpoints import (
+    from litellm_custom.proxy.management_endpoints.project_endpoints import (
         _check_user_permission_for_project,
     )
 
@@ -135,7 +135,7 @@ async def test_project_perm_check_denies_team_admin_unless_projects_permission_c
 @pytest.mark.asyncio
 async def test_project_perm_check_require_admin_denies_team_admin_even_when_configured():
     """/project/delete passes require_admin=True, so the projects permission must not open it up."""
-    from litellm_enterprise.proxy.management_endpoints.project_endpoints import (
+    from litellm_custom.proxy.management_endpoints.project_endpoints import (
         _check_user_permission_for_project,
     )
 
@@ -155,7 +155,7 @@ async def test_project_perm_check_require_admin_denies_team_admin_even_when_conf
 
 @pytest.mark.asyncio
 async def test_project_perm_check_uses_injected_team_object_for_reassignment_target():
-    from litellm_enterprise.proxy.management_endpoints.project_endpoints import (
+    from litellm_custom.proxy.management_endpoints.project_endpoints import (
         _check_user_permission_for_project,
     )
 
@@ -176,7 +176,7 @@ async def test_project_perm_check_uses_injected_team_object_for_reassignment_tar
 
 @pytest.mark.asyncio
 async def test_project_perm_check_proxy_admin_always_allowed():
-    from litellm_enterprise.proxy.management_endpoints.project_endpoints import (
+    from litellm_custom.proxy.management_endpoints.project_endpoints import (
         _check_user_permission_for_project,
     )
 

@@ -22,8 +22,8 @@ repo_root = sys.argv[1]
 
 class ImportTracer(importlib.abc.MetaPathFinder):
     def find_spec(self, name, path, target=None):
-        if {block_enterprise!r} and name.startswith("litellm_enterprise"):
-            raise ImportError("blocked litellm_enterprise imports")
+        if {block_enterprise!r} and name.startswith("litellm_custom"):
+            raise ImportError("blocked litellm_custom imports")
         if name == "litellm.proxy._types":
             repository_frames = [
                 frame for frame in traceback.extract_stack()

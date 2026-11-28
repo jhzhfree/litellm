@@ -203,7 +203,7 @@ def initialize_callbacks_on_proxy(
                 imported_list.append(pii_masking_object)
             elif isinstance(callback, str) and callback == "llamaguard_moderations":
                 try:
-                    from litellm_enterprise.enterprise_callbacks.llama_guard import (
+                    from litellm_custom.enterprise_callbacks.llama_guard import (
                         _ENTERPRISE_LlamaGuard,
                     )
                 except ImportError:
@@ -218,7 +218,7 @@ def initialize_callbacks_on_proxy(
                 imported_list.append(llama_guard_object)
             elif isinstance(callback, str) and callback == "hide_secrets":
                 try:
-                    from litellm_enterprise.enterprise_callbacks.secret_detection import (
+                    from litellm_custom.enterprise_callbacks.secret_detection import (
                         _ENTERPRISE_SecretDetection,
                     )
                 except ImportError:
@@ -233,7 +233,7 @@ def initialize_callbacks_on_proxy(
                 imported_list.append(_secret_detection_object)
             elif isinstance(callback, str) and callback == "openai_moderations":
                 try:
-                    from enterprise.enterprise_hooks.openai_moderation import (
+                    from litellm_custom.enterprise_hooks.openai_moderation import (
                         ENTERPRISE_OpenAI_Moderation,
                     )
                 except ImportError:
@@ -268,7 +268,7 @@ def initialize_callbacks_on_proxy(
                 imported_list.append(aporia_guardrail_object)
             elif isinstance(callback, str) and callback == "google_text_moderation":
                 try:
-                    from enterprise.enterprise_hooks.google_text_moderation import (
+                    from litellm_custom.enterprise_hooks.google_text_moderation import (
                         ENTERPRISE_GoogleTextModeration,
                     )
                 except ImportError:
@@ -284,7 +284,7 @@ def initialize_callbacks_on_proxy(
                 imported_list.append(google_text_moderation_obj)
             elif isinstance(callback, str) and callback == "llmguard_moderations":
                 try:
-                    from litellm_enterprise.enterprise_callbacks.llm_guard import (
+                    from litellm_custom.enterprise_callbacks.llm_guard import (
                         _ENTERPRISE_LLMGuard,
                     )
                 except ImportError:
@@ -297,7 +297,7 @@ def initialize_callbacks_on_proxy(
                 imported_list.append(llm_guard_moderation_obj)
             elif isinstance(callback, str) and callback == "blocked_user_check":
                 try:
-                    from enterprise.enterprise_hooks.blocked_user_list import (
+                    from litellm_custom.enterprise_hooks.blocked_user_list import (
                         ENTERPRISE_BlockedUserList,
                     )
                 except ImportError:
@@ -312,7 +312,7 @@ def initialize_callbacks_on_proxy(
                 imported_list.append(blocked_user_list)
             elif isinstance(callback, str) and callback == "banned_keywords":
                 try:
-                    from enterprise.enterprise_hooks.banned_keywords import (
+                    from litellm_custom.enterprise_hooks.banned_keywords import (
                         ENTERPRISE_BannedKeywords,
                     )
                 except ImportError:

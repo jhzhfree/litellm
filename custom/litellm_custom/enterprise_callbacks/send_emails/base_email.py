@@ -1,0 +1,774 @@
+"""
+Base class for sending emails to users after creating keys or invite links.
+"""
+
+import asyncio
+import html
+import json
+import os
+from typing import Final, Literal
+
+from litellm._internal_context import with_service_target
+from litellm._logging import verbose_proxy_logger
+from litellm.caching.caching import DualCache
+from litellm.constants import (
+    EMAIL_BUDGET_ALERT_MAX_SPEND_ALERT_PERCENTAGE,
+    EMAIL_BUDGET_ALERT_TTL,
+)
+from litellm.integrations.custom_logger import CustomLogger
+from litellm.integrations.email_templates.email_footer import EMAIL_FOOTER
+from litellm.integrations.email_templates.key_created_email import KEY_CREATED_EMAIL_TEMPLATE
+from litellm.integrations.email_templates.key_rotated_email import KEY_ROTATED_EMAIL_TEMPLATE
+from litellm.integrations.email_templates.templates import (
+    MAX_BUDGET_ALERT_EMAIL_TEMPLATE,
+    SOFT_BUDGET_ALERT_EMAIL_TEMPLATE,
+    TEAM_MEMBER_MAX_BUDGET_ALERT_EMAIL_TEMPLATE,
+    TEAM_SOFT_BUDGET_ALERT_EMAIL_TEMPLATE,
+)
+from litellm.integrations.email_templates.user_invitation_email import USER_INVITATION_EMAIL_TEMPLATE
+from litellm.proxy._types import CallInfo, InvitationNew, Litellm_EntityType, UserAPIKeyAuth, WebhookEvent
+from litellm.repositories.table_repositories import InvitationLinkRepository
+from litellm.repositories.user_repository import UserRepository
+from litellm.secret_managers.main import get_secret_bool
+from litellm.types.integrations.slack_alerting import LITELLM_LOGO_URL
+from litellm_custom.types.enterprise_callbacks.send_emails import (
+    EmailEvent,
+    EmailParams,
+    SendKeyCreatedEmailEvent,
+    SendKeyRotatedEmailEvent,
+)
+
+_BUDGET_ALERT_CLAIMS_TARGET: Final = "budget_alert_claims"
+
+
+def _max_budget_alert_id(user_info: CallInfo) -> str:
+    if user_info.event_group == Litellm_EntityType.TEAM_MEMBER:
+        return f"team_member:{user_info.user_id}:{user_info.team_id}"
+    return user_info.token or user_info.user_id or "default_id"
+
+
+def _parse_email_list(raw: object) -> list[str]:  # mutable-ok: [LIT001] recipient payload
+    """Parse emails from a list or comma-separated string."""
+    if isinstance(raw, list):
+        return [e.strip() for e in raw if isinstance(e, str) and e.strip()]
+    if isinstance(raw, str):
+        return [e.strip() for e in raw.split(",") if e.strip()]
+    return []
+
+
+class BaseEmailLogger(CustomLogger):
+    DEFAULT_LITELLM_EMAIL = "notifications@alerts.litellm.ai"
+    DEFAULT_SUPPORT_EMAIL = "support@berri.ai"
+    DEFAULT_SUBJECT_TEMPLATES = {
+        EmailEvent.new_user_invitation: "LiteLLM: {event_message}",
+        EmailEvent.virtual_key_created: "LiteLLM: {event_message}",
+        EmailEvent.virtual_key_rotated: "LiteLLM: {event_message}",
+    }
+
+    def __init__(
+        self,
+        internal_usage_cache: DualCache | None = None,
+        **kwargs,  # kwargs-ok: CustomLogger subclass contract forwards init args to the base logger
+    ):
+        """
+        Initialize BaseEmailLogger
+
+        Args:
+            internal_usage_cache: DualCache instance for preventing duplicate alerts
+            **kwargs: Additional arguments passed to CustomLogger
+        """
+        super().__init__(**kwargs)
+        self.internal_usage_cache = internal_usage_cache or DualCache()
+
+    async def send_user_invitation_email(self, event: WebhookEvent):
+        """
+        Send email to user after inviting them to the team
+        """
+        email_params = await self._get_email_params(
+            email_event=EmailEvent.new_user_invitation,
+            user_id=event.user_id,
+            user_email=getattr(event, "user_email", None),
+            event_message=event.event_message,
+        )
+
+        verbose_proxy_logger.debug(f"send_user_invitation_email_event: {json.dumps(event, indent=4, default=str)}")
+
+        email_html_content = USER_INVITATION_EMAIL_TEMPLATE.format(
+            email_logo_url=email_params.logo_url,
+            recipient_email=email_params.recipient_email,
+            invitation_link=email_params.base_url,
+            base_url=email_params.base_url,
+            email_support_contact=email_params.support_contact,
+            email_footer=email_params.signature,
+        )
+
+        await self.send_email(
+            from_email=self.DEFAULT_LITELLM_EMAIL,
+            to_email=[email_params.recipient_email],
+            subject=email_params.subject,
+            html_body=email_html_content,
+        )
+
+    async def send_key_created_email(self, send_key_created_email_event: SendKeyCreatedEmailEvent):
+        """
+        Send email to user after creating key for the user
+        """
+        email_params = await self._get_email_params(
+            user_id=send_key_created_email_event.user_id,
+            user_email=send_key_created_email_event.user_email,
+            email_event=EmailEvent.virtual_key_created,
+            event_message=send_key_created_email_event.event_message,
+        )
+
+        verbose_proxy_logger.debug(
+            f"send_key_created_email_event: {json.dumps(send_key_created_email_event, indent=4, default=str)}"
+        )
+
+        include_api_key = get_secret_bool(secret_name="EMAIL_INCLUDE_API_KEY", default_value=True)
+        if include_api_key is None:
+            include_api_key = True
+        key_token_display = (
+            send_key_created_email_event.virtual_key
+            if include_api_key
+            else "[Key hidden for security - retrieve from dashboard]"
+        )
+
+        email_html_content = KEY_CREATED_EMAIL_TEMPLATE.format(
+            email_logo_url=email_params.logo_url,
+            recipient_email=email_params.recipient_email,
+            key_budget=self._format_key_budget(send_key_created_email_event.max_budget),
+            key_token=key_token_display,
+            base_url=email_params.base_url,
+            email_support_contact=email_params.support_contact,
+            email_footer=email_params.signature,
+        )
+
+        await self.send_email(
+            from_email=self.DEFAULT_LITELLM_EMAIL,
+            to_email=[email_params.recipient_email],
+            subject=email_params.subject,
+            html_body=email_html_content,
+        )
+
+    async def send_key_rotated_email(self, send_key_rotated_email_event: SendKeyRotatedEmailEvent):
+        """
+        Send email to user after rotating key for the user
+        """
+        email_params = await self._get_email_params(
+            user_id=send_key_rotated_email_event.user_id,
+            user_email=send_key_rotated_email_event.user_email,
+            email_event=EmailEvent.virtual_key_rotated,
+            event_message=send_key_rotated_email_event.event_message,
+        )
+
+        verbose_proxy_logger.debug(
+            f"send_key_rotated_email_event: {json.dumps(send_key_rotated_email_event, indent=4, default=str)}"
+        )
+
+        include_api_key = get_secret_bool(secret_name="EMAIL_INCLUDE_API_KEY", default_value=True)
+        if include_api_key is None:
+            include_api_key = True
+        key_token_display = (
+            send_key_rotated_email_event.virtual_key
+            if include_api_key
+            else "[Key hidden for security - retrieve from dashboard]"
+        )
+
+        email_html_content = KEY_ROTATED_EMAIL_TEMPLATE.format(
+            email_logo_url=email_params.logo_url,
+            recipient_email=email_params.recipient_email,
+            key_budget=self._format_key_budget(send_key_rotated_email_event.max_budget),
+            key_token=key_token_display,
+            base_url=email_params.base_url,
+            email_support_contact=email_params.support_contact,
+            email_footer=email_params.signature,
+        )
+
+        await self.send_email(
+            from_email=self.DEFAULT_LITELLM_EMAIL,
+            to_email=[email_params.recipient_email],
+            subject=email_params.subject,
+            html_body=email_html_content,
+        )
+
+    async def send_soft_budget_alert_email(self, event: WebhookEvent):
+        """
+        Send email to user when soft budget is crossed
+        """
+        email_params = await self._get_email_params(
+            email_event=EmailEvent.soft_budget_crossed,
+            user_id=event.user_id,
+            user_email=event.user_email,
+            event_message=event.event_message,
+        )
+
+        verbose_proxy_logger.debug(
+            f"send_soft_budget_alert_email_event: {json.dumps(event.model_dump(exclude_none=True), indent=4, default=str)}"
+        )
+
+        soft_budget_str = f"${event.soft_budget}" if event.soft_budget is not None else "N/A"
+        spend_str = f"${event.spend}" if event.spend is not None else "$0.00"
+        max_budget_info = ""
+        if event.max_budget is not None:
+            max_budget_info = f"<b>Maximum Budget:</b> ${event.max_budget} <br />"
+
+        email_html_content = SOFT_BUDGET_ALERT_EMAIL_TEMPLATE.format(
+            email_logo_url=email_params.logo_url,
+            recipient_email=email_params.recipient_email,
+            soft_budget=soft_budget_str,
+            spend=spend_str,
+            max_budget_info=max_budget_info,
+            base_url=email_params.base_url,
+            email_support_contact=email_params.support_contact,
+            email_footer=email_params.signature,
+        )
+        await self.send_email(
+            from_email=self.DEFAULT_LITELLM_EMAIL,
+            to_email=[email_params.recipient_email],
+            subject=email_params.subject,
+            html_body=email_html_content,
+        )
+
+    async def send_team_soft_budget_alert_email(self, event: WebhookEvent):
+        """
+        Send email to team members when team soft budget is crossed.
+        Supports multiple recipients via alert_emails from team metadata.
+        """
+        recipient_emails = [
+            email for email in (getattr(event, "alert_emails", None) or []) if email
+        ]  # mutable-ok: [LIT001] built in one shot
+
+        if not recipient_emails:
+            verbose_proxy_logger.warning(
+                f"No recipient emails found for team soft budget alert. event={event.model_dump(exclude_none=True)}"
+            )
+            return
+
+        first_recipient_email = recipient_emails[0]
+        if not first_recipient_email or not first_recipient_email.strip():
+            verbose_proxy_logger.warning(
+                f"Invalid recipient email found for team soft budget alert. event={event.model_dump(exclude_none=True)}"
+            )
+            return
+
+        verbose_proxy_logger.debug(
+            f"send_team_soft_budget_alert_email_event: {json.dumps(event.model_dump(exclude_none=True), indent=4, default=str)}"
+        )
+
+        email_params = await self._get_email_params(
+            email_event=EmailEvent.soft_budget_crossed,
+            user_id=None,
+            user_email=first_recipient_email,
+            event_message=event.event_message,
+        )
+
+        soft_budget_str = f"${event.soft_budget}" if event.soft_budget is not None else "N/A"
+        spend_str = f"${event.spend}" if event.spend is not None else "$0.00"
+        max_budget_info = ""
+        if event.max_budget is not None:
+            max_budget_info = f"<b>Maximum Budget:</b> ${event.max_budget} <br />"
+
+        team_alias = event.team_alias or "Team"
+
+        email_html_content = TEAM_SOFT_BUDGET_ALERT_EMAIL_TEMPLATE.format(
+            email_logo_url=email_params.logo_url,
+            team_alias=team_alias,
+            soft_budget=soft_budget_str,
+            spend=spend_str,
+            max_budget_info=max_budget_info,
+            base_url=email_params.base_url,
+            email_support_contact=email_params.support_contact,
+            email_footer=email_params.signature,
+        )
+
+        await self.send_email(
+            from_email=self.DEFAULT_LITELLM_EMAIL,
+            to_email=recipient_emails,
+            subject=email_params.subject,
+            html_body=email_html_content,
+        )
+
+    async def send_max_budget_alert_email(
+        self,
+        event: WebhookEvent,
+        threshold_pct: int | None = None,
+        recipient_emails: list[str] | None = None,  # mutable-ok: [LIT001] caller-owned recipients
+    ):
+        """
+        Send email to user when max budget alert threshold is reached.
+
+        Args:
+            event: The webhook event with spend/budget info
+            threshold_pct: Override percentage for multi-threshold alerts (e.g. 50, 75, 100).
+                          When None, uses EMAIL_BUDGET_ALERT_MAX_SPEND_ALERT_PERCENTAGE (old behavior).
+            recipient_emails: Override recipient list for multi-threshold alerts.
+                             When None, resolves single owner email via _get_email_params (old behavior).
+        """
+        verbose_proxy_logger.debug(
+            f"send_max_budget_alert_email_event: {json.dumps(event.model_dump(exclude_none=True), indent=4, default=str)}"
+        )
+
+        spend_str = f"${event.spend}" if event.spend is not None else "$0.00"
+        max_budget_str = f"${event.max_budget}" if event.max_budget is not None else "N/A"
+
+        percentage = (
+            threshold_pct
+            if threshold_pct is not None
+            else int(EMAIL_BUDGET_ALERT_MAX_SPEND_ALERT_PERCENTAGE * 100)
+        )
+        threshold_fraction = percentage / 100.0
+        alert_threshold_str = f"${event.max_budget * threshold_fraction:.2f}" if event.max_budget is not None else "N/A"
+
+        if recipient_emails:
+            email_params = await self._get_email_params(
+                email_event=EmailEvent.max_budget_alert,
+                user_id=event.user_id,
+                user_email=event.user_email or recipient_emails[0],
+                event_message=event.event_message,
+            )
+            greeting = html.escape(event.user_email or event.key_alias or event.token or "")
+            if event.event_group == Litellm_EntityType.TEAM_MEMBER:
+                email_html_content = TEAM_MEMBER_MAX_BUDGET_ALERT_EMAIL_TEMPLATE.format(
+                    email_logo_url=email_params.logo_url,
+                    member=html.escape(event.user_email or event.user_id or ""),
+                    team_alias=html.escape(event.team_alias or event.team_id or ""),
+                    percentage=percentage,
+                    spend=spend_str,
+                    max_budget=max_budget_str,
+                    alert_threshold=alert_threshold_str,
+                    base_url=email_params.base_url,
+                    email_support_contact=email_params.support_contact,
+                    email_footer=email_params.signature,
+                )
+            else:
+                email_html_content = MAX_BUDGET_ALERT_EMAIL_TEMPLATE.format(
+                    email_logo_url=email_params.logo_url,
+                    recipient_email=greeting,
+                    percentage=percentage,
+                    spend=spend_str,
+                    max_budget=max_budget_str,
+                    alert_threshold=alert_threshold_str,
+                    base_url=email_params.base_url,
+                    email_support_contact=email_params.support_contact,
+                    email_footer=email_params.signature,
+                )
+            await self.send_email(
+                from_email=self.DEFAULT_LITELLM_EMAIL,
+                to_email=recipient_emails,
+                subject=email_params.subject,
+                html_body=email_html_content,
+            )
+        else:
+            email_params = await self._get_email_params(
+                email_event=EmailEvent.max_budget_alert,
+                user_id=event.user_id,
+                user_email=event.user_email,
+                event_message=event.event_message,
+            )
+            email_html_content = MAX_BUDGET_ALERT_EMAIL_TEMPLATE.format(
+                email_logo_url=email_params.logo_url,
+                recipient_email=email_params.recipient_email,
+                percentage=percentage,
+                spend=spend_str,
+                max_budget=max_budget_str,
+                alert_threshold=alert_threshold_str,
+                base_url=email_params.base_url,
+                email_support_contact=email_params.support_contact,
+                email_footer=email_params.signature,
+            )
+            await self.send_email(
+                from_email=self.DEFAULT_LITELLM_EMAIL,
+                to_email=[email_params.recipient_email],
+                subject=email_params.subject,
+                html_body=email_html_content,
+            )
+
+    @with_service_target(_BUDGET_ALERT_CLAIMS_TARGET)
+    async def budget_alerts(
+        self,
+        type: Literal[
+            "token_budget",
+            "soft_budget",
+            "max_budget_alert",
+            "user_budget",
+            "team_budget",
+            "organization_budget",
+            "proxy_budget",
+            "projected_limit_exceeded",
+        ],
+        user_info: CallInfo,
+    ):
+        """
+        Send a budget alert via email
+
+        Args:
+            type: The type of budget alert to send
+            user_info: The user info to send the alert for
+        """
+        # Alert once within the TTL window, cache the claim before sending,
+        # release it if the send fails so a later request can retry.
+        _cache: DualCache = self.internal_usage_cache
+
+        if type == "soft_budget":
+            if user_info.event_group == Litellm_EntityType.TEAM:
+                if user_info.soft_budget is None:
+                    return
+                if user_info.alert_emails is None or len(user_info.alert_emails) == 0:
+                    verbose_proxy_logger.debug("Skipping team soft budget email alert: no alert_emails configured")
+                    return
+            elif user_info.max_budget is None and user_info.soft_budget is None:
+                return
+
+            if user_info.soft_budget is not None and user_info.spend >= user_info.soft_budget:
+                _id = self._soft_budget_cache_id(user_info)
+                _cache_key = f"email_budget_alerts:soft_budget_crossed:{_id}"
+
+                send_count = await _cache.async_increment_cache(key=_cache_key, value=1, ttl=EMAIL_BUDGET_ALERT_TTL)
+                if send_count is None or send_count <= 1:
+                    event_message = f"Soft Budget Crossed - Total Soft Budget: ${user_info.soft_budget}"
+                    webhook_event = self._webhook_event(
+                        "soft_budget_crossed", event_message, user_info, alert_emails=user_info.alert_emails
+                    )
+                    try:
+                        if user_info.event_group == Litellm_EntityType.TEAM:
+                            await self.send_team_soft_budget_alert_email(webhook_event)
+                        else:
+                            await self.send_soft_budget_alert_email(webhook_event)
+                    except Exception as e:
+                        verbose_proxy_logger.error(f"Error sending soft budget alert email: {e}", exc_info=True)
+                        await self._release_budget_alert_claim(_cache, _cache_key)
+            return
+
+        if type == "max_budget_alert":
+            if user_info.max_budget is not None and user_info.spend is not None:
+                if user_info.max_budget_alert_emails:
+                    await self._handle_multi_threshold_max_budget_alert(user_info=user_info, _cache=_cache)
+                    return
+
+                alert_threshold = user_info.max_budget * EMAIL_BUDGET_ALERT_MAX_SPEND_ALERT_PERCENTAGE
+
+                if user_info.spend >= alert_threshold and user_info.spend < user_info.max_budget:
+                    _id = user_info.token or user_info.user_id or "default_id"
+                    _cache_key = f"email_budget_alerts:max_budget_alert:{_id}"
+
+                    send_count = await _cache.async_increment_cache(key=_cache_key, value=1, ttl=EMAIL_BUDGET_ALERT_TTL)
+                    if send_count is None or send_count <= 1:
+                        percentage = int(EMAIL_BUDGET_ALERT_MAX_SPEND_ALERT_PERCENTAGE * 100)
+                        event_message = f"Max Budget Alert - {percentage}% of Maximum Budget Reached"
+                        webhook_event = self._webhook_event("max_budget_alert", event_message, user_info)
+                        try:
+                            await self.send_max_budget_alert_email(webhook_event)
+                        except Exception as e:
+                            verbose_proxy_logger.error(f"Error sending max budget alert email: {e}", exc_info=True)
+                            await self._release_budget_alert_claim(_cache, _cache_key)
+            return
+
+    def _soft_budget_cache_id(self, user_info: CallInfo) -> str:
+        if user_info.event_group == Litellm_EntityType.TEAM:
+            return user_info.team_id or "default_id"
+        if user_info.event_group == Litellm_EntityType.ORGANIZATION:
+            return user_info.organization_id or "default_id"
+        if user_info.event_group == Litellm_EntityType.USER:
+            return user_info.user_id or "default_id"
+        return user_info.token or user_info.user_id or "default_id"
+
+    def _webhook_event(
+        self,
+        event: str,
+        event_message: str,
+        user_info: CallInfo,
+        alert_emails: list[str] | None = None,  # mutable-ok: [LIT001] webhook payload field
+    ) -> WebhookEvent:
+        return WebhookEvent(
+            event=event,
+            event_message=event_message,
+            spend=user_info.spend,
+            max_budget=user_info.max_budget,
+            soft_budget=user_info.soft_budget,
+            alert_emails=alert_emails or user_info.alert_emails,
+            token=user_info.token,
+            customer_id=user_info.customer_id,
+            user_id=user_info.user_id,
+            team_id=user_info.team_id,
+            team_alias=user_info.team_alias,
+            organization_id=user_info.organization_id,
+            user_email=user_info.user_email,
+            key_alias=user_info.key_alias,
+            projected_exceeded_date=user_info.projected_exceeded_date,
+            projected_spend=user_info.projected_spend,
+            event_group=user_info.event_group,
+        )
+
+    @with_service_target(_BUDGET_ALERT_CLAIMS_TARGET)
+    async def _handle_multi_threshold_max_budget_alert(self, user_info: CallInfo, _cache: DualCache):
+        """
+        Loop over configured thresholds in max_budget_alert_emails,
+        check cache per threshold, and send to configured recipients.
+        """
+        if not user_info.max_budget_alert_emails or user_info.max_budget is None:
+            return
+
+        for threshold_str, raw_emails in user_info.max_budget_alert_emails.items():
+            try:
+                threshold_pct = int(threshold_str)
+            except (ValueError, TypeError):
+                continue
+
+            threshold_amount = user_info.max_budget * (threshold_pct / 100.0)
+            if user_info.spend < threshold_amount:
+                continue
+
+            _id = _max_budget_alert_id(user_info)
+            _cache_key = f"email_budget_alerts:max_budget_alert:{threshold_pct}:{_id}"
+
+            emails = _parse_email_list(raw_emails)
+            if user_info.user_email:
+                emails.append(user_info.user_email)
+            if not emails:
+                verbose_proxy_logger.warning("No recipients for %d%% threshold on %s, skipping alert", threshold_pct, _id)
+                continue
+            recipient_emails = list(set(emails))
+
+            send_count = await _cache.async_increment_cache(key=_cache_key, value=1, ttl=EMAIL_BUDGET_ALERT_TTL)
+            if send_count is not None and send_count > 1:
+                continue
+
+            event_message = (
+                f"Team Member Budget Alert - {threshold_pct}% of Team Member Budget Reached"
+                if user_info.event_group == Litellm_EntityType.TEAM_MEMBER
+                else f"Max Budget Alert - {threshold_pct}% of Maximum Budget Reached"
+            )
+            webhook_event = self._webhook_event("max_budget_alert", event_message, user_info)
+
+            try:
+                await self.send_max_budget_alert_email(
+                    webhook_event,
+                    threshold_pct=threshold_pct,
+                    recipient_emails=recipient_emails,
+                )
+            except Exception as e:
+                verbose_proxy_logger.error(
+                    f"Error sending multi-threshold max budget alert email for {threshold_pct}%: {e}",
+                    exc_info=True,
+                )
+                await self._release_budget_alert_claim(_cache, _cache_key)
+
+    @with_service_target(_BUDGET_ALERT_CLAIMS_TARGET)
+    async def _release_budget_alert_claim(self, cache: DualCache, cache_key: str) -> None:
+        try:
+            await cache.async_delete_cache(key=cache_key)
+        except Exception:
+            verbose_proxy_logger.debug("Failed to release budget alert claim for %s; it expires with the TTL", cache_key)
+
+    async def _get_email_params(
+        self,
+        email_event: EmailEvent,
+        user_id: str | None = None,
+        user_email: str | None = None,
+        event_message: str | None = None,
+    ) -> EmailParams:
+        """
+        Get common email parameters used across different email sending methods
+
+        Args:
+            email_event: Type of email event
+            user_id: Optional user ID to look up email
+            user_email: Optional direct email address
+            event_message: Optional message to include in email subject
+
+        Returns:
+            EmailParams containing logo_url, support_contact, base_url, recipient_email, subject, and signature
+        """
+        custom_logo = os.getenv("EMAIL_LOGO_URL", None)
+        custom_support = os.getenv("EMAIL_SUPPORT_CONTACT", None)
+        custom_signature = os.getenv("EMAIL_SIGNATURE", None)
+        custom_subject_invitation = os.getenv("EMAIL_SUBJECT_INVITATION", None)
+        custom_subject_key_created = os.getenv("EMAIL_SUBJECT_KEY_CREATED", None)
+
+        unused_custom_fields = []  # mutable-ok: [LIT001] local accumulator
+
+        def get_custom_or_default(custom_value: str | None, default_value: str, field_name: str) -> str:
+            if custom_value is not None:
+                from litellm.proxy.proxy_server import premium_user
+
+                if premium_user is not True:
+                    unused_custom_fields.append(field_name)
+                    return default_value
+                return custom_value
+            return default_value
+
+        logo_url = get_custom_or_default(custom_logo, LITELLM_LOGO_URL, "logo URL")
+        support_contact = get_custom_or_default(custom_support, self.DEFAULT_SUPPORT_EMAIL, "support contact")
+        base_url = os.getenv("PROXY_BASE_URL", "http://0.0.0.0:4000")
+        signature = get_custom_or_default(custom_signature, EMAIL_FOOTER, "email signature")
+
+        if email_event == EmailEvent.new_user_invitation:
+            subject_template = get_custom_or_default(
+                custom_subject_invitation,
+                self.DEFAULT_SUBJECT_TEMPLATES[EmailEvent.new_user_invitation],
+                "invitation subject template",
+            )
+        elif email_event == EmailEvent.virtual_key_created:
+            subject_template = get_custom_or_default(
+                custom_subject_key_created,
+                self.DEFAULT_SUBJECT_TEMPLATES[EmailEvent.virtual_key_created],
+                "key created subject template",
+            )
+        elif email_event == EmailEvent.virtual_key_rotated:
+            subject_template = get_custom_or_default(
+                os.getenv("EMAIL_SUBJECT_KEY_ROTATED", None),
+                self.DEFAULT_SUBJECT_TEMPLATES[EmailEvent.virtual_key_rotated],
+                "key rotated subject template",
+            )
+        else:
+            subject_template = "LiteLLM: {event_message}"
+
+        subject = subject_template.format(event_message=event_message) if event_message else "LiteLLM Notification"
+
+        recipient_email: str | None = user_email or await self._lookup_user_email_from_db(user_id=user_id)
+        if recipient_email is None:
+            raise ValueError(f"User email not found for user_id: {user_id}. User email is required to send email.")
+
+        if email_event == EmailEvent.new_user_invitation:
+            base_url = await self._get_invitation_link(user_id=user_id, base_url=base_url)
+
+        if unused_custom_fields:
+            fields_str = ", ".join(unused_custom_fields)
+            warning_msg = (
+                f"Email sent with default values instead of custom values for: {fields_str}. "
+                "This is an Enterprise feature. To use custom email fields, please upgrade to LiteLLM Enterprise. "
+                "Schedule a meeting here: https://enterprise.litellm.ai/demo"
+            )
+            verbose_proxy_logger.warning(f"{warning_msg}")
+
+        return EmailParams(
+            logo_url=logo_url,
+            support_contact=support_contact,
+            base_url=base_url,
+            recipient_email=recipient_email,
+            subject=subject,
+            signature=signature,
+        )
+
+    def _format_key_budget(self, max_budget: float | None) -> str:
+        """
+        Format the key budget to be displayed in the email
+        """
+        if max_budget is None:
+            return "No budget"
+        return f"${max_budget}"
+
+    async def _lookup_user_email_from_db(self, user_id: str | None) -> str | None:
+        """
+        Lookup user email from user_id
+        """
+        from litellm.proxy.proxy_server import prisma_client
+
+        if prisma_client is None:
+            verbose_proxy_logger.debug(f"Prisma client not found. Unable to lookup user email for user_id: {user_id}")
+            return None
+
+        user_row = await UserRepository(prisma_client).table.find_unique(where={"user_id": user_id})
+
+        if user_row is not None:
+            return user_row.user_email
+        return None
+
+    async def _get_invitation_link(self, user_id: str | None, base_url: str) -> str:
+        """
+        Get invitation link for the user
+        """
+        if not user_id:
+            verbose_proxy_logger.warning(
+                "No user_id provided for invitation link. Email will link to base URL instead of onboarding page"
+            )
+            return base_url
+
+        if not await self._is_prisma_client_available():
+            verbose_proxy_logger.warning(
+                "Prisma client not available. Email will link to base URL instead of onboarding page"
+            )
+            return base_url
+
+        await self._wait_for_invitation_creation()
+
+        invitation = await self._get_or_create_invitation(user_id)
+        if not invitation:
+            verbose_proxy_logger.warning(
+                f"Failed to get/create invitation for user_id: {user_id}. Email will link to base URL instead of onboarding page"
+            )
+            return base_url
+
+        invitation_link = self._construct_invitation_link(invitation.id, base_url)
+        verbose_proxy_logger.info(f"Successfully created invitation link for user_id: {user_id}")
+        return invitation_link
+
+    async def _is_prisma_client_available(self) -> bool:
+        """Check if Prisma client is available"""
+        from litellm.proxy.proxy_server import prisma_client
+
+        if prisma_client is None:
+            verbose_proxy_logger.debug("Prisma client not found. Unable to lookup invitation")
+            return False
+        return True
+
+    async def _wait_for_invitation_creation(self) -> None:
+        """
+        Wait for any concurrent invitation creation to complete.
+
+        The UI calls /invitation/new to generate the invitation link.
+        We wait to ensure any pending invitation creation is completed.
+        """
+        await asyncio.sleep(10)
+
+    async def _get_or_create_invitation(self, user_id: str):
+        """
+        Get existing invitation or create a new one for the user
+
+        Returns:
+            Invitation object with id attribute, or None if failed
+        """
+        from litellm.proxy.management_helpers.user_invitation import create_invitation_for_user
+        from litellm.proxy.proxy_server import prisma_client
+
+        if prisma_client is None:
+            verbose_proxy_logger.error("Prisma client is None in _get_or_create_invitation")
+            return None
+
+        try:
+            existing_invitations = await InvitationLinkRepository(prisma_client).table.find_many(
+                where={"user_id": user_id},
+                order={"created_at": "desc"},
+            )
+
+            if existing_invitations and len(existing_invitations) > 0:
+                verbose_proxy_logger.debug(f"Found existing invitation for user_id: {user_id}")
+                return existing_invitations[0]
+
+            verbose_proxy_logger.debug(f"Creating new invitation for user_id: {user_id}")
+            return await create_invitation_for_user(
+                data=InvitationNew(user_id=user_id),
+                user_api_key_dict=UserAPIKeyAuth(user_id=user_id),
+            )
+
+        except Exception as e:
+            verbose_proxy_logger.error(f"Error getting/creating invitation for user_id {user_id}: {e}")
+            return None
+
+    def _construct_invitation_link(self, invitation_id: str, base_url: str) -> str:
+        """
+        Construct invitation link for the user
+
+        # http://localhost:4000/ui/onboarding?invitation_id=7a096b3a-37c6-440f-9dd1-ba22e8043f6b
+        """
+        base_url = base_url.rstrip("/")
+        return f"{base_url}/ui/onboarding?invitation_id={invitation_id}"
+
+    async def send_email(
+        self,
+        from_email: str,
+        to_email: list[str],  # mutable-ok: [LIT001] email provider accepts a recipient list
+        subject: str,
+        html_body: str,
+    ):
+        pass

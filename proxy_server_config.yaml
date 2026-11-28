@@ -227,7 +227,7 @@ guardrails:
   - guardrail_name: "financial-data-guard"
     litellm_params:
       # 自定义护栏：拦截含财务数据的请求，保证财务数据不发送给外部模型
-      guardrail: enterprise.financial_guardrail.FinancialDataGuardrail
+      guardrail: litellm_custom.financial_guardrail.FinancialDataGuardrail
       mode: "pre_call"          # 请求发往外部模型前拦截
       default_on: true          # 默认对所有模型请求生效
       action: block             # block=拦截(400) / monitor=仅记录放行

@@ -436,7 +436,7 @@ async def public_model_hub_info():
     from litellm.proxy.proxy_server import title, version
 
     try:
-        from litellm_enterprise.proxy.proxy_server import EnterpriseProxyConfig
+        from litellm_custom.proxy.proxy_server import EnterpriseProxyConfig
 
         custom_docs_description = EnterpriseProxyConfig.get_custom_docs_description()
     except Exception:

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DailyActivityAggregatedResponse } from "@/components/UsagePage/dailyActivityApi";
 import { EMPTY_DAILY_ACTIVITY_METADATA } from "@/components/UsagePage/dailyActivityApi";
 import { all_admin_roles } from "@/utils/roles";
+import { LiteAdminFrame } from "@/components/liteadmin/LiteAdmin";
 import HomePage from "./HomePage";
 import i18n from "@/i18n/i18n";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
@@ -145,6 +146,19 @@ describe("HomePage", () => {
     auth.isViewOnly = true;
     renderHome();
     expect(screen.queryByRole("button", { name: /create new virtual key/i })).not.toBeInTheDocument();
+  });
+
+  it("keeps Home focused on usage without an embedded Aria composer", async () => {
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <LiteAdminFrame>
+          <HomePage />
+        </LiteAdminFrame>
+      </QueryClientProvider>,
+    );
+    expect(screen.queryByRole("region", { name: "Ask 小恒" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Send message" })).not.toBeInTheDocument();
+    expect(await screen.findByText(i18n.t("format.usd", { val: activity.metadata.total_spend }))).toBeInTheDocument();
   });
 
   it("shows an error with a retry instead of zero totals when the usage request fails", async () => {

@@ -1051,11 +1051,11 @@ def _background_cost_check() -> _BackgroundCostCheck | None:
     if prisma_client is None or llm_router is None:
         return None
     try:
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import CheckResponsesCost
+        from litellm_custom.proxy.common_utils.check_responses_cost import CheckResponsesCost
     except ImportError:
         return None
 
-    return CheckResponsesCost(  # pyright: ignore[reportUnknownVariableType]  # litellm_enterprise is absent from the type-check venv
+    return CheckResponsesCost(  # pyright: ignore[reportUnknownVariableType]  # litellm_custom is absent from the type-check venv
         proxy_logging_obj=proxy_logging_obj, prisma_client=prisma_client, llm_router=llm_router
     )
 

@@ -32,6 +32,10 @@ vi.mock("next/navigation", () => ({
   usePathname: vi.fn(),
 }));
 
+vi.mock("@/components/liteadmin/LiteAdmin", () => ({
+  LiteAdminFrame: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 vi.mock("@/components/DashboardHeader", () => ({
   DashboardHeader: ({ navigationTrigger }: { navigationTrigger?: React.ReactNode }) => (
     <div data-testid="dashboard-header">{navigationTrigger}</div>

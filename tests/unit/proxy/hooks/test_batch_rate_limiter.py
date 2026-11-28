@@ -634,7 +634,7 @@ async def test_model_routed_batch_is_counted_with_the_deployment_key_not_the_req
 async def _install_managed_file_hook(
     openai_files: respx.MockRouter, monkeypatch: pytest.MonkeyPatch, rows: str
 ) -> tuple[respx.Route, respx.Route]:
-    from litellm_enterprise.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
+    from litellm_custom.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
 
     from litellm import Router
     from litellm.models.managed_files import LiteLLM_ManagedFileTable

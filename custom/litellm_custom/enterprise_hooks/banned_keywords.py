@@ -1,0 +1,86 @@
+from fastapi import HTTPException
+
+import litellm
+from litellm._logging import verbose_proxy_logger
+from litellm.caching.caching import DualCache
+from litellm.integrations.custom_logger import CustomLogger
+from litellm.proxy._types import UserAPIKeyAuth
+from litellm.proxy.guardrails._content_utils import is_text_content_call_type, iter_message_text
+
+
+class EnterpriseBannedKeywords(CustomLogger):
+    """
+    Rejects a call or response when it contains any keyword from
+    `litellm.banned_keywords_list` (inline list or file path).
+    """
+
+    enforces_request_content: bool = True
+
+    def __init__(self):
+        banned_keywords_list = litellm.banned_keywords_list
+
+        if banned_keywords_list is None:
+            raise Exception("`banned_keywords_list` can either be a list or filepath. None set.")
+
+        if isinstance(banned_keywords_list, list):
+            self.banned_keywords_list = banned_keywords_list
+
+        if isinstance(banned_keywords_list, str):  # assume it's a filepath
+            try:
+                with open(banned_keywords_list, "r") as file:
+                    self.banned_keywords_list = file.read().split("\n")
+            except FileNotFoundError:
+                raise Exception(f"File not found. banned_keywords_list={banned_keywords_list}")
+            except Exception as e:
+                raise Exception(f"An error occurred: {e!s}, banned_keywords_list={banned_keywords_list}")
+
+    def test_violation(self, test_str: str):
+        for word in self.banned_keywords_list:
+            if word in test_str.lower():
+                raise HTTPException(status_code=400, detail={"error": f"Keyword banned. Keyword={word}"})
+
+    async def async_pre_call_hook(
+        self,
+        user_api_key_dict: UserAPIKeyAuth,
+        cache: DualCache,
+        data: dict,
+        call_type: str,
+    ):
+        try:
+            verbose_proxy_logger.debug("Inside Banned Keyword List Pre-Call Hook")
+            if is_text_content_call_type(call_type):
+                for text in iter_message_text(data):
+                    self.test_violation(test_str=text)
+        except HTTPException:
+            raise
+        except Exception as e:
+            verbose_proxy_logger.exception(
+                f"litellm_custom.enterprise_hooks.banned_keywords::async_pre_call_hook - Exception occurred - {e!s}"
+            )
+
+    async def async_post_call_success_hook(
+        self,
+        data: dict,
+        user_api_key_dict: UserAPIKeyAuth,
+        response,
+    ):
+        if not isinstance(response, litellm.ModelResponse):
+            return
+
+        for choice in response.choices:
+            if not isinstance(choice, litellm.utils.Choices):
+                continue
+            message = getattr(choice, "message", None)
+            content = getattr(message, "content", None)
+            if isinstance(content, str):
+                self.test_violation(test_str=content)
+
+    async def async_post_call_streaming_hook(
+        self,
+        user_api_key_dict: UserAPIKeyAuth,
+        response: str,
+    ):
+        self.test_violation(test_str=response)
+
+
+_ENTERPRISE_BannedKeywords = EnterpriseBannedKeywords

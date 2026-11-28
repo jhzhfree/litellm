@@ -12099,10 +12099,10 @@ def test_uncached_price_keeps_an_earlier_price_failure(pr44187_priced_model: str
 
 
 def test_enterprise_alerting_loggers_resolves_real_classes():
-    from litellm_enterprise.enterprise_callbacks.pagerduty.pagerduty import PagerDutyAlerting
-    from litellm_enterprise.enterprise_callbacks.send_emails.resend_email import ResendEmailLogger
-    from litellm_enterprise.enterprise_callbacks.send_emails.sendgrid_email import SendGridEmailLogger
-    from litellm_enterprise.enterprise_callbacks.send_emails.smtp_email import SMTPEmailLogger
+    from litellm_custom.enterprise_callbacks.pagerduty.pagerduty import PagerDutyAlerting
+    from litellm_custom.enterprise_callbacks.send_emails.resend_email import ResendEmailLogger
+    from litellm_custom.enterprise_callbacks.send_emails.sendgrid_email import SendGridEmailLogger
+    from litellm_custom.enterprise_callbacks.send_emails.smtp_email import SMTPEmailLogger
     from litellm.litellm_core_utils import litellm_logging as logging_module
 
     logging_module._enterprise_alerting_loggers.cache_clear()
@@ -12119,7 +12119,7 @@ def test_enterprise_alerting_loggers_resolves_real_classes():
 def test_enterprise_alerting_loggers_falls_back_without_disabling_callback_controls(
     monkeypatch,
 ):
-    from litellm_enterprise.enterprise_callbacks.callback_controls import (
+    from litellm_custom.enterprise_callbacks.callback_controls import (
         EnterpriseCallbackControls,
     )
     from litellm.integrations.custom_logger import CustomLogger
@@ -12132,13 +12132,13 @@ def test_enterprise_alerting_loggers_falls_back_without_disabling_callback_contr
             path: Sequence[str] | None = None,
             target: ModuleType | None = None,
         ) -> ModuleSpec | None:
-            if fullname == "litellm_enterprise.enterprise_callbacks.pagerduty.pagerduty":
+            if fullname == "litellm_custom.enterprise_callbacks.pagerduty.pagerduty":
                 raise ImportError("blocked pagerduty import")
             return None
 
     module_prefixes: Final = (
-        "litellm_enterprise.enterprise_callbacks.pagerduty",
-        "litellm_enterprise.enterprise_callbacks.send_emails",
+        "litellm_custom.enterprise_callbacks.pagerduty",
+        "litellm_custom.enterprise_callbacks.send_emails",
     )
     logging_module._enterprise_alerting_loggers.cache_clear()
     for module_name in tuple(sys.modules):
@@ -12163,9 +12163,9 @@ def test_init_email_alerting_logger_reuses_instance(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from litellm.litellm_core_utils import litellm_logging as logging_module
-    from litellm_enterprise.enterprise_callbacks.send_emails.resend_email import ResendEmailLogger
-    from litellm_enterprise.enterprise_callbacks.send_emails.sendgrid_email import SendGridEmailLogger
-    from litellm_enterprise.enterprise_callbacks.send_emails.smtp_email import SMTPEmailLogger
+    from litellm_custom.enterprise_callbacks.send_emails.resend_email import ResendEmailLogger
+    from litellm_custom.enterprise_callbacks.send_emails.sendgrid_email import SendGridEmailLogger
+    from litellm_custom.enterprise_callbacks.send_emails.smtp_email import SMTPEmailLogger
 
     logger_class: Final = (
         SMTPEmailLogger
@@ -12201,7 +12201,7 @@ def test_init_email_alerting_logger_reuses_instance(
 
 def test_init_pagerduty_logger_reuses_instance(monkeypatch):
     from litellm.types.integrations.pagerduty import AlertingConfig
-    from litellm_enterprise.enterprise_callbacks.pagerduty.pagerduty import PagerDutyAlerting
+    from litellm_custom.enterprise_callbacks.pagerduty.pagerduty import PagerDutyAlerting
     from litellm.litellm_core_utils import litellm_logging as logging_module
 
     monkeypatch.setenv("PAGERDUTY_API_KEY", "test-pagerduty-key")
@@ -13732,7 +13732,7 @@ def test_litellm_logging_no_log_param(monkeypatch, disable_no_log_param):
     )
     assert should_run_proxy_callback is True
 
-    from litellm_enterprise.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
+    from litellm_custom.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
 
     managed_files_callback = PROXY_LiteLLMManagedFiles(DualCache(), prisma_client=MagicMock())
     should_run_managed_files_callback = litellm_logging_obj.should_run_callback(

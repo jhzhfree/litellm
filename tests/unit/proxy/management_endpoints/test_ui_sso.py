@@ -3112,13 +3112,13 @@ class TestCustomUISSO:
             ):
                 with patch.dict(
                     "sys.modules",
-                    {"litellm_enterprise.proxy.auth.custom_sso_handler": None},
+                    {"litellm_custom.proxy.auth.custom_sso_handler": None},
                 ):
                     # Temporarily mock the google_login function call to test the import error path
                     async def mock_google_login():
                         # This mimics the relevant part of google_login that would trigger the import error
                         try:
-                            from litellm_enterprise.proxy.auth.custom_sso_handler import (  # noqa: F401
+                            from litellm_custom.proxy.auth.custom_sso_handler import (  # noqa: F401
                                 EnterpriseCustomSSOHandler,
                             )
 
@@ -3140,7 +3140,7 @@ class TestCustomUISSO:
     async def test_handle_custom_ui_sso_sign_in_success(self):
         """Test successful custom UI SSO sign-in with valid headers"""
         from fastapi_sso.sso.base import OpenID
-        from litellm_enterprise.proxy.auth.custom_sso_handler import (
+        from litellm_custom.proxy.auth.custom_sso_handler import (
             EnterpriseCustomSSOHandler,
         )
 
@@ -3216,7 +3216,7 @@ class TestCustomUISSO:
     @pytest.mark.asyncio
     async def test_handle_custom_ui_sso_sign_in_rejects_untrusted_proxy(self):
         """Custom UI SSO rejects spoofed identity headers from direct clients."""
-        from litellm_enterprise.proxy.auth.custom_sso_handler import (
+        from litellm_custom.proxy.auth.custom_sso_handler import (
             EnterpriseCustomSSOHandler,
         )
 
@@ -3256,7 +3256,7 @@ class TestCustomUISSO:
         and its methods are called with the correct parameters
         """
         from fastapi_sso.sso.base import OpenID
-        from litellm_enterprise.proxy.auth.custom_sso_handler import (
+        from litellm_custom.proxy.auth.custom_sso_handler import (
             EnterpriseCustomSSOHandler,
         )
 

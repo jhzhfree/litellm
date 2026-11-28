@@ -142,7 +142,7 @@ class UserManagementEventHooks:
             return False
 
         try:
-            from litellm_enterprise.enterprise_callbacks.send_emails.base_email import (
+            from litellm_custom.enterprise_callbacks.send_emails.base_email import (
                 BaseEmailLogger,
             )
         except ImportError:

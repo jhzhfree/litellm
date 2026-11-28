@@ -5,7 +5,7 @@ cycles that Python 3.12 silently tolerated. The previous bug:
 
   litellm.proxy.hooks.__init__
     -> enterprise.enterprise_hooks
-    -> litellm_enterprise.proxy.hooks.managed_files
+    -> litellm_custom.proxy.hooks.managed_files
     -> litellm.llms.base_llm.managed_resources.isolation
     -> litellm.proxy.management_endpoints.common_utils
     -> litellm.proxy.utils  (re-enters litellm.proxy.hooks mid-init)
@@ -20,14 +20,14 @@ from litellm.proxy.hooks import PROXY_HOOKS, get_proxy_hook
 
 
 def test_managed_files_hook_registered():
-    pytest.importorskip("litellm_enterprise")
+    pytest.importorskip("litellm_custom")
     assert "managed_files" in PROXY_HOOKS
     hook_cls = get_proxy_hook("managed_files")
     assert hook_cls.__name__ == "_PROXY_LiteLLMManagedFiles"
 
 
 def test_managed_vector_stores_hook_registered():
-    pytest.importorskip("litellm_enterprise")
+    pytest.importorskip("litellm_custom")
     assert "managed_vector_stores" in PROXY_HOOKS
     hook_cls = get_proxy_hook("managed_vector_stores")
     assert hook_cls.__name__ == "_PROXY_LiteLLMManagedVectorStores"

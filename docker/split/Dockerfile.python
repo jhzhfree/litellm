@@ -57,6 +57,7 @@ ENV UV_PROJECT_ENVIRONMENT=/app/.venv \
 COPY pyproject.toml uv.lock ./
 COPY litellm-proxy-extras/pyproject.toml litellm-proxy-extras/
 COPY packaging/litellm-proxy/pyproject.toml packaging/litellm-proxy/
+COPY custom/pyproject.toml custom/
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-install-workspace --no-default-groups --no-editable \
@@ -72,6 +73,7 @@ COPY litellm/ litellm/
 COPY litellm_cli/ litellm_cli/
 COPY litellm-proxy-extras/ litellm-proxy-extras/
 COPY packaging/litellm-proxy/ packaging/litellm-proxy/
+COPY custom/ custom/
 COPY docker/ docker/
 COPY schema.prisma ./
 COPY README.md LICENSE ./

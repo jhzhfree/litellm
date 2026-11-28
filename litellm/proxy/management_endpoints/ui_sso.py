@@ -1213,7 +1213,7 @@ async def google_login(
     # check if user defined a custom auth sso sign in handler, if yes, use it
     if user_custom_ui_sso_sign_in_handler is not None:
         try:
-            from litellm_enterprise.proxy.auth.custom_sso_handler import (
+            from litellm_custom.proxy.auth.custom_sso_handler import (
                 EnterpriseCustomSSOHandler,
             )
 

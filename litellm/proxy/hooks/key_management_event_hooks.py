@@ -508,7 +508,7 @@ class KeyManagementEventHooks:
         """
         # Check v2 enterprise email loggers
         try:
-            from litellm_enterprise.enterprise_callbacks.send_emails.base_email import (
+            from litellm_custom.enterprise_callbacks.send_emails.base_email import (
                 BaseEmailLogger,
             )
 
@@ -547,10 +547,10 @@ class KeyManagementEventHooks:
         # v2 integration for emails (enterprise)
         ##########################
         try:
-            from litellm_enterprise.enterprise_callbacks.send_emails.base_email import (
+            from litellm_custom.enterprise_callbacks.send_emails.base_email import (
                 BaseEmailLogger,
             )
-            from litellm_enterprise.types.enterprise_callbacks.send_emails import (
+            from litellm_custom.types.enterprise_callbacks.send_emails import (
                 SendKeyCreatedEmailEvent,
             )
 
@@ -617,7 +617,7 @@ class KeyManagementEventHooks:
             return
 
         try:
-            from litellm_enterprise.enterprise_callbacks.send_emails.base_email import (
+            from litellm_custom.enterprise_callbacks.send_emails.base_email import (
                 BaseEmailLogger,
             )
         except ImportError:
@@ -626,7 +626,7 @@ class KeyManagementEventHooks:
             return
 
         try:
-            from litellm_enterprise.types.enterprise_callbacks.send_emails import (
+            from litellm_custom.types.enterprise_callbacks.send_emails import (
                 SendKeyRotatedEmailEvent,
             )
         except ImportError:

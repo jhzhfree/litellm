@@ -31,9 +31,9 @@ class EnterpriseImportFinder(ast.NodeVisitor):
         self.in_try_block = len(self.try_blocks) > 0
 
     def visit_Import(self, node):
-        # Check for direct imports of litellm_enterprise
+        # Check for direct imports of the premium feature packages
         for name in node.names:
-            if "litellm_enterprise" in name.name or "enterprise" in name.name:
+            if "litellm_enterprise" in name.name or "litellm_custom" in name.name:
                 if not self.in_try_block:
                     self.unsafe_imports.append(
                         {
@@ -46,9 +46,9 @@ class EnterpriseImportFinder(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node):
-        # Check for from litellm_enterprise imports
+        # Check for from litellm_enterprise / litellm_custom imports
         if node.module and (
-            "litellm_enterprise" in node.module or "enterprise" in node.module
+            "litellm_enterprise" in node.module or "litellm_custom" in node.module
         ):
             if not self.in_try_block:
                 self.unsafe_imports.append(

@@ -664,7 +664,7 @@ async def test_azure_content_safety_post_call_checks_all_choices(user_api_key):
 
 @pytest.mark.asyncio
 async def test_secret_detection_redacts_multimodal_text_parts(user_api_key):
-    from litellm_enterprise.enterprise_callbacks.secret_detection import (
+    from litellm_custom.enterprise_callbacks.secret_detection import (
         _ENTERPRISE_SecretDetection,
     )
 
@@ -700,7 +700,7 @@ async def test_secret_detection_redacts_multimodal_text_parts(user_api_key):
 
 @pytest.mark.asyncio
 async def test_secret_detection_redacts_responses_api_input(user_api_key):
-    from litellm_enterprise.enterprise_callbacks.secret_detection import (
+    from litellm_custom.enterprise_callbacks.secret_detection import (
         _ENTERPRISE_SecretDetection,
     )
 

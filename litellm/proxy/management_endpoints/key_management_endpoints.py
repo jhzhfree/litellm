@@ -1573,7 +1573,7 @@ async def _common_key_generation_helper(
 
     # APPLY ENTERPRISE KEY MANAGEMENT PARAMS
     try:
-        from litellm_enterprise.proxy.management_endpoints.key_management_endpoints import (
+        from litellm_custom.proxy.management_endpoints.key_management_endpoints import (
             apply_enterprise_key_management_params,
         )
 

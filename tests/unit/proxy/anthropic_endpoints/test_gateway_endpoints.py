@@ -932,7 +932,7 @@ def test_gateway_model_discovery_disabled(monkeypatch: pytest.MonkeyPatch, setti
 @pytest.mark.asyncio
 @pytest.mark.parametrize("route", ["/models", "/v1/models", "/claude_code_gateway/v1/models"])
 async def test_gateway_model_discovery_preserves_route_exemptions(monkeypatch: pytest.MonkeyPatch, route: str) -> None:
-    from litellm_enterprise.proxy.auth.route_checks import EnterpriseRouteChecks
+    from litellm_custom.proxy.auth.route_checks import EnterpriseRouteChecks
 
     import litellm
     from litellm.proxy._types import LiteLLM_TeamTable, UserAPIKeyAuth

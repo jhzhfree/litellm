@@ -42,7 +42,7 @@ from unittest.mock import DEFAULT, AsyncMock, MagicMock, patch
 import httpx
 import pytest
 import respx
-from litellm_enterprise.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
+from litellm_custom.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
 
 import litellm
 import litellm.proxy.batches_endpoints.endpoints as endpoints

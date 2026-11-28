@@ -321,7 +321,7 @@ async def test_arrivals_progress_while_retry_scan_advances_and_wraps(count: int)
     from litellm.proxy.common_utils.user_api_key_cache import UserApiKeyCache
     from litellm.proxy.utils import ProxyLogging
     from litellm.router import Router
-    from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+    from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
     owner: Final = f"batch-scan-{uuid4().hex}"
 
@@ -380,7 +380,7 @@ async def test_recent_batches_are_revisited_without_scanning_old_backlog(steady_
     from litellm.proxy.common_utils.user_api_key_cache import UserApiKeyCache
     from litellm.proxy.utils import ProxyLogging
     from litellm.router import Router
-    from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+    from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
     owner: Final = f"batch-repeat-{uuid4().hex}"
     try:

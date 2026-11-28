@@ -105,16 +105,16 @@ from litellm.types.proxy.model_listing import ModelInfoResponse
 from litellm.types.utils import MCP_GUARDRAIL_CALL_TYPES, CallTypes, CallTypesLiteral, ModelInfo, Usage
 
 try:
-    from litellm_enterprise.enterprise_callbacks.send_emails.base_email import (
+    from litellm_custom.enterprise_callbacks.send_emails.base_email import (
         BaseEmailLogger,
     )
-    from litellm_enterprise.enterprise_callbacks.send_emails.resend_email import (
+    from litellm_custom.enterprise_callbacks.send_emails.resend_email import (
         ResendEmailLogger,
     )
-    from litellm_enterprise.enterprise_callbacks.send_emails.sendgrid_email import (
+    from litellm_custom.enterprise_callbacks.send_emails.sendgrid_email import (
         SendGridEmailLogger,
     )
-    from litellm_enterprise.enterprise_callbacks.send_emails.smtp_email import (
+    from litellm_custom.enterprise_callbacks.send_emails.smtp_email import (
         SMTPEmailLogger,
     )
 except ImportError:

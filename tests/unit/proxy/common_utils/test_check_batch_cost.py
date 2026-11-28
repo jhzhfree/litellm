@@ -24,7 +24,7 @@ import httpx
 import pytest
 import respx
 from fastapi import HTTPException
-from litellm_enterprise.proxy.common_utils.check_batch_cost import GIVE_UP_POLLING_AFTER
+from litellm_custom.proxy.common_utils.check_batch_cost import GIVE_UP_POLLING_AFTER
 
 import litellm
 from litellm.constants import MANAGED_OBJECT_STALENESS_CUTOFF_DAYS
@@ -45,7 +45,7 @@ def _fixed_clock() -> datetime:
 
 
 def test_batch_output_file_object_derives_metadata():
-    from litellm_enterprise.proxy.hooks.managed_files import _batch_output_file_object
+    from litellm_custom.proxy.hooks.managed_files import _batch_output_file_object
 
     output_file = _batch_output_file_object(
         unified_file_id="unified-output",
@@ -155,7 +155,7 @@ class TestCheckBatchCost:
 
     @pytest.fixture
     def check_batch_cost_instance(self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router):
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import (
+        from litellm_custom.proxy.common_utils.check_batch_cost import (
             CheckBatchCost,
         )
 
@@ -1681,7 +1681,7 @@ class TestUnmanagedVertexRouting:
     """Routing of unmanaged Vertex batches whose unified_object_id is a raw provider job id."""
 
     def _instance(self, track_unmanaged, router):
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import (
+        from litellm_custom.proxy.common_utils.check_batch_cost import (
             CheckBatchCost,
         )
 
@@ -1992,7 +1992,7 @@ class TestUnmanagedBedrockRouting:
     _ARN = "arn:aws:bedrock:us-east-1:298249409318:model-invocation-job/1ofb47x17jua"
 
     def _instance(self, track_unmanaged, router):
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import (
+        from litellm_custom.proxy.common_utils.check_batch_cost import (
             CheckBatchCost,
         )
 
@@ -2208,7 +2208,7 @@ class TestUnmanagedBatchCostFlagIsGeneralized:
     just the provider it was originally added for."""
 
     def test_one_flag_routes_both_vertex_and_bedrock_jobs(self):
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import (
+        from litellm_custom.proxy.common_utils.check_batch_cost import (
             CheckBatchCost,
         )
 
@@ -2297,11 +2297,11 @@ class TestManagedOutputFileIdEncodesPublicModelGroup:
         return job
 
     async def _run(self, job: MagicMock) -> str:
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import (
+        from litellm_custom.proxy.common_utils.check_batch_cost import (
             CheckBatchCost,
         )
 
-        from enterprise.litellm_enterprise.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
+        from litellm_custom.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
         from litellm.proxy.openai_files_endpoints.common_utils import ManagedBatchOutputFileWriter
         from litellm.types.utils import LiteLLMBatch
 
@@ -2438,7 +2438,7 @@ class TestBatchCostAttribution:
         return prisma
 
     def _instance(self, key_row=None, team_row=None, user_row=None, prisma=None):
-        from litellm_enterprise.proxy.common_utils.managed_object_attribution import (
+        from litellm_custom.proxy.common_utils.managed_object_attribution import (
             ManagedObjectCreatorAttribution,
         )
 
@@ -2736,7 +2736,7 @@ class TestPollPageStarvation:
     batch was ever polled or costed."""
 
     def _instance(self, prisma, llm_router):
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+        from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
         proxy_logging_obj = MagicMock()
         proxy_logging_obj.get_proxy_hook.return_value = None
@@ -2992,7 +2992,7 @@ class TestPollPageStarvation:
     async def _poll_cycles(
         self, monkeypatch: pytest.MonkeyPatch, ages: dict[str, timedelta], cycles: int, page_size: int = 2
     ) -> list[frozenset[str]]:
-        from litellm_enterprise.proxy.common_utils import check_batch_cost
+        from litellm_custom.proxy.common_utils import check_batch_cost
 
         monkeypatch.setattr(check_batch_cost, "MAX_OBJECTS_PER_POLL_CYCLE", page_size)
         prisma: Final = self._prisma([])
@@ -3208,7 +3208,7 @@ class TestMultiPodBatchCostClaim:
 
     @staticmethod
     def _instance(prisma, llm_router):
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+        from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
         proxy_logging_obj = MagicMock()
         proxy_logging_obj.get_proxy_hook.return_value = None
@@ -3678,7 +3678,7 @@ class TestMultiPodBatchCostClaim:
     @staticmethod
     async def _run_deletion_guard(prisma, file_id: str) -> None:
         """Run the real managed-files deletion guard against the row the poller is costing."""
-        from litellm_enterprise.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
+        from litellm_custom.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
 
         cache = MagicMock()
         cache.async_get_cache = AsyncMock(return_value=None)
@@ -4426,7 +4426,7 @@ class TestBatchLineItemsFromThePoller:
 
     @pytest.mark.asyncio
     async def test_a_batch_bigger_than_one_part_reaches_the_callbacks_as_numbered_parts(self, monkeypatch):
-        from litellm_enterprise.proxy.common_utils import check_batch_cost
+        from litellm_custom.proxy.common_utils import check_batch_cost
 
         import litellm
 
@@ -4477,7 +4477,7 @@ class TestCreatorTurnedOffMessageLogging:
 
     @staticmethod
     def _instance(key_row=None, team_row=None, error: Exception | None = None):
-        from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+        from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
         prisma = MagicMock()
         prisma.db.litellm_verificationtoken.find_unique = AsyncMock(return_value=key_row, side_effect=error)
@@ -4937,7 +4937,7 @@ async def test_failed_retirement_keeps_batch_available() -> None:
 @pytest.mark.parametrize("resource_id", ("batch-123", "file-123", "gs://bucket/job/predictions.jsonl"))
 @pytest.mark.parametrize("other_id", ("{id}4", "prefix-{id}", "{id}/child", "{id}.backup", "{id}?generation=2"))
 def test_another_resource_in_a_404_is_not_permanent_loss(resource_id: str, other_id: str) -> None:
-    from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+    from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
     from litellm.exceptions import NotFoundError
 
@@ -4963,7 +4963,7 @@ def test_another_resource_in_a_404_is_not_permanent_loss(resource_id: str, other
     ),
 )
 def test_a_404_naming_the_exact_resource_is_permanent_loss(resource_id: str, message: str) -> None:
-    from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+    from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
     from litellm.exceptions import NotFoundError
 
@@ -4976,7 +4976,7 @@ def test_a_404_naming_the_exact_resource_is_permanent_loss(resource_id: str, mes
     ("missing_key", "gone"), (("out/job-123/input.jsonl.out", True), ("out/job-123/other.jsonl.out", False))
 )
 def test_an_s3_no_such_key_for_the_output_object_is_permanent_loss(missing_key: str, gone: bool) -> None:
-    from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+    from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
     from litellm.llms.bedrock.common_utils import BedrockError
 
@@ -4992,7 +4992,7 @@ def test_an_s3_no_such_key_for_the_output_object_is_permanent_loss(missing_key: 
 
 @pytest.mark.parametrize("output_file_id", (None, ""))
 def test_a_404_without_an_output_identity_remains_retryable(output_file_id: str | None) -> None:
-    from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+    from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
     from litellm.exceptions import NotFoundError
 
@@ -5011,7 +5011,7 @@ async def test_batch_cost_reaches_configured_success_callbacks(
     initialized: bool,
     claimed: bool,
 ) -> None:
-    from litellm_enterprise.proxy.common_utils.check_batch_cost import CheckBatchCost
+    from litellm_custom.proxy.common_utils.check_batch_cost import CheckBatchCost
 
     import litellm
     from litellm.integrations.custom_logger import CustomLogger

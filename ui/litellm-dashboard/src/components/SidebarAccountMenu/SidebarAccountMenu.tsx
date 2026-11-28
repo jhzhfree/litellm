@@ -3,6 +3,8 @@ import { useEnterpriseFeatures } from "@/app/(dashboard)/hooks/enterpriseFeature
 import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
 import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
 import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBouncingIcon";
+import { useDisableLiteAdmin } from "@/app/(dashboard)/hooks/useDisableLiteAdmin";
+import { ARIA_AGENT_LABEL } from "@/components/liteadmin/aria-brand";
 import { useDisableShowNewBadge } from "@/app/(dashboard)/hooks/useDisableShowNewBadge";
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import CurrencyField from "./CurrencyField";
@@ -18,10 +20,11 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cva.config";
 import { uiHref } from "@/utils/uiHref";
+import { isProxyAdminRole } from "@/utils/roles";
 import { ChevronsUpDown, Crown, IdCard, KeyRound, LogOut, Mail, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { productNames } from "@/i18n/untranslated/productNames";
 
 // 版本徽标不再跳转文档，链接常量保留注释以便恢复
@@ -89,7 +92,16 @@ interface SidebarAccountMenuProps {
 }
 
 const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, collapsed = false }) => {
-  const { userId, userEmail, userRoleLabel: userRole, premiumUser, accessToken, loginMethod } = useAuthorized();
+  const {
+    userId,
+    userEmail,
+    userRole: role,
+    userRoleLabel: userRole,
+    isViewOnly,
+    premiumUser,
+    accessToken,
+    loginMethod,
+  } = useAuthorized();
   const { t } = useTranslation();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
@@ -101,6 +113,8 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
   const disableBlogPosts = useDisableBlogPosts();
   const disableBouncingIcon = useDisableBouncingIcon();
   const disableShowNewBadge = useDisableShowNewBadge();
+  const [disableLiteAdmin, setDisableLiteAdmin] = useDisableLiteAdmin(userId);
+  const canUseLiteAdmin = userId && !isViewOnly && isProxyAdminRole(role);
 
   const setFlag = (key: string, checked: boolean) => {
     if (checked) {
@@ -250,6 +264,19 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
               />
             </div>
           ))}
+          {premiumUser === true && canUseLiteAdmin && (
+            <div className="flex h-[38px] items-center justify-between gap-3 px-3">
+              <span className="text-[13px] text-foreground">
+                <Trans i18nKey="shell.sidebarAccountMenu.hideAria" components={{ name: <>{ARIA_AGENT_LABEL}</> }} />
+              </span>
+              <Switch
+                size="sm"
+                checked={disableLiteAdmin}
+                onCheckedChange={setDisableLiteAdmin}
+                aria-label={t("shell.sidebarAccountMenu.toggleHideAria", { name: ARIA_AGENT_LABEL })}
+              />
+            </div>
+          )}
           <LanguageField />
           <CurrencyField />
         </div>

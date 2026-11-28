@@ -30,7 +30,7 @@ def test_explicit_proxy_mount_is_used_for_all_urls(url: str) -> None:
 
 @pytest.mark.parametrize("value", ["not-a-url", "ftp://127.0.0.1", "http://"])
 def test_async_handler_rejects_invalid_proxy_url(value: str) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="expected an http, https, socks5 or socks5h URL"):
         AsyncHTTPHandler(proxy_url=value)
 
 

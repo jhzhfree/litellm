@@ -38,7 +38,7 @@
 | `financial_amount` | 货币符号/单位与数字组合 | `¥12,345.67`、`月薪 25,000 元`、`营收 1.2 亿` | 必须伴随货币符号或货币单位 |
 | `financial_keyword_with_number` | 财务关键词 + 同文本中存在具体数字（≥3 位或带小数） | `工资 8500`、`Q4 成本 35000` | 纯概念讨论不含数字，不误伤 |
 
-财务关键词表（内置，可在 `enterprise/financial_guardrail.py` 的
+财务关键词表（内置，可在 `custom/litellm_custom/financial_guardrail.py` 的
 `_FINANCIAL_KEYWORDS` 中扩展）：工资、薪资、薪酬、待遇、财报、财务报表、营收、
 营业额、利润、毛利、净利、预算、成本、报价、标底、发票、税率、税额、报销、
 汇款、转账、对公账户、回款、应收、应付、资产负债、审计、决算、花销、支出。
@@ -59,8 +59,8 @@
 
 ### 2.1 护栏代码
 
-文件：`enterprise/financial_guardrail.py`（随镜像分发，容器内路径
-`/app/enterprise/financial_guardrail.py`）。
+文件：`custom/litellm_custom/financial_guardrail.py`（随镜像分发，容器内路径
+`/app/custom/litellm_custom/financial_guardrail.py`）。
 
 类：`FinancialDataGuardrail`，基于 AI治理网关 `CustomGuardrail` 基类的统一
 `apply_guardrail` 接口。
@@ -72,7 +72,7 @@ guardrails:
   - guardrail_name: "financial-data-guard"
     litellm_params:
       # 自定义护栏：拦截含财务数据的请求，保证财务数据不发送给外部模型
-      guardrail: enterprise.financial_guardrail.FinancialDataGuardrail
+      guardrail: litellm_custom.financial_guardrail.FinancialDataGuardrail
       mode: "pre_call"          # 请求发往外部模型前拦截
       default_on: true          # 默认对所有模型请求生效
       action: block             # block=拦截(400) / monitor=仅记录放行
@@ -175,6 +175,6 @@ curl -s -o /dev/null -w "%{http_code}\n" --max-time 30 $BASE/chat/completions \
   - 调整 `_NUMBER_RE`（要求更严格的数字形态）。
 - **漏报处理**：新增财务词直接加进 `_FINANCIAL_KEYWORDS`；新增模式（如社保号、
   合同编号）在 `_scan_text` 中加正则。
-- **升级护栏代码**：修改 `enterprise/financial_guardrail.py` 后需重新构建镜像并
+- **升级护栏代码**：修改 `custom/litellm_custom/financial_guardrail.py` 后需重新构建镜像并
   升级 22.6（文件打包在镜像内，不是挂载卷）。
 - **注意**：`default_on: false` 时护栏不生效（除非请求显式指定），请勿随意关闭。

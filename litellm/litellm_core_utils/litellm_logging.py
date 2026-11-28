@@ -292,10 +292,10 @@ if TYPE_CHECKING:
     from litellm.proxy.hooks.autorouter_baseline_cache import BaselineCacheContext, CapturedBaselineObservation
     from litellm.proxy.hooks.search_free_tier import SearchAllowanceAllocation
 try:
-    from litellm_enterprise.enterprise_callbacks.callback_controls import (
+    from litellm_custom.enterprise_callbacks.callback_controls import (
         EnterpriseCallbackControls,
     )
-    from litellm_enterprise.litellm_core_utils.litellm_logging import (
+    from litellm_custom.litellm_core_utils.litellm_logging import (
         StandardLoggingPayloadSetup as EnterpriseStandardLoggingPayloadSetup,
     )
 
@@ -326,10 +326,10 @@ class BridgedChatRequest(NamedTuple):
 @functools.cache
 def _enterprise_alerting_loggers() -> _EnterpriseAlertingLoggers:
     try:
-        from litellm_enterprise.enterprise_callbacks.pagerduty.pagerduty import PagerDutyAlerting
-        from litellm_enterprise.enterprise_callbacks.send_emails.resend_email import ResendEmailLogger
-        from litellm_enterprise.enterprise_callbacks.send_emails.sendgrid_email import SendGridEmailLogger
-        from litellm_enterprise.enterprise_callbacks.send_emails.smtp_email import SMTPEmailLogger
+        from litellm_custom.enterprise_callbacks.pagerduty.pagerduty import PagerDutyAlerting
+        from litellm_custom.enterprise_callbacks.send_emails.resend_email import ResendEmailLogger
+        from litellm_custom.enterprise_callbacks.send_emails.sendgrid_email import SendGridEmailLogger
+        from litellm_custom.enterprise_callbacks.send_emails.smtp_email import SMTPEmailLogger
     except Exception as e:
         verbose_logger.debug(
             "[Non-Blocking] Unable to import enterprise alerting loggers - LiteLLM Enterprise Feature - %s",

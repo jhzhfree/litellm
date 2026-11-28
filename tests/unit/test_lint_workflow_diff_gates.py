@@ -548,7 +548,7 @@ def _ui_api_types_relevant(tmp_path: Path, changed: str) -> bool:
         "litellm/tracing/generated/models.py",
         "litellm/router_strategy/complexity_router/config.py",
         "litellm/models/credentials.py",
-        "enterprise/litellm_enterprise/types/proxy/audit_logging_endpoints.py",
+        "custom/litellm_custom/types/proxy/audit_logging_endpoints.py",
         "pyproject.toml",
         "uv.lock",
         "ui/litellm-dashboard/scripts/gen-api-types.mjs",

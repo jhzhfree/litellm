@@ -32,7 +32,7 @@ import pytest
 from fastapi import Request as FastAPIRequest, Response
 from litellm import Router
 from litellm.integrations.custom_logger import CustomLogger
-from litellm_enterprise.enterprise_callbacks.secret_detection import _ENTERPRISE_SecretDetection
+from litellm_custom.enterprise_callbacks.secret_detection import _ENTERPRISE_SecretDetection
 from starlette.datastructures import URL
 from integration._support.client import Scenario, eventually
 from integration._support.database import read_rows

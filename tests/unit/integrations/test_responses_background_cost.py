@@ -258,9 +258,9 @@ class TestResponsesBackgroundCostTracking:
 
 
 def _check_responses_cost_module_available():
-    """Check if litellm_enterprise.proxy.common_utils.check_responses_cost module is available"""
+    """Check if litellm_custom.proxy.common_utils.check_responses_cost module is available"""
     try:
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (  # noqa: F401
+        from litellm_custom.proxy.common_utils.check_responses_cost import (  # noqa: F401
             CheckResponsesCost,
         )
 
@@ -271,7 +271,7 @@ def _check_responses_cost_module_available():
 
 @pytest.mark.skipif(
     not _check_responses_cost_module_available(),
-    reason="litellm_enterprise.proxy.common_utils.check_responses_cost module not available (enterprise-only feature)",
+    reason="litellm_custom.proxy.common_utils.check_responses_cost module not available (enterprise-only feature)",
 )
 class TestCheckResponsesCost:
     """Tests for the CheckResponsesCost polling class"""
@@ -305,7 +305,7 @@ class TestCheckResponsesCost:
         self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router
     ):
         """Test CheckResponsesCost initialization"""
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+        from litellm_custom.proxy.common_utils.check_responses_cost import (
             CheckResponsesCost,
         )
 
@@ -324,7 +324,7 @@ class TestCheckResponsesCost:
         self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router
     ):
         """Test polling when there are no jobs"""
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+        from litellm_custom.proxy.common_utils.check_responses_cost import (
             CheckResponsesCost,
         )
 
@@ -357,7 +357,7 @@ class TestCheckResponsesCost:
         self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router
     ):
         """Test polling with a completed job"""
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+        from litellm_custom.proxy.common_utils.check_responses_cost import (
             CheckResponsesCost,
         )
 
@@ -423,7 +423,7 @@ class TestCheckResponsesCost:
         self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router
     ):
         """Test polling with a failed job"""
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+        from litellm_custom.proxy.common_utils.check_responses_cost import (
             CheckResponsesCost,
         )
 
@@ -477,7 +477,7 @@ class TestCheckResponsesCost:
         self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router
     ):
         """Test polling with a job still in progress"""
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+        from litellm_custom.proxy.common_utils.check_responses_cost import (
             CheckResponsesCost,
         )
 
@@ -530,7 +530,7 @@ class TestCheckResponsesCost:
         self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router
     ):
         """Test that errors when querying responses are handled gracefully"""
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+        from litellm_custom.proxy.common_utils.check_responses_cost import (
             CheckResponsesCost,
         )
 

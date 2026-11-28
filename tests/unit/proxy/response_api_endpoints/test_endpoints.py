@@ -944,7 +944,7 @@ async def _read_twice_on_two_pods(
     monkeypatch: pytest.MonkeyPatch, table: _UniqueManagedObjectTable, response_id: str, reader: object
 ) -> tuple[Mapping[str, object], ...]:
     from fastapi import Response as FastAPIResponse
-    from litellm_enterprise.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
+    from litellm_custom.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
 
     from litellm.caching.caching import DualCache
     from litellm.integrations.custom_logger import CustomLogger
@@ -1116,7 +1116,7 @@ class _StoredBackgroundResponse:
 
 
 def _one_pending_background_response() -> _StoredBackgroundResponse:
-    from litellm_enterprise.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
+    from litellm_custom.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
 
     from litellm.caching.caching import DualCache
     from litellm.responses.utils import ResponsesAPIRequestUtils
@@ -1381,7 +1381,7 @@ def _proxy_issued_id(provider_response_id: str) -> str:
 
 
 def _managed_files_over(table: _UniqueManagedObjectTable) -> tuple[MagicMock, MagicMock]:
-    from litellm_enterprise.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
+    from litellm_custom.proxy.hooks.managed_files import _PROXY_LiteLLMManagedFiles
 
     from litellm.caching.caching import DualCache
 

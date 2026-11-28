@@ -124,16 +124,16 @@ class CustomLoggerRegistry:
     }
 
     try:
-        from litellm_enterprise.enterprise_callbacks.pagerduty.pagerduty import (
+        from litellm_custom.enterprise_callbacks.pagerduty.pagerduty import (
             PagerDutyAlerting,
         )
-        from litellm_enterprise.enterprise_callbacks.send_emails.resend_email import (
+        from litellm_custom.enterprise_callbacks.send_emails.resend_email import (
             ResendEmailLogger,
         )
-        from litellm_enterprise.enterprise_callbacks.send_emails.sendgrid_email import (
+        from litellm_custom.enterprise_callbacks.send_emails.sendgrid_email import (
             SendGridEmailLogger,
         )
-        from litellm_enterprise.enterprise_callbacks.send_emails.smtp_email import (
+        from litellm_custom.enterprise_callbacks.send_emails.smtp_email import (
             SMTPEmailLogger,
         )
 

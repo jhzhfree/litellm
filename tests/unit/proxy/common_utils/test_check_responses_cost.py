@@ -15,7 +15,7 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from prisma.errors import UniqueViolationError
-from litellm_enterprise.proxy.common_utils.check_responses_cost import BilledBackgroundResponse, BilledCharge
+from litellm_custom.proxy.common_utils.check_responses_cost import BilledBackgroundResponse, BilledCharge
 
 from litellm.constants import MAX_OBJECTS_PER_POLL_CYCLE
 from litellm.types.llms.openai import ResponseAPIUsage, ResponsesAPIResponse
@@ -142,7 +142,7 @@ def _prisma_with_no_creator_rows() -> MagicMock:
 
 
 def _poller_over(table: _InMemoryManagedObjectTable, billed_logger: _RecordingBilledLogger):
-    from litellm_enterprise.proxy.common_utils.check_responses_cost import CheckResponsesCost
+    from litellm_custom.proxy.common_utils.check_responses_cost import CheckResponsesCost
 
     prisma_client: Final = _prisma_with_no_creator_rows()
     prisma_client.db.litellm_managedobjecttable = table
@@ -216,7 +216,7 @@ class TestCheckResponsesCost:
         self, mock_proxy_logging_obj, mock_prisma_client, mock_llm_router, billed_logger
     ):
         """Create a CheckResponsesCost instance with mocked dependencies"""
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import (
+        from litellm_custom.proxy.common_utils.check_responses_cost import (
             CheckResponsesCost,
         )
 
@@ -1723,7 +1723,7 @@ class _PricedPoller:
     response_id: str
 
     async def bill(self, read: ResponsesAPIResponse) -> object:
-        from litellm_enterprise.proxy.common_utils.check_responses_cost import CheckResponsesCost
+        from litellm_custom.proxy.common_utils.check_responses_cost import CheckResponsesCost
 
         from litellm.litellm_core_utils.logging_worker import GLOBAL_LOGGING_WORKER
 
@@ -1764,7 +1764,7 @@ def _priced_poller(
     from types import SimpleNamespace
 
     import litellm
-    from litellm_enterprise.proxy.common_utils.check_responses_cost import CheckResponsesCost
+    from litellm_custom.proxy.common_utils.check_responses_cost import CheckResponsesCost
 
     from litellm.responses.utils import ResponsesAPIRequestUtils
 

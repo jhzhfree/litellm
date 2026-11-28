@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import httpx
 import pytest
-from litellm_enterprise.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
+from litellm_custom.proxy.hooks.managed_files import PROXY_LiteLLMManagedFiles
 from openai.types.batch_request_counts import BatchRequestCounts
 
 from litellm.models.managed_files import LiteLLM_ManagedFileTable

@@ -198,7 +198,7 @@ from litellm.secret_managers.main import get_secret_bool
 from litellm.types.services import ServiceTypes
 
 try:
-    from litellm_enterprise.proxy.auth.user_api_key_auth import (
+    from litellm_custom.proxy.auth.user_api_key_auth import (
         enterprise_custom_auth as _enterprise_custom_auth,
     )
 

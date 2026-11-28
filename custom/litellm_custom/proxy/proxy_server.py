@@ -30,3 +30,8 @@ class CustomProxyConfig:
         if not premium_user:
             return None
         return os.getenv("DOCS_DESCRIPTION")
+
+
+# The OSS proxy server mounts the package through
+# `from litellm_custom.proxy.proxy_server import EnterpriseProxyConfig`.
+EnterpriseProxyConfig = CustomProxyConfig

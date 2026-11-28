@@ -96,3 +96,5 @@ class EnterpriseGoogleTextModeration(CustomLogger):
 
 
 _ENTERPRISE_GoogleTextModeration = EnterpriseGoogleTextModeration
+
+ENTERPRISE_GoogleTextModeration = _ENTERPRISE_GoogleTextModeration

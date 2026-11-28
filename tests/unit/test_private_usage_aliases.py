@@ -93,12 +93,12 @@ PROXY_CLASS_NAME_ALIAS_CASES: Final = (
         "ProxyDBLogger",
     ),
     (
-        "enterprise.litellm_custom.proxy.hooks.managed_files",
+        "litellm_custom.proxy.hooks.managed_files",
         "_PROXY_LiteLLMManagedFiles",
         "PROXY_LiteLLMManagedFiles",
     ),
     (
-        "enterprise.litellm_custom.proxy.hooks.managed_vector_stores",
+        "litellm_custom.proxy.hooks.managed_vector_stores",
         "_PROXY_LiteLLMManagedVectorStores",
         "PROXY_LiteLLMManagedVectorStores",
     ),
@@ -1140,42 +1140,42 @@ MODULE_IMPORT_ALIAS_CASES: Final = (
 
 ALIAS_CASES: Final = (
     (
-        "enterprise.enterprise_hooks.banned_keywords",
+        "litellm_custom.enterprise_hooks.banned_keywords",
         "",
         "_ENTERPRISE_BannedKeywords",
         "ENTERPRISE_BannedKeywords",
         False,
     ),
     (
-        "enterprise.enterprise_hooks.blocked_user_list",
+        "litellm_custom.enterprise_hooks.blocked_user_list",
         "",
         "_ENTERPRISE_BlockedUserList",
         "ENTERPRISE_BlockedUserList",
         False,
     ),
     (
-        "enterprise.enterprise_hooks.google_text_moderation",
+        "litellm_custom.enterprise_hooks.google_text_moderation",
         "",
         "_ENTERPRISE_GoogleTextModeration",
         "ENTERPRISE_GoogleTextModeration",
         False,
     ),
     (
-        "enterprise.enterprise_hooks.openai_moderation",
+        "litellm_custom.enterprise_hooks.openai_moderation",
         "",
         "_ENTERPRISE_OpenAI_Moderation",
         "ENTERPRISE_OpenAI_Moderation",
         False,
     ),
     (
-        "enterprise.litellm_custom.proxy.hooks.managed_files",
+        "litellm_custom.proxy.hooks.managed_files",
         "",
         "_PROXY_LiteLLMManagedFiles",
         "PROXY_LiteLLMManagedFiles",
         False,
     ),
     (
-        "enterprise.litellm_custom.proxy.hooks.managed_vector_stores",
+        "litellm_custom.proxy.hooks.managed_vector_stores",
         "",
         "_PROXY_LiteLLMManagedVectorStores",
         "PROXY_LiteLLMManagedVectorStores",
@@ -1694,7 +1694,7 @@ ALIAS_CASES: Final = (
         False,
     ),
     (
-        "litellm.proxy.enterprise.litellm_custom.proxy.utils",
+        "litellm_custom.proxy.utils",
         "",
         "_should_block_robots",
         "should_block_robots",

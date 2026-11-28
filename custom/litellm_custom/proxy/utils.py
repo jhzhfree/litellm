@@ -2,7 +2,7 @@
 from litellm.secret_managers.main import str_to_bool
 
 
-def should_block_robots() -> bool:
+def _should_block_robots() -> bool:
     """
     Returns True if robots.txt should block web crawlers, controlled by:
 
@@ -28,3 +28,6 @@ def should_block_robots() -> bool:
             )
         return True
     return False
+
+
+should_block_robots = _should_block_robots

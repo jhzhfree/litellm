@@ -38,3 +38,5 @@ class EnterpriseOpenAIModeration(CustomLogger):
 
 
 _ENTERPRISE_OpenAI_Moderation = EnterpriseOpenAIModeration
+
+ENTERPRISE_OpenAI_Moderation = _ENTERPRISE_OpenAI_Moderation

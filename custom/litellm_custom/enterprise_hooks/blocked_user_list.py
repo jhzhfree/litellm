@@ -91,3 +91,5 @@ class EnterpriseBlockedUserList(CustomLogger):
 
 
 _ENTERPRISE_BlockedUserList = EnterpriseBlockedUserList
+
+ENTERPRISE_BlockedUserList = _ENTERPRISE_BlockedUserList

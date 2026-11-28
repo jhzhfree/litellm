@@ -84,3 +84,5 @@ class EnterpriseBannedKeywords(CustomLogger):
 
 
 _ENTERPRISE_BannedKeywords = EnterpriseBannedKeywords
+
+ENTERPRISE_BannedKeywords = _ENTERPRISE_BannedKeywords
